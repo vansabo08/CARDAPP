@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Tokens de marca Cardapp */
+    --grafite: #141414;
+    --grafite-alto: #1c1c1c;
+    --grafite-suave: #242424;
+    --creme: #faf8f5;
+    --creme-fundo: #faf8f5;
+    --ouro: #c9a227;
+    --verde: #0f9d58;
+    --linha: rgba(250, 248, 245, 0.12);
+    --linha-escura: rgba(20, 20, 20, 0.1);
+    --tenue: rgba(250, 248, 245, 0.56);
+    --tenue-escuro: rgba(20, 20, 20, 0.55);
+
+    --fonte-display: 'Fraunces', Georgia, serif;
+    --fonte-sans: 'Manrope', system-ui, sans-serif;
+
+    color-scheme: dark;
+  }
+
+  * {
+    border-color: var(--linha);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--grafite);
+    color: var(--creme);
+    font-family: var(--fonte-sans);
+    font-feature-settings: 'ss01', 'cv01';
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* O cardapio publico inverte o esquema: creme sobre grafite */
+  [data-superficie='clara'] {
+    background-color: var(--creme);
+    color: var(--grafite);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--fonte-display);
+    font-weight: 400;
+    letter-spacing: -0.015em;
+  }
+
+  ::selection {
+    background: var(--ouro);
+    color: var(--grafite);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ouro);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+@layer components {
+  .etiqueta {
+    @apply font-sans text-[11px] font-semibold uppercase tracking-[0.14em];
+  }
+
+  .barra-esconde::-webkit-scrollbar {
+    display: none;
+  }
+
+  .barra-esconde {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Reticencias tipograficas entre nome e preco, como numa carta impressa */
+  .pontilhado {
+    background-image: radial-gradient(circle, currentColor 1px, transparent 1px);
+    background-position: bottom;
+    background-size: 6px 6px;
+    background-repeat: repeat-x;
+    opacity: 0.28;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
