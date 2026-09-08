@@ -4,6 +4,7 @@ import { Botao } from '@/components/ui/botao';
 import { CabecalhoPagina } from '@/components/painel/navegacao';
 import { obterPedidosDeHoje, obterRestauranteDoDono } from '@/lib/dados';
 import { formatarKz, numeroMesa } from '@/lib/format';
+import { resumoDoDia } from '@/lib/resumo';
 import { LIMITES_PLANO, NOME_PLANO, type Pedido } from '@/lib/tipos';
 
 export const metadata: Metadata = { title: 'Resumo' };
@@ -54,23 +55,9 @@ export default async function PaginaResumo() {
 /* ------------------------------------------------------------------ */
 
 function Estatisticas({ pedidos }: { pedidos: Pedido[] }) {
-  const totalValor = pedidos.reduce((s, p) => s + p.total, 0);
-  const totalItens = pedidos.reduce(
-    (s, p) => s + p.itens.reduce((si, i) => si + i.qtd, 0),
-    0,
-  );
-  const ticket = pedidos.length ? totalValor / pedidos.length : 0;
-
-  const contagem = new Map<string, { nome: string; qtd: number; valor: number }>();
-  for (const pedido of pedidos) {
-    for (const item of pedido.itens) {
-      const actual = contagem.get(item.nome) ?? { nome: item.nome, qtd: 0, valor: 0 };
-      actual.qtd += item.qtd;
-      actual.valor += item.qtd * item.preco;
-      contagem.set(item.nome, actual);
-    }
-  }
-  const top = [...contagem.values()].sort((a, b) => b.qtd - a.qtd).slice(0, 5);
+  // As mesmas contas que vão no email da manhã, para os dois nunca
+  // discordarem um do outro.
+  const { total: totalValor, itens: totalItens, media, top } = resumoDoDia(pedidos);
   const maiorQtd = top[0]?.qtd ?? 1;
 
   if (!pedidos.length) {
@@ -90,7 +77,7 @@ function Estatisticas({ pedidos }: { pedidos: Pedido[] }) {
         <Numero rotulo="Pedidos" valor={String(pedidos.length)} />
         <Numero rotulo="Valor" valor={formatarKz(totalValor)} />
         <Numero rotulo="Itens" valor={String(totalItens)} />
-        <Numero rotulo="Média por pedido" valor={formatarKz(Math.round(ticket))} />
+        <Numero rotulo="Média por pedido" valor={formatarKz(media)} />
       </div>
 
       <section className="mt-12">
