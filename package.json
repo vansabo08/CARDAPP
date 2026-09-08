@@ -9,7 +9,8 @@
     "lint": "next lint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "supabase:verificar": "node scripts/verificar-supabase.mjs"
+    "supabase:verificar": "node scripts/verificar-supabase.mjs",
+    "vercel:variaveis": "node scripts/vercel-variaveis.mjs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.4",
