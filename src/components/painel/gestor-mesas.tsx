@@ -136,7 +136,7 @@ export function GestorMesas({
       </div>
 
       {!mesas.length ? (
-        <p className="mt-10 rounded-[12px] border border-linha bg-grafite-alto px-6 py-12 text-center font-sans text-[15px] text-tenue">
+        <p className="mt-10 rounded-cartao border border-linha bg-grafite-alto px-6 py-12 text-center font-sans text-[15px] text-tenue">
           Ainda não há mesas. Junte as que tem na sala e imprima os cartões.
         </p>
       ) : null}
@@ -169,7 +169,7 @@ function CartaoMesaQr({
   }, [url]);
 
   return (
-    <div className="group relative flex flex-col items-center rounded-[12px] border border-linha bg-grafite-alto p-4">
+    <div className="group relative flex flex-col items-center rounded-cartao border border-linha bg-grafite-alto p-4">
       <button
         type="button"
         onClick={aoRemover}
@@ -179,7 +179,7 @@ function CartaoMesaQr({
         ×
       </button>
 
-      <div className="flex aspect-square w-full items-center justify-center rounded-[10px] bg-creme p-3">
+      <div className="flex aspect-square w-full items-center justify-center rounded-campo bg-creme p-3">
         {qr ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={qr} alt={`QR da mesa ${mesa.numero}`} className="h-full w-full" />

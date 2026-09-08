@@ -4,21 +4,32 @@
 
 @layer base {
   :root {
-    /* Tokens de marca Cardapp */
-    --grafite: #141414;
-    --grafite-alto: #1c1c1c;
-    --grafite-suave: #242424;
-    --creme: #faf8f5;
-    --creme-fundo: #faf8f5;
-    --ouro: #c9a227;
-    --verde: #0f9d58;
-    --linha: rgba(250, 248, 245, 0.12);
-    --linha-escura: rgba(20, 20, 20, 0.1);
-    --tenue: rgba(250, 248, 245, 0.56);
-    --tenue-escuro: rgba(20, 20, 20, 0.55);
+    /* --------------------------------------------------------------
+       Paleta tirada da referência: preto quente, dourado champanhe,
+       folha branca. O dourado tem duas alturas — o claro é para
+       tipografia grande, o médio para botões e acentos pequenos.
+       -------------------------------------------------------------- */
+    --grafite: #0f0e0d;
+    --grafite-alto: #171614;
+    --grafite-suave: #211f1c;
+    --grafite-carta: #121110;
 
-    --fonte-display: 'Fraunces', Georgia, serif;
-    --fonte-sans: 'Manrope', system-ui, sans-serif;
+    --creme: #faf7f2;
+    --creme-folha: #fdfcfa;
+
+    --ouro: #d9b36b;
+    --ouro-claro: #efd6a4;
+    --ouro-fundo: #a8813e;
+
+    --verde: #0f9d58;
+
+    --linha: rgba(250, 247, 242, 0.1);
+    --linha-escura: rgba(15, 14, 13, 0.08);
+    --tenue: rgba(250, 247, 242, 0.55);
+    --tenue-escuro: rgba(15, 14, 13, 0.52);
+
+    --fonte-display: 'Instrument Serif', Georgia, serif;
+    --fonte-sans: 'Familjen Grotesk', system-ui, sans-serif;
 
     color-scheme: dark;
   }
@@ -35,14 +46,13 @@
     background-color: var(--grafite);
     color: var(--creme);
     font-family: var(--fonte-sans);
-    font-feature-settings: 'ss01', 'cv01';
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
 
-  /* O cardapio publico inverte o esquema: creme sobre grafite */
+  /* O cardápio público inverte o esquema: folha clara sobre o preto. */
   [data-superficie='clara'] {
-    background-color: var(--creme);
+    background-color: var(--creme-folha);
     color: var(--grafite);
   }
 
@@ -51,7 +61,7 @@
   h3 {
     font-family: var(--fonte-display);
     font-weight: 400;
-    letter-spacing: -0.015em;
+    letter-spacing: -0.018em;
   }
 
   ::selection {
@@ -62,13 +72,13 @@
   :focus-visible {
     outline: 2px solid var(--ouro);
     outline-offset: 2px;
-    border-radius: 4px;
+    border-radius: 6px;
   }
 }
 
 @layer components {
   .etiqueta {
-    @apply font-sans text-[11px] font-semibold uppercase tracking-[0.14em];
+    @apply font-sans text-[11px] font-semibold uppercase tracking-[0.16em];
   }
 
   .barra-esconde::-webkit-scrollbar {
@@ -80,13 +90,125 @@
     scrollbar-width: none;
   }
 
-  /* Reticencias tipograficas entre nome e preco, como numa carta impressa */
-  .pontilhado {
-    background-image: radial-gradient(circle, currentColor 1px, transparent 1px);
-    background-position: bottom;
-    background-size: 6px 6px;
-    background-repeat: repeat-x;
-    opacity: 0.28;
+  /* Título de display em dourado, com o degradé subtil da referência. */
+  .ouro-display {
+    background-image: linear-gradient(
+      180deg,
+      var(--ouro-claro) 0%,
+      var(--ouro) 62%,
+      var(--ouro-fundo) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Véu que garante leitura do texto por cima de fotografia. */
+  .veu-foto {
+    background-image: linear-gradient(
+      180deg,
+      rgba(15, 14, 13, 0.15) 0%,
+      rgba(15, 14, 13, 0.55) 45%,
+      rgba(15, 14, 13, 0.94) 100%
+    );
+  }
+
+  /* ----------------------------------------------------------------
+     Fundo vivo. O preto liso é o que faz uma página parecer morta:
+     por baixo de tudo ficam brasas quentes muito difusas, a derivar
+     devagar, mais grão e vinheta. Nada disto pede JavaScript.
+     ---------------------------------------------------------------- */
+  .brasa {
+    position: absolute;
+    border-radius: 9999px;
+    will-change: transform;
+  }
+
+  .brasa-ouro {
+    background: radial-gradient(circle, rgba(217, 179, 107, 0.2) 0%, transparent 64%);
+    animation: derivar-a 46s ease-in-out infinite alternate;
+  }
+
+  .brasa-cobre {
+    background: radial-gradient(circle, rgba(176, 84, 43, 0.17) 0%, transparent 66%);
+    animation: derivar-b 62s ease-in-out infinite alternate;
+  }
+
+  .brasa-fria {
+    background: radial-gradient(circle, rgba(72, 96, 110, 0.14) 0%, transparent 68%);
+    animation: derivar-c 54s ease-in-out infinite alternate;
+  }
+
+  .vinheta {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(120% 80% at 50% 0%, transparent 38%, rgba(0, 0, 0, 0.55) 100%);
+  }
+
+  /* Holofote que segue o cursor: as variáveis vêm do componente. */
+  .holofote {
+    background: radial-gradient(
+      520px circle at var(--rato-x, 70%) var(--rato-y, 26%),
+      rgba(217, 179, 107, 0.13) 0%,
+      transparent 62%
+    );
+    transition: opacity 400ms ease-out;
+  }
+
+  /* Faixa de nomes de pratos a correr, como a lousa de um bar. */
+  .faixa-correr {
+    animation: correr 42s linear infinite;
+  }
+
+  .faixa-correr:hover {
+    animation-play-state: paused;
+  }
+
+  /* Grão fino: tira o aspecto plástico das superfícies muito escuras. */
+  .grao::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='r'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23r)' opacity='0.28'/%3E%3C/svg%3E");
+  }
+}
+
+@keyframes derivar-a {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  100% {
+    transform: translate3d(-8%, 10%, 0) scale(1.18);
+  }
+}
+
+@keyframes derivar-b {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1.1);
+  }
+  100% {
+    transform: translate3d(12%, -8%, 0) scale(0.92);
+  }
+}
+
+@keyframes derivar-c {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.95);
+  }
+  100% {
+    transform: translate3d(-10%, -12%, 0) scale(1.2);
+  }
+}
+
+@keyframes correr {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
   }
 }
 

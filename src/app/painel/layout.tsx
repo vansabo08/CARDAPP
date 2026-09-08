@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { NavegacaoPainel } from '@/components/painel/navegacao';
+import { FundoVivo } from '@/components/marketing/fundo-vivo';
 import { emModoDemonstracao, obterRestauranteDoDono } from '@/lib/dados';
 import { utilizadorActual } from '@/lib/supabase/servidor';
 
@@ -14,7 +15,8 @@ export default async function LayoutPainel({ children }: { children: React.React
   const restaurante = await obterRestauranteDoDono();
 
   return (
-    <div className="min-h-dvh bg-grafite md:flex">
+    <div className="relative min-h-dvh md:flex">
+      <FundoVivo />
       <NavegacaoPainel
         nomeRestaurante={restaurante?.nome ?? null}
         slug={restaurante?.slug ?? null}

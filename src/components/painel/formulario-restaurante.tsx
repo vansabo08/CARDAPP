@@ -15,7 +15,7 @@ export type ValoresRestaurante = {
   cor_marca: string;
 };
 
-const CORES = ['#C9A227', '#B4522D', '#2F6F4E', '#3B5B8C', '#8A4A6B', '#7A6A52'];
+const CORES = ['#D9B36B', '#C2703C', '#2F6F4E', '#3B5B8C', '#8A4A6B', '#8C6A4A'];
 
 /* --------------------------- nome, logo, slug --------------------------- */
 
@@ -88,7 +88,7 @@ export function CamposIdentidade({
               accept="image/jpeg,image/png,image/webp,image/avif"
               onChange={escolherLogo}
               aria-label="Escolher logótipo"
-              className="block w-full font-sans text-[13px] text-tenue file:mr-3 file:rounded-[10px] file:border file:border-linha file:bg-transparent file:px-3 file:py-2 file:font-sans file:text-[13px] file:text-creme"
+              className="block w-full font-sans text-[13px] text-tenue file:mr-3 file:rounded-campo file:border file:border-linha file:bg-transparent file:px-3 file:py-2 file:font-sans file:text-[13px] file:text-creme"
             />
             <Ajuda>{aEnviar ? 'A enviar…' : 'Opcional. Sem logo usamos as iniciais.'}</Ajuda>
           </div>
@@ -98,7 +98,7 @@ export function CamposIdentidade({
 
       <div>
         <Rotulo htmlFor="slug">Endereço do cardápio</Rotulo>
-        <div className="flex items-center gap-0 rounded-[12px] border border-linha px-3.5 focus-within:border-ouro">
+        <div className="flex items-center gap-0 rounded-campo border border-linha px-3.5 focus-within:border-ouro">
           <span className="shrink-0 font-sans text-[14px] text-tenue">
             {SITE_URL.replace(/^https?:\/\//, '')}/
           </span>
@@ -151,7 +151,7 @@ export function CampoWhatsApp({
   return (
     <div>
       <Rotulo htmlFor="whatsapp">Número de WhatsApp</Rotulo>
-      <div className="flex items-center gap-0 rounded-[12px] border border-linha px-3.5 focus-within:border-ouro">
+      <div className="flex items-center gap-0 rounded-campo border border-linha px-3.5 focus-within:border-ouro">
         <span className="shrink-0 font-sans text-[15px] text-tenue">+244</span>
         <input
           id="whatsapp"

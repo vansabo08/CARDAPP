@@ -10,12 +10,12 @@ import { cn } from '@/lib/utils';
  */
 
 const PALETAS = [
-  { fundo: '#1d1a16', molho: '#8a5a2b', peca: '#c9a227', verde: '#4f6b3a' },
-  { fundo: '#1a1c19', molho: '#6b6f3a', peca: '#c8b47a', verde: '#3f5d34' },
-  { fundo: '#201a17', molho: '#9c4a2a', peca: '#d9b877', verde: '#5b6b3a' },
-  { fundo: '#181b1d', molho: '#4a6470', peca: '#cbb98d', verde: '#47695a' },
-  { fundo: '#1f1b1a', molho: '#7a3f2e', peca: '#dcc38b', verde: '#556b39' },
-  { fundo: '#1b1917', molho: '#a8791f', peca: '#e2cd9a', verde: '#4a6437' },
+  { fundo: '#191715', molho: '#7d5228', peca: '#d9b36b', verde: '#4b6338' },
+  { fundo: '#171916', molho: '#63673a', peca: '#c8b078', verde: '#3d5732' },
+  { fundo: '#1c1714', molho: '#8f4527', peca: '#dcbe84', verde: '#57653a' },
+  { fundo: '#15181a', molho: '#445c68', peca: '#c7b489', verde: '#436255' },
+  { fundo: '#1b1716', molho: '#71392a', peca: '#e0c691', verde: '#516536' },
+  { fundo: '#181614', molho: '#9c711d', peca: '#efd6a4', verde: '#466033' },
 ];
 
 function semente(texto: string) {

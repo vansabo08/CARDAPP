@@ -39,7 +39,7 @@ export function EditorDefinicoes({
     slug: restaurante.slug,
     whatsapp: restaurante.whatsapp.replace(/^244/, ''),
     logo_url: restaurante.logo_url,
-    cor_marca: restaurante.cor_marca || '#C9A227',
+    cor_marca: restaurante.cor_marca || '#D9B36B',
   });
   const [estado, setEstado] = React.useState<'parado' | 'a-guardar' | 'guardado'>('parado');
   const [erro, setErro] = React.useState<string | null>(null);
@@ -106,7 +106,7 @@ export function EditorDefinicoes({
             return (
               <div
                 key={plano.id}
-                className={`rounded-[12px] border p-5 ${
+                className={`rounded-cartao border p-5 ${
                   actual ? 'border-ouro/45 bg-ouro/[0.04]' : 'border-linha bg-grafite-alto'
                 }`}
               >

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Botao } from '@/components/ui/botao';
 import { Ajuda, Campo, Erro, Rotulo } from '@/components/ui/campo';
 import { Marca } from '@/components/marca';
+import { FundoVivo } from '@/components/marketing/fundo-vivo';
 import {
   CampoWhatsApp,
   CamposIdentidade,
@@ -54,7 +55,7 @@ export function Onboarding({ demonstracao }: { demonstracao: boolean }) {
     slug: '',
     whatsapp: '',
     logo_url: null,
-    cor_marca: '#C9A227',
+    cor_marca: '#D9B36B',
   });
   const [mesas, setMesas] = React.useState('8');
   const [cardapio, setCardapio] = React.useState<CategoriaInicial[]>(SUGESTAO);
@@ -88,7 +89,8 @@ export function Onboarding({ demonstracao }: { demonstracao: boolean }) {
   }
 
   return (
-    <div className="min-h-dvh bg-grafite">
+    <div className="relative min-h-dvh">
+      <FundoVivo />
       <header className="border-b border-linha px-5 py-5 md:px-8">
         <Marca href="/painel" />
       </header>
@@ -212,7 +214,7 @@ export function Onboarding({ demonstracao }: { demonstracao: boolean }) {
               </div>
 
               {demonstracao ? (
-                <p className="mt-7 rounded-[12px] border border-ouro/30 bg-ouro/[0.06] px-4 py-3 font-sans text-[13.5px] leading-[1.55] text-ouro">
+                <p className="mt-7 rounded-cartao border border-ouro/30 bg-ouro/[0.06] px-4 py-3 font-sans text-[13.5px] leading-[1.55] text-ouro">
                   Sem Supabase ligado nada fica gravado — mas pode percorrer o painel todo à mesma.
                 </p>
               ) : null}
@@ -298,7 +300,7 @@ function EditorCardapioInicial({
   return (
     <div className="flex flex-col gap-4">
       {cardapio.map((categoria, ci) => (
-        <div key={ci} className="rounded-[12px] border border-linha bg-grafite-alto">
+        <div key={ci} className="rounded-cartao border border-linha bg-grafite-alto">
           <div className="border-b border-linha px-4 py-3">
             <input
               value={categoria.nome}
@@ -365,7 +367,7 @@ function EditorCardapioInicial({
       <button
         type="button"
         onClick={() => aoMudar([...cardapio, { nome: 'Nova categoria', itens: [] }])}
-        className="self-start rounded-[12px] border border-linha px-4 py-2.5 font-sans text-[13.5px] font-semibold text-tenue transition-colors duration-200 hover:border-creme/30 hover:text-creme"
+        className="self-start rounded-cartao border border-linha px-4 py-2.5 font-sans text-[13.5px] font-semibold text-tenue transition-colors duration-200 hover:border-creme/30 hover:text-creme"
       >
         + Nova categoria
       </button>

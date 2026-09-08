@@ -16,7 +16,7 @@ create table if not exists restaurants (
   slug text unique not null,
   logo_url text,
   whatsapp text not null,          -- formato 244XXXXXXXXX
-  cor_marca text default '#C9A227',
+  cor_marca text default '#D9B36B',
   plano text default 'balcao',     -- balcao | mesa | sala
   activo boolean default true,
   created_at timestamptz default now()

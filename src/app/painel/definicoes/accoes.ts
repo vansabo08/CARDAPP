@@ -59,7 +59,7 @@ export async function criarRestaurante(
       slug,
       whatsapp: normalizarWhatsApp(dados.whatsapp),
       logo_url: dados.logo_url,
-      cor_marca: dados.cor_marca || '#C9A227',
+      cor_marca: dados.cor_marca || '#D9B36B',
     })
     .select('id, slug')
     .single();
@@ -130,7 +130,7 @@ export async function guardarRestaurante(dados: DadosRestaurante): Promise<Resul
       slug,
       whatsapp: normalizarWhatsApp(dados.whatsapp),
       logo_url: dados.logo_url,
-      cor_marca: dados.cor_marca || '#C9A227',
+      cor_marca: dados.cor_marca || '#D9B36B',
     })
     .eq('id', actual.id);
 

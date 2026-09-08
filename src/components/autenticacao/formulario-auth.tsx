@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Botao } from '@/components/ui/botao';
 import { Ajuda, Campo, Erro, Rotulo } from '@/components/ui/campo';
 import { Marca } from '@/components/marca';
+import { FundoVivo } from '@/components/marketing/fundo-vivo';
 import { clienteNavegador } from '@/lib/supabase/cliente';
 
 type Modo = 'entrar' | 'criar';
@@ -92,7 +93,8 @@ export function FormularioAuth({ modo }: { modo: Modo }) {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col bg-grafite">
+    <div className="relative flex min-h-dvh flex-col">
+      <FundoVivo />
       <header className="px-5 py-6 md:px-8">
         <Marca />
       </header>

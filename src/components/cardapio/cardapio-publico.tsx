@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import Image from 'next/image';
 import { Botao } from '@/components/ui/botao';
 import { FolhaInferior } from '@/components/ui/folha-inferior';
 import { AreaTexto } from '@/components/ui/campo';
@@ -34,7 +35,14 @@ export function CardapioPublico({
   const seccoes = React.useRef<Record<string, HTMLElement | null>>({});
   const pilulas = React.useRef<Record<string, HTMLButtonElement | null>>({});
 
-  /* Barra de categorias: segue a seccao que esta a ser lida. */
+  const todos = React.useMemo(() => categorias.flatMap((c) => c.itens), [categorias]);
+  const capa = todos.find((i) => i.foto_url)?.foto_url ?? null;
+  const destaques = React.useMemo(
+    () => todos.filter((i) => i.disponivel && i.foto_url).slice(0, 6),
+    [todos],
+  );
+
+  /* Barra de categorias: segue a secção que está a ser lida. */
   React.useEffect(() => {
     const nos = categorias
       .map((c) => seccoes.current[c.id])
@@ -51,14 +59,13 @@ export function CardapioPublico({
           if (id) setActiva(id);
         }
       },
-      { rootMargin: '-124px 0px -62% 0px', threshold: 0 },
+      { rootMargin: '-120px 0px -62% 0px', threshold: 0 },
     );
 
     nos.forEach((n) => observador.observe(n));
     return () => observador.disconnect();
   }, [categorias]);
 
-  /* A pilula activa acompanha a leitura sem obrigar a arrastar. */
   React.useEffect(() => {
     pilulas.current[activa]?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
   }, [activa]);
@@ -66,8 +73,7 @@ export function CardapioPublico({
   function irPara(id: string) {
     const no = seccoes.current[id];
     if (!no) return;
-    const topo = no.getBoundingClientRect().top + window.scrollY - 108;
-    window.scrollTo({ top: topo, behavior: 'smooth' });
+    window.scrollTo({ top: no.getBoundingClientRect().top + window.scrollY - 100, behavior: 'smooth' });
   }
 
   async function enviarPedido() {
@@ -78,8 +84,8 @@ export function CardapioPublico({
     const pedido = { restaurante: restaurante.nome, mesa, itens, total: carrinho.total };
     const url = buildWhatsAppUrl(restaurante.whatsapp, pedido);
 
-    // Gravamos sem esperar pela resposta: o que interessa ao cliente e
-    // chegar ao WhatsApp. Se a gravacao falhar, o pedido segue na mesma.
+    // Gravamos sem esperar pela resposta: o que interessa ao cliente é
+    // chegar ao WhatsApp. Se a gravação falhar, o pedido segue na mesma.
     try {
       fetch('/api/pedidos', {
         method: 'POST',
@@ -107,29 +113,51 @@ export function CardapioPublico({
   }
 
   const temCarrinho = carrinho.quantidadeTotal > 0;
+  const cor = restaurante.cor_marca || '#D9B36B';
 
   return (
     <div className="min-h-dvh bg-grafite">
       {/* ---------------------------------------------------------- */}
-      {/* Cabeçalho                                                    */}
+      {/* Herói                                                        */}
       {/* ---------------------------------------------------------- */}
-      <header className="px-5 pb-9 pt-7">
-        <div className="mx-auto flex max-w-[560px] items-center gap-3">
-          <Logotipo restaurante={restaurante} />
-          <div className="min-w-0 flex-1">
-            <h1 className="truncate font-display text-[20px] leading-tight text-creme">
-              {restaurante.nome}
-            </h1>
-            <p className="font-sans text-[12.5px] text-tenue">Cardápio</p>
+      <header className="relative isolate">
+        <div className="relative h-[260px] w-full overflow-hidden sm:h-[300px]">
+          {capa ? (
+            <Image
+              src={capa}
+              alt=""
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
+              aria-hidden
+            />
+          ) : (
+            <div className="absolute inset-0 bg-grafite-alto" />
+          )}
+          <div className="veu-foto absolute inset-0" />
+        </div>
+
+        <div className="absolute inset-x-0 bottom-0 px-5 pb-9">
+          <div className="mx-auto flex max-w-[600px] items-end gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="etiqueta" style={{ color: cor }}>
+                Cardápio
+              </p>
+              <h1 className="ouro-display mt-2 font-display text-[34px] leading-[1.04] tracking-[-0.02em] sm:text-[40px]">
+                {restaurante.nome}
+              </h1>
+            </div>
+
+            {mesa != null ? (
+              <span
+                className="etiqueta shrink-0 rounded-full px-3.5 py-2 text-grafite"
+                style={{ backgroundColor: cor }}
+              >
+                Mesa {numeroMesa(mesa)}
+              </span>
+            ) : null}
           </div>
-          {mesa != null ? (
-            <span
-              className="etiqueta shrink-0 rounded-full px-3 py-1.5 text-grafite"
-              style={{ backgroundColor: restaurante.cor_marca || '#C9A227' }}
-            >
-              Mesa {numeroMesa(mesa)}
-            </span>
-          ) : null}
         </div>
       </header>
 
@@ -138,12 +166,14 @@ export function CardapioPublico({
       {/* ---------------------------------------------------------- */}
       <div
         data-superficie="clara"
-        className="min-h-[70dvh] rounded-t-[20px] bg-creme pb-40 text-grafite"
+        className="relative z-10 -mt-5 min-h-[70dvh] rounded-t-folha pb-40"
       >
-        {/* barra de categorias */}
-        <div className="sticky top-0 z-30 -mt-px rounded-t-[20px] bg-creme/95 backdrop-blur-sm">
+        <div className="sticky top-0 z-30 rounded-t-folha bg-creme-folha/95 backdrop-blur-md">
+          <div className="flex justify-center pt-3">
+            <span className="block h-[4px] w-[38px] rounded-full bg-grafite/10" />
+          </div>
           <div
-            className="barra-esconde mx-auto flex max-w-[560px] gap-2 overflow-x-auto px-5 py-3.5"
+            className="barra-esconde mx-auto flex max-w-[600px] gap-2 overflow-x-auto px-5 py-3"
             role="tablist"
             aria-label="Categorias"
           >
@@ -160,10 +190,10 @@ export function CardapioPublico({
                   aria-selected={activaAgora}
                   onClick={() => irPara(categoria.id)}
                   className={cn(
-                    'shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 font-sans text-[13px] font-semibold transition-colors duration-200',
+                    'shrink-0 whitespace-nowrap rounded-full px-4 py-2 font-sans text-[13px] font-semibold transition-colors duration-200',
                     activaAgora
-                      ? 'bg-grafite text-creme'
-                      : 'border border-linha-escura text-tenue-escuro hover:border-grafite/25',
+                      ? 'bg-grafite-carta text-creme'
+                      : 'border border-linha-escura text-tenue-escuro hover:border-grafite/22',
                   )}
                 >
                   {categoria.nome}
@@ -171,11 +201,31 @@ export function CardapioPublico({
               );
             })}
           </div>
-          <div className="mx-auto h-px max-w-[560px] bg-linha-escura" />
+          <div className="mx-auto h-px max-w-[600px] bg-linha-escura" />
         </div>
 
-        {/* lista */}
-        <div className="mx-auto max-w-[560px] px-5">
+        {/* fila de destaques, no registo dos cartões da referência */}
+        {destaques.length >= 3 ? (
+          <section className="pt-7">
+            <div className="mx-auto max-w-[600px] px-5">
+              <h2 className="font-sans text-[19px] font-extrabold tracking-[-0.02em] text-grafite">
+                Mais pedidos
+              </h2>
+            </div>
+            <div className="barra-esconde mt-4 flex gap-3 overflow-x-auto px-5 pb-1 [scroll-padding-left:20px] [scroll-snap-type:x_mandatory] sm:mx-auto sm:max-w-[600px]">
+              {destaques.map((prato) => (
+                <CartaoDestaque
+                  key={prato.id}
+                  prato={prato}
+                  aoAbrir={() => setPratoAberto(prato)}
+                />
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        {/* lista por categoria */}
+        <div className="mx-auto max-w-[600px] px-5">
           {categorias.map((categoria) => (
             <section
               key={categoria.id}
@@ -185,9 +235,11 @@ export function CardapioPublico({
               }}
               className="scroll-mt-28 pt-9"
             >
-              <h2 className="font-display text-[24px] leading-none text-grafite">{categoria.nome}</h2>
+              <h2 className="font-sans text-[19px] font-extrabold tracking-[-0.02em] text-grafite">
+                {categoria.nome}
+              </h2>
 
-              <ul className="mt-5 flex flex-col">
+              <ul className="mt-4 flex flex-col">
                 {categoria.itens.map((prato) => (
                   <li key={prato.id}>
                     <LinhaPrato
@@ -217,44 +269,37 @@ export function CardapioPublico({
       {/* ---------------------------------------------------------- */}
       <div
         className={cn(
-          'fixed inset-x-0 bottom-0 z-40 px-4 pb-[max(16px,env(safe-area-inset-bottom))] pt-3',
-          'bg-gradient-to-t from-grafite via-grafite/95 to-transparent',
+          'fixed inset-x-0 bottom-0 z-40 px-4 pb-[max(16px,env(safe-area-inset-bottom))] pt-8',
+          'bg-gradient-to-t from-grafite via-grafite/92 to-transparent',
           'transition-[opacity,transform] duration-[240ms] ease-out',
           temCarrinho ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-2 opacity-0',
         )}
       >
-        <div className="mx-auto flex max-w-[560px] items-center gap-3">
+        <div className="mx-auto flex max-w-[600px] items-center gap-2.5">
           <button
             type="button"
             onClick={() => setResumoAberto(true)}
-            className="flex min-w-0 flex-1 items-center gap-3 rounded-[12px] border border-linha bg-grafite-alto px-4 py-3 text-left transition-colors duration-200 hover:border-creme/25"
+            className="flex min-w-0 flex-1 items-center gap-3 rounded-full border border-linha bg-grafite-alto py-2.5 pl-2.5 pr-4 text-left transition-colors duration-200 hover:border-creme/22"
           >
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ouro font-sans text-[13px] font-bold text-grafite">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ouro font-sans text-[14px] font-bold text-grafite">
               {carrinho.quantidadeTotal}
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block font-sans text-[11px] text-tenue">Ver pedido</span>
+              <span className="block font-sans text-[10.5px] uppercase tracking-[0.14em] text-tenue">
+                Ver pedido
+              </span>
               <span className="block truncate font-sans text-[16px] font-bold text-creme">
                 {formatarKz(carrinho.total)}
               </span>
             </span>
           </button>
 
-          <Botao
-            variante="verde"
-            tamanho="lg"
-            onClick={enviarPedido}
-            disabled={aEnviar}
-            className="shrink-0"
-          >
+          <Botao variante="verde" tamanho="lg" onClick={enviarPedido} disabled={aEnviar} className="shrink-0">
             {aEnviar ? 'A abrir…' : 'Enviar pedido'}
           </Botao>
         </div>
       </div>
 
-      {/* ---------------------------------------------------------- */}
-      {/* Folha do prato                                               */}
-      {/* ---------------------------------------------------------- */}
       <FolhaPrato
         prato={pratoAberto}
         aoFechar={() => setPratoAberto(null)}
@@ -264,9 +309,6 @@ export function CardapioPublico({
         }}
       />
 
-      {/* ---------------------------------------------------------- */}
-      {/* Folha do resumo                                              */}
-      {/* ---------------------------------------------------------- */}
       <FolhaInferior
         aberta={resumoAberto}
         aoFechar={() => setResumoAberto(false)}
@@ -274,7 +316,7 @@ export function CardapioPublico({
       >
         <div className="flex min-h-0 flex-col overflow-y-auto px-5 pb-6 pt-2">
           <div className="flex items-baseline justify-between">
-            <h2 className="font-display text-[24px]">O seu pedido</h2>
+            <h2 className="font-display text-[26px]">O seu pedido</h2>
             {mesa != null ? (
               <span className="etiqueta text-tenue-escuro">Mesa {numeroMesa(mesa)}</span>
             ) : null}
@@ -292,7 +334,9 @@ export function CardapioPublico({
 
           <div className="mt-6 flex items-baseline justify-between border-t border-linha-escura pt-5">
             <span className="etiqueta text-tenue-escuro">Total</span>
-            <span className="font-sans text-[22px] font-bold">{formatarKz(carrinho.total)}</span>
+            <span className="font-sans text-[24px] font-extrabold tracking-[-0.02em]">
+              {formatarKz(carrinho.total)}
+            </span>
           </div>
 
           <p className="mt-3 font-sans text-[13px] text-tenue-escuro">
@@ -315,34 +359,30 @@ export function CardapioPublico({
 
 /* ------------------------------------------------------------------ */
 
-function Logotipo({ restaurante }: { restaurante: Restaurante }) {
-  const iniciais = restaurante.nome
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((p) => p[0])
-    .join('')
-    .toUpperCase();
-
-  if (restaurante.logo_url) {
-    return (
-      <span className="relative block h-11 w-11 shrink-0 overflow-hidden rounded-full border border-linha">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={restaurante.logo_url}
-          alt={restaurante.nome}
-          className="h-full w-full object-cover"
-        />
-      </span>
-    );
-  }
-
+function CartaoDestaque({ prato, aoAbrir }: { prato: Prato; aoAbrir: () => void }) {
   return (
-    <span
-      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-linha font-display text-[15px]"
-      style={{ color: restaurante.cor_marca || '#C9A227' }}
+    <button
+      type="button"
+      onClick={aoAbrir}
+      className="w-[168px] shrink-0 overflow-hidden rounded-cartao bg-grafite-carta text-left shadow-cartao [scroll-snap-align:start] transition-transform duration-200 ease-calmo active:scale-[0.98]"
     >
-      {iniciais}
-    </span>
+      <span className="relative block aspect-[4/3] w-full">
+        <FotoPrato nome={prato.nome} url={prato.foto_url} tamanhos="168px" />
+      </span>
+      <span className="block px-3.5 pb-3.5 pt-3">
+        <span className="block truncate font-display text-[15px] leading-tight text-creme">
+          {prato.nome}
+        </span>
+        {prato.descricao ? (
+          <span className="mt-0.5 block truncate font-sans text-[11.5px] text-tenue">
+            {prato.descricao}
+          </span>
+        ) : null}
+        <span className="mt-2 block font-sans text-[16px] font-extrabold tracking-[-0.02em] text-creme">
+          {formatarKz(prato.preco)}
+        </span>
+      </span>
+    </button>
   );
 }
 
@@ -362,7 +402,7 @@ function LinhaPrato({
   return (
     <div
       className={cn(
-        'flex items-start gap-4 border-b border-linha-escura py-4',
+        'flex items-center gap-4 border-b border-linha-escura py-3.5',
         esgotado && 'opacity-45',
       )}
     >
@@ -371,27 +411,22 @@ function LinhaPrato({
         onClick={aoAbrir}
         disabled={esgotado}
         aria-label={prato.nome}
-        className="relative block h-[76px] w-[76px] shrink-0 overflow-hidden rounded-[12px] bg-grafite/5"
+        className="relative block h-[82px] w-[82px] shrink-0 overflow-hidden rounded-[16px] bg-grafite/5"
       >
-        <FotoPrato nome={prato.nome} url={prato.foto_url} tamanhos="76px" />
+        <FotoPrato nome={prato.nome} url={prato.foto_url} tamanhos="82px" />
       </button>
 
-      <button
-        type="button"
-        onClick={aoAbrir}
-        disabled={esgotado}
-        className="min-w-0 flex-1 text-left"
-      >
+      <button type="button" onClick={aoAbrir} disabled={esgotado} className="min-w-0 flex-1 text-left">
         <p className="font-display text-[17px] leading-snug text-grafite">{prato.nome}</p>
         {prato.descricao ? (
-          <p className="mt-1 font-sans text-[13.5px] leading-[1.45] text-tenue-escuro">
+          <p className="mt-1 line-clamp-2 font-sans text-[13px] leading-[1.45] text-tenue-escuro">
             {prato.descricao}
           </p>
         ) : null}
-        <p className="mt-2 font-sans text-[15px] font-bold text-grafite">
+        <p className="mt-1.5 font-sans text-[15.5px] font-extrabold tracking-[-0.02em] text-grafite">
           {formatarKz(prato.preco)}
           {esgotado ? (
-            <span className="ml-2 font-sans text-[12px] font-semibold uppercase tracking-[0.1em] text-tenue-escuro">
+            <span className="ml-2 font-sans text-[11px] font-semibold uppercase tracking-[0.12em] text-tenue-escuro">
               esgotado
             </span>
           ) : null}
@@ -403,11 +438,11 @@ function LinhaPrato({
           type="button"
           onClick={aoAdicionar}
           aria-label={`Adicionar ${prato.nome}`}
-          className="relative mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-grafite text-creme transition-transform duration-200 ease-calmo active:scale-95"
+          className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-grafite-carta text-creme transition-transform duration-200 ease-calmo active:scale-95"
         >
-          <span className="text-[18px] leading-none">+</span>
+          <span className="text-[19px] leading-none">+</span>
           {quantidade > 0 ? (
-            <span className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-ouro px-1 font-sans text-[10px] font-bold text-grafite">
+            <span className="absolute -right-1 -top-1 flex h-[19px] min-w-[19px] items-center justify-center rounded-full bg-ouro px-1 font-sans text-[10px] font-bold text-grafite">
               {quantidade}
             </span>
           ) : null}
@@ -431,19 +466,12 @@ function LinhaResumo({
         {linha.obs ? (
           <p className="mt-0.5 font-sans text-[12.5px] text-tenue-escuro">↳ {linha.obs}</p>
         ) : null}
-        <p className="mt-1 font-sans text-[13px] text-tenue-escuro">
-          {formatarKz(linha.preco)} cada
-        </p>
+        <p className="mt-1 font-sans text-[13px] text-tenue-escuro">{formatarKz(linha.preco)} cada</p>
       </div>
 
       <div className="flex shrink-0 items-center gap-2.5">
-        <SeletorQuantidade
-          valor={linha.qtd}
-          aoAlterar={aoAlterar}
-          rotulo={linha.nome}
-          compacto
-        />
-        <span className="w-[86px] text-right font-sans text-[15px] font-bold">
+        <SeletorQuantidade valor={linha.qtd} aoAlterar={aoAlterar} rotulo={linha.nome} compacto />
+        <span className="w-[86px] text-right font-sans text-[15px] font-extrabold">
           {formatarKz(linha.preco * linha.qtd)}
         </span>
       </div>
@@ -462,7 +490,7 @@ export function SeletorQuantidade({
   rotulo: string;
   compacto?: boolean;
 }) {
-  const tamanho = compacto ? 'h-7 w-7 text-[15px]' : 'h-10 w-10 text-[19px]';
+  const tamanho = compacto ? 'h-7 w-7 text-[15px]' : 'h-11 w-11 text-[19px]';
   return (
     <div className="flex items-center gap-1">
       <button
@@ -470,7 +498,7 @@ export function SeletorQuantidade({
         onClick={() => aoAlterar(-1)}
         aria-label={`Menos um ${rotulo}`}
         className={cn(
-          'flex items-center justify-center rounded-full border border-linha-escura leading-none transition-colors duration-200 hover:border-grafite/30',
+          'flex items-center justify-center rounded-full border border-linha-escura leading-none transition-colors duration-200 hover:border-grafite/28',
           tamanho,
         )}
       >
@@ -489,7 +517,7 @@ export function SeletorQuantidade({
         onClick={() => aoAlterar(1)}
         aria-label={`Mais um ${rotulo}`}
         className={cn(
-          'flex items-center justify-center rounded-full border border-linha-escura leading-none transition-colors duration-200 hover:border-grafite/30',
+          'flex items-center justify-center rounded-full border border-linha-escura leading-none transition-colors duration-200 hover:border-grafite/28',
           tamanho,
         )}
       >
@@ -523,18 +551,24 @@ function FolhaPrato({
   return (
     <FolhaInferior aberta={Boolean(prato)} aoFechar={aoFechar} titulo={prato.nome}>
       <div className="flex min-h-0 flex-col overflow-y-auto">
-        <div className="relative mx-5 mt-2 aspect-[16/10] overflow-hidden rounded-[12px] bg-grafite/5">
-          <FotoPrato nome={prato.nome} url={prato.foto_url} tamanhos="(max-width: 560px) 92vw, 520px" />
+        <div className="relative mx-4 mt-2 aspect-[16/10] overflow-hidden rounded-cartao bg-grafite/5">
+          <FotoPrato
+            nome={prato.nome}
+            url={prato.foto_url}
+            tamanhos="(max-width: 600px) 92vw, 540px"
+          />
         </div>
 
         <div className="px-5 pb-6 pt-5">
-          <h2 className="font-display text-[26px] leading-tight">{prato.nome}</h2>
+          <h2 className="font-display text-[27px] leading-tight">{prato.nome}</h2>
           {prato.descricao ? (
             <p className="mt-2 font-sans text-[15px] leading-[1.55] text-tenue-escuro">
               {prato.descricao}
             </p>
           ) : null}
-          <p className="mt-4 font-sans text-[20px] font-bold">{formatarKz(prato.preco)}</p>
+          <p className="mt-4 font-sans text-[21px] font-extrabold tracking-[-0.02em]">
+            {formatarKz(prato.preco)}
+          </p>
 
           <div className="mt-6">
             <label htmlFor="obs-prato" className="etiqueta mb-2 block text-tenue-escuro">

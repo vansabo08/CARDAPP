@@ -75,7 +75,7 @@ function Estatisticas({ pedidos }: { pedidos: Pedido[] }) {
 
   if (!pedidos.length) {
     return (
-      <div className="mt-10 rounded-[12px] border border-linha bg-grafite-alto px-7 py-14 text-center">
+      <div className="mt-10 rounded-cartao border border-linha bg-grafite-alto px-7 py-14 text-center">
         <p className="font-display text-[22px] text-creme">Ainda não entrou nenhum pedido hoje.</p>
         <p className="mx-auto mt-3 max-w-[42ch] font-sans text-[15px] leading-[1.6] text-tenue">
           Assim que alguém ler o QR de uma mesa e enviar o pedido, ele aparece aqui.
@@ -86,7 +86,7 @@ function Estatisticas({ pedidos }: { pedidos: Pedido[] }) {
 
   return (
     <>
-      <div className="mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-[12px] border border-linha bg-linha lg:grid-cols-4">
+      <div className="mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-cartao border border-linha bg-linha lg:grid-cols-4">
         <Numero rotulo="Pedidos" valor={String(pedidos.length)} />
         <Numero rotulo="Valor" valor={formatarKz(totalValor)} />
         <Numero rotulo="Itens" valor={String(totalItens)} />
@@ -153,7 +153,7 @@ function Numero({ rotulo, valor }: { rotulo: string; valor: string }) {
 
 function Bloqueio({ plano }: { plano: 'balcao' | 'mesa' | 'sala' }) {
   return (
-    <div className="mt-10 overflow-hidden rounded-[12px] border border-linha bg-grafite-alto">
+    <div className="mt-10 overflow-hidden rounded-cartao border border-linha bg-grafite-alto">
       <div className="relative px-7 py-14 text-center">
         {/* Silhueta do que existe do outro lado, esbatida de propósito. */}
         <div aria-hidden className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-[0.07]">

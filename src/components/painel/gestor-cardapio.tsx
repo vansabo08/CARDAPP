@@ -187,14 +187,14 @@ export function GestorCardapio({
   return (
     <div>
       {demonstracao ? (
-        <p className="mt-8 rounded-[12px] border border-ouro/30 bg-ouro/[0.06] px-4 py-3 font-sans text-[13.5px] leading-[1.55] text-ouro">
+        <p className="mt-8 rounded-cartao border border-ouro/30 bg-ouro/[0.06] px-4 py-3 font-sans text-[13.5px] leading-[1.55] text-ouro">
           Modo de demonstração: pode mexer à vontade, mas as alterações não são gravadas enquanto o
           Supabase não estiver ligado.
         </p>
       ) : null}
 
       {atingiuLimite ? (
-        <p className="mt-6 rounded-[12px] border border-linha bg-grafite-alto px-4 py-3 font-sans text-[13.5px] leading-[1.55] text-tenue">
+        <p className="mt-6 rounded-cartao border border-linha bg-grafite-alto px-4 py-3 font-sans text-[13.5px] leading-[1.55] text-tenue">
           O plano Balcão vai até {limites.pratos} pratos e já lá chegou. Mude para o plano Mesa para
           continuar a acrescentar.
         </p>
@@ -210,7 +210,7 @@ export function GestorCardapio({
             onDragOver={(e) => e.preventDefault()}
             onDrop={() => largarSobre(categoria.id)}
             className={cn(
-              'rounded-[12px] border border-linha bg-grafite-alto transition-opacity duration-200',
+              'rounded-cartao border border-linha bg-grafite-alto transition-opacity duration-200',
               arrastada === categoria.id && 'opacity-40',
             )}
           >
@@ -273,7 +273,7 @@ export function GestorCardapio({
                   >
                     <span
                       className={cn(
-                        'relative block h-11 w-11 shrink-0 overflow-hidden rounded-[10px]',
+                        'relative block h-11 w-11 shrink-0 overflow-hidden rounded-campo',
                         !prato.disponivel && 'opacity-40',
                       )}
                     >
@@ -379,7 +379,7 @@ function BotaoIcone({
       title={rotulo}
       onClick={onClick}
       disabled={desactivado}
-      className="flex h-8 w-8 items-center justify-center rounded-[10px] text-[15px] text-tenue transition-colors duration-200 hover:bg-white/[0.06] hover:text-creme disabled:pointer-events-none disabled:opacity-25"
+      className="flex h-8 w-8 items-center justify-center rounded-campo text-[15px] text-tenue transition-colors duration-200 hover:bg-white/[0.06] hover:text-creme disabled:pointer-events-none disabled:opacity-25"
     >
       {children}
     </button>
@@ -443,7 +443,7 @@ function FolhaPrato({
         </h2>
 
         <div className="mt-6 flex items-start gap-4">
-          <span className="relative block h-[84px] w-[84px] shrink-0 overflow-hidden rounded-[12px] border border-linha">
+          <span className="relative block h-[84px] w-[84px] shrink-0 overflow-hidden rounded-cartao border border-linha">
             <FotoPrato nome={dados.nome || 'Prato'} url={dados.foto_url} tamanhos="84px" />
           </span>
           <div className="min-w-0 flex-1">
@@ -453,7 +453,7 @@ function FolhaPrato({
               type="file"
               accept="image/jpeg,image/png,image/webp,image/avif"
               onChange={escolherFoto}
-              className="block w-full font-sans text-[13px] text-tenue file:mr-3 file:rounded-[10px] file:border file:border-linha file:bg-transparent file:px-3 file:py-2 file:font-sans file:text-[13px] file:text-creme"
+              className="block w-full font-sans text-[13px] text-tenue file:mr-3 file:rounded-campo file:border file:border-linha file:bg-transparent file:px-3 file:py-2 file:font-sans file:text-[13px] file:text-creme"
             />
             <p className="mt-2 font-sans text-[12.5px] text-tenue">
               {aEnviar ? 'A enviar…' : 'Sem foto, o cardápio mostra uma ilustração do prato.'}
@@ -513,7 +513,7 @@ function FolhaPrato({
             ) : null}
           </div>
 
-          <label className="flex items-center justify-between rounded-[12px] border border-linha px-4 py-3.5">
+          <label className="flex items-center justify-between rounded-cartao border border-linha px-4 py-3.5">
             <span>
               <span className="block font-sans text-[14.5px] font-semibold text-creme">
                 Disponível hoje

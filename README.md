@@ -123,25 +123,58 @@ enviado pelo browser é apenas indicativo.
 
 ## Desenho
 
-Tokens em `src/app/globals.css`, tipografia via `next/font`:
+Tokens em `src/app/globals.css`, tipografia via `next/font`.
 
 | Token | Valor | Uso |
 | --- | --- | --- |
-| `--grafite` | `#141414` | fundo da app e da landing |
-| `--creme` | `#FAF8F5` | texto sobre escuro; fundo do cardápio |
-| `--ouro` | `#C9A227` | único acento de marca |
+| `--grafite` | `#0F0E0D` | preto quente, fundo da app |
+| `--creme-folha` | `#FDFCFA` | folha do cardápio |
+| `--ouro` | `#D9B36B` | acento e botões |
+| `--ouro-claro` | `#EFD6A4` | topo do degradé dos títulos |
 | `--verde` | `#0F9D58` | exclusivo do botão de WhatsApp |
-| `--linha` | `rgba(250,248,245,.12)` | separadores |
 
-Fraunces nos títulos e nomes de pratos, Manrope na interface e nos preços. Raio
-de 12px, sem gradientes berrantes nem sombras pesadas. Animação única: fade +
-8px de subida, 240 ms, `ease-out`, desligada com `prefers-reduced-motion`.
+Tipos: **Instrument Serif** nos títulos, no nome do restaurante e nos nomes
+dos pratos — serifa de alto contraste, com um itálico que carrega a marca.
+**Familjen Grotesk** na interface e nos preços. Nenhuma das duas é comum em
+aplicações, que é meia batalha para não parecer um template.
 
-Pratos sem fotografia não mostram um vazio: `PratoVisual` desenha em SVG inline
-um prato visto de cima, sempre igual para o mesmo nome e sem custar um pedido de
-rede.
+Raios ao jeito da referência: folhas a 28px, cartões a 20px, campos a 14px,
+controlos em pastilha.
 
----
+### O fundo
+
+Um preto liso lê-se como página morta, por isso por baixo de tudo há um
+`FundoVivo`: três brasas quentes (ouro, cobre, azul frio) em gradiente
+radial a derivar entre 46 e 62 segundos, grão fino, vinheta, e — só onde
+existe rato — um holofote dourado que segue o cursor. É tudo CSS: os
+gradientes não levam `filter: blur`, e o holofote actualiza duas variáveis
+dentro de `requestAnimationFrame`. Com `prefers-reduced-motion` pára.
+
+A faixa de nomes de pratos corre em ciclo e pára quando se lhe passa o rato
+por cima.
+
+### Os telemóveis da página inicial
+
+`Telemovel` desenha o aparelho com as proporções a sério: ecrã 393×852,
+raio a 14% da largura, ilha dinâmica de 125×36 com a lente, banda em
+titânio, botões laterais nos sítios certos, reflexo do vidro e bisel.
+
+O que está lá dentro é escrito **à resolução real** e só depois encolhido
+por `transform: scale` — por isso o que se vê no mockup é o ecrã que o
+cliente vê, não uma miniatura desenhada à parte.
+
+### Fotografia
+
+As imagens em `public/pratos` são do Unsplash, escolhidas uma a uma pelo
+registo escuro e quente (ver `public/pratos/CREDITOS.md`). **Não são fotos
+dos pratos angolanos a sério** — procurei-as no Wikimedia Commons, onde
+existem calulus e mufetes autênticos, mas são instantâneos com flash e
+toalha de mesa que destoavam por completo do resto. Quando um restaurante
+carregar as suas fotografias pelo painel, estas desaparecem.
+
+Pratos sem fotografia continuam a ter `PratoVisual`: um prato visto de
+cima, desenhado em SVG inline, sempre igual para o mesmo nome e sem custar
+um pedido de rede.
 
 ## Peso das páginas
 

@@ -15,12 +15,17 @@ const config: Config = {
           DEFAULT: 'var(--grafite)',
           alto: 'var(--grafite-alto)',
           suave: 'var(--grafite-suave)',
+          carta: 'var(--grafite-carta)',
         },
         creme: {
           DEFAULT: 'var(--creme)',
-          fundo: 'var(--creme-fundo)',
+          folha: 'var(--creme-folha)',
         },
-        ouro: 'var(--ouro)',
+        ouro: {
+          DEFAULT: 'var(--ouro)',
+          claro: 'var(--ouro-claro)',
+          fundo: 'var(--ouro-fundo)',
+        },
         verde: 'var(--verde)',
         linha: 'var(--linha)',
         'linha-escura': 'var(--linha-escura)',
@@ -32,17 +37,21 @@ const config: Config = {
         sans: ['var(--fonte-sans)', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
-        DEFAULT: '12px',
-        lg: '12px',
-        xl: '16px',
-        '2xl': '20px',
+        // Escala da referência: folhas e cartões com raio generoso,
+        // controlos em pastilha.
+        campo: '14px',
+        cartao: '20px',
+        folha: '28px',
+        DEFAULT: '14px',
       },
       maxWidth: {
-        conteudo: '1120px',
+        conteudo: '1140px',
         leitura: '68ch',
       },
-      letterSpacing: {
-        etiqueta: '0.14em',
+      boxShadow: {
+        // Sombra de um objecto pousado, não de uma caixa a flutuar.
+        aparelho: '0 50px 90px -40px rgba(0,0,0,0.95), 0 18px 40px -22px rgba(0,0,0,0.8)',
+        cartao: '0 24px 50px -30px rgba(0,0,0,0.85)',
       },
       keyframes: {
         subir: {

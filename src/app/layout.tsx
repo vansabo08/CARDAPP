@@ -1,15 +1,16 @@
 import type { Metadata, Viewport } from 'next';
-import { Fraunces, Manrope } from 'next/font/google';
+import { Familjen_Grotesk, Instrument_Serif } from 'next/font/google';
 import './globals.css';
 
-const fraunces = Fraunces({
+const display = Instrument_Serif({
   subsets: ['latin'],
+  weight: '400',
+  style: ['normal', 'italic'],
   display: 'swap',
   variable: '--fonte-display',
-  axes: ['SOFT', 'WONK', 'opsz'],
 });
 
-const manrope = Manrope({
+const sans = Familjen_Grotesk({
   subsets: ['latin'],
   display: 'swap',
   variable: '--fonte-sans',
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#141414',
+  themeColor: '#0f0e0d',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
@@ -39,7 +40,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-AO" className={`${fraunces.variable} ${manrope.variable}`}>
+    <html lang="pt-AO" className={`${display.variable} ${sans.variable}`}>
       <body>{children}</body>
     </html>
   );

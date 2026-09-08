@@ -3,26 +3,31 @@ import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
+/**
+ * Controlos em pastilha, como na referência. O dourado é o único
+ * destaque de marca; o verde pertence exclusivamente ao WhatsApp.
+ */
 const botaoVariantes = cva(
-  'inline-flex items-center justify-center gap-2 rounded-[12px] font-sans text-[14px] font-semibold transition-[background-color,color,border-color,opacity] duration-200 ease-calmo disabled:pointer-events-none disabled:opacity-40 whitespace-nowrap',
+  'inline-flex items-center justify-center gap-2 rounded-full font-sans font-semibold whitespace-nowrap transition-[background-color,color,border-color,opacity,transform] duration-200 ease-calmo active:scale-[0.985] disabled:pointer-events-none disabled:opacity-40',
   {
     variants: {
       variante: {
-        ouro: 'bg-ouro text-grafite hover:bg-[#d8b23a]',
+        ouro: 'bg-ouro text-grafite hover:bg-ouro-claro',
         creme: 'bg-creme text-grafite hover:bg-white',
-        grafite: 'bg-grafite text-creme hover:bg-grafite-suave',
-        contorno: 'border border-linha bg-transparent text-creme hover:border-creme/35 hover:bg-white/[0.04]',
+        grafite: 'bg-grafite-carta text-creme hover:bg-grafite-suave',
+        contorno:
+          'border border-linha bg-transparent text-creme hover:border-creme/30 hover:bg-white/[0.05]',
         'contorno-escuro':
-          'border border-linha-escura bg-transparent text-grafite hover:border-grafite/25 hover:bg-grafite/[0.04]',
+          'border border-linha-escura bg-transparent text-grafite hover:border-grafite/22 hover:bg-grafite/[0.04]',
         verde: 'bg-verde text-white hover:bg-[#12ad61]',
         discreto: 'bg-transparent text-tenue hover:text-creme',
         'discreto-escuro': 'bg-transparent text-tenue-escuro hover:text-grafite',
       },
       tamanho: {
-        sm: 'h-9 px-3.5 text-[13px]',
-        md: 'h-11 px-5',
-        lg: 'h-[52px] px-7 text-[15px]',
-        icone: 'h-10 w-10 p-0',
+        sm: 'h-9 px-4 text-[13px]',
+        md: 'h-11 px-5 text-[14px]',
+        lg: 'h-[54px] px-8 text-[15px]',
+        icone: 'h-11 w-11 p-0',
         'icone-sm': 'h-8 w-8 p-0',
       },
       largo: { true: 'w-full', false: '' },

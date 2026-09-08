@@ -63,7 +63,7 @@ export function NavegacaoPainel({
                 key={ligacao.href}
                 href={ligacao.href}
                 className={cn(
-                  'shrink-0 rounded-[12px] px-3.5 py-2 font-sans text-[14px] font-semibold transition-colors duration-200 md:py-2.5',
+                  'shrink-0 rounded-full px-3.5 py-2 font-sans text-[14px] font-semibold transition-colors duration-200 md:py-2.5',
                   activa ? 'bg-white/[0.07] text-creme' : 'text-tenue hover:text-creme',
                 )}
               >
@@ -79,7 +79,7 @@ export function NavegacaoPainel({
               href={`/${slug}`}
               target="_blank"
               rel="noreferrer"
-              className="rounded-[12px] px-3.5 py-2.5 font-sans text-[14px] text-tenue transition-colors duration-200 hover:text-creme"
+              className="rounded-full px-3.5 py-2.5 font-sans text-[14px] text-tenue transition-colors duration-200 hover:text-creme"
             >
               Ver o cardápio ↗
             </a>
@@ -87,7 +87,7 @@ export function NavegacaoPainel({
           <button
             type="button"
             onClick={sair}
-            className="rounded-[12px] px-3.5 py-2.5 text-left font-sans text-[14px] text-tenue transition-colors duration-200 hover:text-creme"
+            className="rounded-full px-3.5 py-2.5 text-left font-sans text-[14px] text-tenue transition-colors duration-200 hover:text-creme"
           >
             Sair
           </button>

@@ -1,10 +1,12 @@
 import Link from 'next/link';
 import { Botao } from '@/components/ui/botao';
 import { Marca } from '@/components/marca';
+import { FundoVivo } from '@/components/marketing/fundo-vivo';
 
 export default function NaoEncontrado() {
   return (
-    <div className="flex min-h-dvh flex-col bg-grafite">
+    <div className="relative flex min-h-dvh flex-col">
+      <FundoVivo />
       <header className="px-5 py-6 md:px-8">
         <Marca />
       </header>

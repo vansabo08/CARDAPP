@@ -1,57 +1,171 @@
 import * as React from 'react';
-import { PratoVisual } from '@/components/prato-visual';
+import Image from 'next/image';
 import { formatarKz } from '@/lib/format';
 import { buildWhatsAppMessage } from '@/lib/whatsapp';
 import { cn } from '@/lib/utils';
 
 /**
- * Mockups dos ecras reais usados na pagina inicial.
- * Sao os componentes verdadeiros em ponto pequeno, nao icones genericos:
- * o que se ve aqui e o que o cliente ve no telemovel.
+ * Os ecrãs que vão dentro dos telemóveis da página inicial.
+ * São escritos à resolução real (393×852) — o componente Telemovel
+ * trata de os encolher — por isso os tamanhos aqui são os mesmos que
+ * o cliente vê no cardápio a sério.
  */
 
-export function MolduraTelemovel({
-  children,
-  className,
-  legenda,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  legenda?: string;
-}) {
+const DESTAQUES = [
+  { nome: 'Muamba de Galinha', desc: 'Óleo de palma e quiabo', preco: 4500, foto: '/pratos/muamba-galinha.jpg' },
+  { nome: 'Calulu de Peixe', desc: 'Folhas de batata-doce', preco: 5500, foto: '/pratos/calulu.jpg' },
+  { nome: 'Mufete', desc: 'Carapau grelhado', preco: 7500, foto: '/pratos/mufete.jpg' },
+];
+
+const LISTA = [
+  { nome: 'Espetada de Vaca', desc: 'Lombo marinado, cebola e pimento', preco: 6800, foto: '/pratos/espetada.jpg' },
+  { nome: 'Garoupa Grelhada', desc: 'Peixe do dia com batata-doce', preco: 9500, foto: '/pratos/garoupa.jpg' },
+];
+
+/* ------------------------------------------------------------------ */
+/* Passo 2 — o cardápio público                                        */
+/* ------------------------------------------------------------------ */
+
+export function EcraCardapio() {
   return (
-    <div className={cn('w-full', className)}>
-      <div className="relative mx-auto w-full max-w-[268px]">
-        <div className="rounded-[34px] border border-linha bg-grafite-alto p-[7px] shadow-[0_24px_60px_-30px_rgba(0,0,0,0.9)]">
-          <div className="relative aspect-[9/18.5] overflow-hidden rounded-[28px] bg-grafite">
-            {/* barra de estado */}
-            <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center justify-between px-5 pt-3">
-              <span className="font-sans text-[10px] font-semibold text-creme/80">19:42</span>
-              <div className="flex items-center gap-[3px]">
-                <span className="block h-[7px] w-[3px] rounded-sm bg-creme/45" />
-                <span className="block h-[9px] w-[3px] rounded-sm bg-creme/55" />
-                <span className="block h-[11px] w-[3px] rounded-sm bg-creme/70" />
-                <span className="ml-1 block h-[7px] w-[13px] rounded-[2px] border border-creme/50" />
-              </div>
+    <div className="relative h-full w-full bg-grafite">
+      {/* herói */}
+      <div className="relative h-[260px] w-full overflow-hidden">
+        <Image
+          src="/pratos/kitaba.jpg"
+          alt=""
+          fill
+          sizes="400px"
+          className="object-cover"
+          aria-hidden
+        />
+        <div className="veu-foto absolute inset-0" />
+        <div className="absolute inset-x-0 bottom-0 px-5 pb-8">
+          <div className="flex items-end gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="etiqueta text-ouro">Cardápio</p>
+              <p className="ouro-display mt-2 font-display text-[34px] leading-[1.04] tracking-[-0.02em]">
+                Tia Bela
+              </p>
             </div>
-            <div className="absolute left-1/2 top-2 z-20 h-[18px] w-[74px] -translate-x-1/2 rounded-full bg-grafite-alto" />
-            {children}
+            <span className="etiqueta shrink-0 rounded-full bg-ouro px-3.5 py-2 text-grafite">
+              Mesa 07
+            </span>
           </div>
         </div>
       </div>
-      {legenda ? (
-        <p className="mt-5 text-center font-sans text-[13px] text-tenue">{legenda}</p>
-      ) : null}
+
+      {/* folha */}
+      <div className="relative z-10 -mt-5 rounded-t-folha bg-creme-folha pb-6 text-grafite">
+        <div className="flex justify-center pt-3">
+          <span className="block h-[4px] w-[38px] rounded-full bg-grafite/10" />
+        </div>
+
+        <div className="flex gap-2 overflow-hidden px-5 py-3">
+          {['Entradas', 'Pratos Principais', 'Grelhados'].map((c, i) => (
+            <span
+              key={c}
+              className={cn(
+                'shrink-0 whitespace-nowrap rounded-full px-4 py-2 font-sans text-[13px] font-semibold',
+                i === 1
+                  ? 'bg-grafite-carta text-creme'
+                  : 'border border-linha-escura text-tenue-escuro',
+              )}
+            >
+              {c}
+            </span>
+          ))}
+        </div>
+        <div className="h-px bg-linha-escura" />
+
+        <p className="px-5 pt-6 font-sans text-[19px] font-extrabold tracking-[-0.02em]">
+          Mais pedidos
+        </p>
+
+        <div className="mt-4 flex gap-3 overflow-hidden px-5">
+          {DESTAQUES.map((prato) => (
+            <div
+              key={prato.nome}
+              className="w-[168px] shrink-0 overflow-hidden rounded-cartao bg-grafite-carta"
+            >
+              <span className="relative block aspect-[4/3] w-full">
+                <Image src={prato.foto} alt="" fill sizes="180px" className="object-cover" />
+              </span>
+              <span className="block px-3.5 pb-3.5 pt-3">
+                <span className="block truncate font-display text-[15px] leading-tight text-creme">
+                  {prato.nome}
+                </span>
+                <span className="mt-0.5 block truncate font-sans text-[11.5px] text-tenue">
+                  {prato.desc}
+                </span>
+                <span className="mt-2 block font-sans text-[16px] font-extrabold tracking-[-0.02em] text-creme">
+                  {formatarKz(prato.preco)}
+                </span>
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <p className="px-5 pt-7 font-sans text-[19px] font-extrabold tracking-[-0.02em]">
+          Grelhados
+        </p>
+
+        <div className="mt-4 px-5">
+          {LISTA.map((prato) => (
+            <div key={prato.nome} className="flex items-center gap-4 border-b border-linha-escura py-3.5">
+              <span className="relative block h-[82px] w-[82px] shrink-0 overflow-hidden rounded-[16px]">
+                <Image src={prato.foto} alt="" fill sizes="90px" className="object-cover" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate font-display text-[17px] leading-snug">
+                  {prato.nome}
+                </span>
+                <span className="mt-1 block truncate font-sans text-[13px] text-tenue-escuro">
+                  {prato.desc}
+                </span>
+                <span className="mt-1.5 block font-sans text-[15.5px] font-extrabold tracking-[-0.02em]">
+                  {formatarKz(prato.preco)}
+                </span>
+              </span>
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-grafite-carta text-[19px] leading-none text-creme">
+                +
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* carrinho */}
+      <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-grafite via-grafite/92 to-transparent px-4 pb-6 pt-8">
+        <div className="flex items-center gap-2.5">
+          <div className="flex min-w-0 flex-1 items-center gap-3 rounded-full border border-linha bg-grafite-alto py-2.5 pl-2.5 pr-4">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ouro font-sans text-[14px] font-bold text-grafite">
+              6
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block font-sans text-[10.5px] uppercase tracking-[0.14em] text-tenue">
+                Ver pedido
+              </span>
+              <span className="block font-sans text-[16px] font-bold text-creme">
+                {formatarKz(16300)}
+              </span>
+            </span>
+          </div>
+          <span className="flex h-[54px] shrink-0 items-center rounded-full bg-verde px-8 font-sans text-[15px] font-semibold text-white">
+            Enviar pedido
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
 
 /* ------------------------------------------------------------------ */
-/* Passo 1 — o cartao de mesa com o QR                                  */
+/* Passo 1 — o cartão de mesa                                          */
 /* ------------------------------------------------------------------ */
 
 export function QrDecorativo({ tamanho = 84, seed = 7 }: { tamanho?: number; seed?: number }) {
-  // Padrao estavel que evoca um QR sem fingir ser um codigo legivel.
+  // Padrão estável que evoca um QR sem fingir ser um código legível.
   const modulos = 21;
   const celulas: React.ReactNode[] = [];
   let s = seed * 2654435761;
@@ -75,7 +189,7 @@ export function QrDecorativo({ tamanho = 84, seed = 7 }: { tamanho?: number; see
   const olho = (dx: number, dy: number) => (
     <g key={`olho-${dx}-${dy}`} transform={`translate(${dx} ${dy})`}>
       <rect width="7" height="7" fill="currentColor" />
-      <rect x="1" y="1" width="5" height="5" fill="var(--creme)" />
+      <rect x="1" y="1" width="5" height="5" fill="#fdfcfa" />
       <rect x="2" y="2" width="3" height="3" fill="currentColor" />
     </g>
   );
@@ -99,99 +213,21 @@ export function QrDecorativo({ tamanho = 84, seed = 7 }: { tamanho?: number; see
 
 export function CartaoMesa({ numero = 7, nome = 'Tia Bela' }: { numero?: number; nome?: string }) {
   return (
-    <div className="flex w-full max-w-[230px] flex-col items-center rounded-[12px] bg-creme px-6 py-7 text-grafite shadow-[0_20px_50px_-28px_rgba(0,0,0,0.8)]">
-      <span className="font-display text-[19px]">{nome}</span>
-      <div className="my-5">
-        <QrDecorativo tamanho={104} seed={numero} />
+    <div className="relative w-full max-w-[248px] overflow-hidden rounded-cartao bg-creme-folha px-7 py-8 text-center text-grafite shadow-cartao">
+      <p className="font-display text-[21px] leading-none">{nome}</p>
+      <div className="my-6 flex justify-center">
+        <QrDecorativo tamanho={116} seed={numero} />
       </div>
-      <span className="etiqueta text-tenue-escuro">Scaneie para ver o cardápio</span>
-      <span className="mt-3 font-display text-[26px] leading-none">
+      <p className="etiqueta text-tenue-escuro">Scaneie para ver o cardápio</p>
+      <p className="mt-3 font-display text-[30px] leading-none">
         Mesa {String(numero).padStart(2, '0')}
-      </span>
+      </p>
     </div>
   );
 }
 
 /* ------------------------------------------------------------------ */
-/* Passo 2 — o cardapio publico                                         */
-/* ------------------------------------------------------------------ */
-
-const PRATOS_MOCKUP = [
-  { nome: 'Muamba de Galinha', desc: 'Óleo de palma, quiabo e funge', preco: 4500 },
-  { nome: 'Calulu de Peixe', desc: 'Folhas de batata-doce', preco: 5500 },
-  { nome: 'Mufete', desc: 'Carapau grelhado, banana pão', preco: 7500 },
-];
-
-export function MockupCardapio() {
-  return (
-    <div className="absolute inset-0 flex flex-col bg-grafite">
-      {/* cabecalho escuro */}
-      <div className="shrink-0 px-5 pb-7 pt-11">
-        <div className="flex items-center gap-2.5">
-          <span className="flex h-7 w-7 items-center justify-center rounded-full border border-linha font-display text-[12px] text-ouro">
-            TB
-          </span>
-          <span className="font-display text-[15px] text-creme">Tia Bela</span>
-          <span className="etiqueta ml-auto rounded-full bg-ouro px-2 py-[3px] text-[9px] text-grafite">
-            Mesa 07
-          </span>
-        </div>
-        <p className="mt-4 font-display text-[27px] leading-[1.08] text-creme">
-          Cozinha de
-          <br />
-          <span className="text-ouro">Luanda</span>
-        </p>
-      </div>
-
-      {/* folha creme */}
-      <div className="flex min-h-0 flex-1 flex-col rounded-t-[22px] bg-creme text-grafite">
-        <div className="flex gap-1.5 overflow-hidden px-4 pb-3 pt-4">
-          {['Entradas', 'Principais', 'Grelhados', 'Bebidas'].map((c, i) => (
-            <span
-              key={c}
-              className={cn(
-                'shrink-0 rounded-full px-2.5 py-1 font-sans text-[9px] font-semibold',
-                i === 1 ? 'bg-grafite text-creme' : 'border border-linha-escura text-tenue-escuro',
-              )}
-            >
-              {c}
-            </span>
-          ))}
-        </div>
-
-        <div className="flex flex-col gap-3 px-4">
-          {PRATOS_MOCKUP.map((p) => (
-            <div key={p.nome} className="flex items-center gap-3">
-              <div className="h-[46px] w-[46px] shrink-0 overflow-hidden rounded-[10px]">
-                <PratoVisual nome={p.nome} />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-display text-[12.5px] leading-tight">{p.nome}</p>
-                <p className="truncate font-sans text-[9.5px] text-tenue-escuro">{p.desc}</p>
-                <p className="mt-0.5 font-sans text-[11px] font-bold">{formatarKz(p.preco)}</p>
-              </div>
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-grafite font-sans text-[13px] leading-none text-creme">
-                +
-              </span>
-            </div>
-          ))}
-        </div>
-
-        {/* carrinho flutuante */}
-        <div className="mt-auto p-3.5">
-          <div className="flex items-center justify-between rounded-[12px] bg-verde px-3.5 py-2.5 text-white">
-            <span className="font-sans text-[10px] font-semibold opacity-90">3 itens</span>
-            <span className="font-sans text-[12px] font-bold">{formatarKz(16300)}</span>
-            <span className="font-sans text-[10px] font-bold">Enviar pedido</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/* Passo 3 — a mensagem no WhatsApp                                     */
+/* Passo 3 — a mensagem no WhatsApp                                    */
 /* ------------------------------------------------------------------ */
 
 export const MENSAGEM_EXEMPLO = buildWhatsAppMessage({
@@ -205,25 +241,25 @@ export const MENSAGEM_EXEMPLO = buildWhatsAppMessage({
   ],
 });
 
-export function MockupWhatsApp() {
+export function EcraWhatsApp() {
   return (
-    <div className="absolute inset-0 flex flex-col bg-[#0b141a]">
-      <div className="flex shrink-0 items-center gap-2.5 border-b border-white/[0.06] px-4 pb-3 pt-11">
-        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-verde/20 font-display text-[11px] text-verde">
+    <div className="relative h-full w-full bg-[#0b141a]">
+      <div className="flex items-center gap-3 border-b border-white/[0.06] bg-[#111b21] px-4 pb-3 pt-14">
+        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-verde/20 font-display text-[15px] text-verde">
           TB
         </span>
         <div className="min-w-0">
-          <p className="truncate font-sans text-[12px] font-semibold text-creme">Tia Bela</p>
-          <p className="font-sans text-[9px] text-tenue">online</p>
+          <p className="truncate font-sans text-[15px] font-semibold text-[#e9edef]">Tia Bela</p>
+          <p className="font-sans text-[12px] text-[#8696a0]">online</p>
         </div>
       </div>
 
-      <div className="flex flex-1 items-start justify-end p-3">
-        <div className="max-w-full rounded-[12px] rounded-tr-[4px] bg-[#005c4b] px-2.5 py-2">
-          <pre className="whitespace-pre font-mono text-[6.4px] leading-[1.5] text-[#e9edef]">
+      <div className="flex justify-end p-3.5">
+        <div className="max-w-[92%] rounded-[14px] rounded-tr-[5px] bg-[#005c4b] px-3 py-2.5">
+          <pre className="whitespace-pre font-mono text-[9.5px] leading-[1.55] text-[#e9edef]">
             {MENSAGEM_EXEMPLO}
           </pre>
-          <p className="mt-1 text-right font-sans text-[7px] text-white/50">19:42</p>
+          <p className="mt-1.5 text-right font-sans text-[10px] text-white/50">19:42 ✓✓</p>
         </div>
       </div>
     </div>

@@ -8,7 +8,7 @@ export const Campo = React.forwardRef<HTMLInputElement, CampoProps>(
     <input
       ref={ref}
       className={cn(
-        'h-11 w-full rounded-[12px] border bg-transparent px-3.5 font-sans text-[15px] outline-none transition-colors duration-200',
+        'h-11 w-full rounded-campo border bg-transparent px-3.5 font-sans text-[15px] outline-none transition-colors duration-200',
         'placeholder:text-tenue focus:border-ouro',
         claro
           ? 'border-linha-escura text-grafite placeholder:text-tenue-escuro'
@@ -28,7 +28,7 @@ export const AreaTexto = React.forwardRef<HTMLTextAreaElement, AreaTextoProps>(
     <textarea
       ref={ref}
       className={cn(
-        'w-full resize-none rounded-[12px] border bg-transparent px-3.5 py-3 font-sans text-[15px] outline-none transition-colors duration-200',
+        'w-full resize-none rounded-campo border bg-transparent px-3.5 py-3 font-sans text-[15px] outline-none transition-colors duration-200',
         'placeholder:text-tenue focus:border-ouro',
         claro
           ? 'border-linha-escura text-grafite placeholder:text-tenue-escuro'
