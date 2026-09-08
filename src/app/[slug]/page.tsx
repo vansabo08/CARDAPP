@@ -23,10 +23,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const restaurante = await obterRestaurantePorSlug(slug);
   if (!restaurante) return { title: 'Cardápio não encontrado' };
 
+  const titulo = `${restaurante.nome} — Cardápio`;
+  const descricao = `Veja o cardápio de ${restaurante.nome} e faça o seu pedido pelo WhatsApp. Sem instalar nada, sem criar conta.`;
+
+  // A partilha vai ser quase toda por WhatsApp: e este cartao que a
+  // pessoa ve antes de decidir se toca no link.
   return {
-    title: `${restaurante.nome} — Cardápio`,
-    description: `Veja o cardápio de ${restaurante.nome} e faça o seu pedido pelo WhatsApp.`,
+    title: titulo,
+    description: descricao,
     robots: { index: true, follow: true },
+    alternates: { canonical: `/${restaurante.slug}` },
+    openGraph: {
+      type: 'website',
+      locale: 'pt_AO',
+      siteName: 'Cardapp',
+      title: titulo,
+      description: descricao,
+      url: `/${restaurante.slug}`,
+    },
+    twitter: { card: 'summary_large_image', title: titulo, description: descricao },
   };
 }
 

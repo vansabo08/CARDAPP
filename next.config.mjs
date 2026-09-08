@@ -4,6 +4,12 @@ const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
   : null;
 
 const nextConfig = {
+  // O gerador das imagens de partilha le estes ficheiros em tempo de
+  // execucao; sem isto, o tracing da Vercel nao os leva no pacote.
+  outputFileTracingIncludes: {
+    '/opengraph-image': ['./src/app/_fontes/**', './public/og/**'],
+    '/[slug]/opengraph-image': ['./src/app/_fontes/**', './public/og/**'],
+  },
   images: {
     remotePatterns: [
       ...(supabaseHost
