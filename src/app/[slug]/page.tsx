@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { CardapioPublico } from '@/components/cardapio/cardapio-publico';
+import { AvisoDemonstracao } from '@/components/aviso-demonstracao';
 import { obterCardapio, obterMesaPorNumero, obterRestaurantePorSlug } from '@/lib/dados';
 import { LIMITES_PLANO } from '@/lib/tipos';
 
@@ -67,12 +68,15 @@ export default async function PaginaCardapio({ params, searchParams }: Props) {
   ]);
 
   return (
-    <CardapioPublico
+    <>
+      <AvisoDemonstracao />
+      <CardapioPublico
       restaurante={restaurante}
       categorias={categorias}
       mesa={mesa?.numero ?? numero}
       tableId={mesa?.id ?? null}
-      marcaVisivel={LIMITES_PLANO[restaurante.plano]?.marca ?? true}
-    />
+        marcaVisivel={LIMITES_PLANO[restaurante.plano]?.marca ?? true}
+      />
+    </>
   );
 }

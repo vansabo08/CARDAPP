@@ -59,6 +59,35 @@ NEXT_PUBLIC_SITE_URL=https://o-seu-dominio.ao
 5. Reiniciar o `npm run dev`. Os mesmos ecrãs passam a ler e escrever na base de
    dados, sem alterações no código.
 
+```bash
+npm run supabase:verificar
+```
+
+Confere a chave, as cinco tabelas, se a RLS recusa um pedido órfão vindo de um
+anónimo, e se o bucket está de pé. Só faz leituras.
+
+### Em produção, não te esqueças da Vercel
+
+O `.env.local` está no `.gitignore` — **nunca sai da tua máquina**. Um deploy sem
+as variáveis definidas no painel da Vercel arranca em modo de demonstração:
+parece inteiro e não grava nada.
+
+Em **Project → Settings → Environment Variables**, para *Production*, *Preview* e
+*Development*:
+
+| Variável | Onde a ir buscar |
+| --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase → Project Settings → API |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | a mesma página, chave `anon public` |
+| `NEXT_PUBLIC_SITE_URL` | o endereço público, sem barra no fim |
+
+Depois de as guardar é preciso **voltar a fazer deploy** — a Vercel só as lê no
+build.
+
+Enquanto faltarem, todas as páginas que dependem da base de dados mostram uma
+faixa vermelha a dizê-lo. Foi de propósito: um produto que perde pedidos tem de
+o dizer em voz alta.
+
 ### Regras de acesso
 
 - O dono lê e escreve apenas as linhas do seu `restaurant_id`.
