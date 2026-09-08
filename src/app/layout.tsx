@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Familjen_Grotesk, Instrument_Serif } from 'next/font/google';
+import { SITE_URL } from '@/lib/supabase/config';
 import './globals.css';
 
 const display = Instrument_Serif({
@@ -17,7 +18,7 @@ const sans = Familjen_Grotesk({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: 'Cardapp — o cardápio que cabe numa mesa',
     template: '%s · Cardapp',
