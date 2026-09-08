@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { NavegacaoPainel } from '@/components/painel/navegacao';
+import { DocaPainel, NavegacaoPainel } from '@/components/painel/navegacao';
 import { FundoVivo } from '@/components/marketing/fundo-vivo';
 import { emModoDemonstracao, obterRestauranteDoDono } from '@/lib/dados';
 import { utilizadorActual } from '@/lib/supabase/servidor';
@@ -23,9 +23,11 @@ export default async function LayoutPainel({ children }: { children: React.React
         plano={restaurante?.plano ?? 'balcao'}
         demonstracao={demonstracao}
       />
-      <main className="min-w-0 flex-1 px-5 py-8 md:px-10 md:py-12">
+      <main className="min-w-0 flex-1 px-5 pb-32 pt-8 md:px-10 md:py-12 md:pb-12">
         <div className="mx-auto max-w-[880px]">{children}</div>
       </main>
+
+      <DocaPainel />
     </div>
   );
 }

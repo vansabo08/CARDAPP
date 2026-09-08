@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Botao } from '@/components/ui/botao';
-import { Distintivo } from '@/components/ui/distintivo';
 import { Revelar } from '@/components/ui/revelar';
 import { Marca } from '@/components/marca';
 import { Telemovel } from '@/components/marketing/telemovel';
@@ -9,7 +8,7 @@ import { CartaoMesa, EcraCardapio, EcraWhatsApp } from '@/components/marketing/m
 import { FundoVivo } from '@/components/marketing/fundo-vivo';
 import { FaixaPratos } from '@/components/marketing/faixa-pratos';
 import { ProvaSocial } from '@/components/marketing/prova-social';
-import { formatarKz } from '@/lib/format';
+import { Precos } from '@/components/marketing/precos';
 
 const PASSOS = [
   {
@@ -29,36 +28,6 @@ const PASSOS = [
     titulo: 'O pedido chega ao WhatsApp',
     texto:
       'Uma mensagem já formatada, com mesa, itens, observações e total. A cozinha lê e começa a trabalhar.',
-  },
-];
-
-const PLANOS = [
-  {
-    nome: 'Balcão',
-    preco: 'Grátis',
-    detalhe: 'para sempre',
-    descricao: 'Para quem quer experimentar antes de decidir.',
-    inclui: ['1 mesa', 'Até 15 pratos', 'Pedidos por WhatsApp', 'Marca Cardapp visível'],
-    destaque: false,
-    cta: 'Começar grátis',
-  },
-  {
-    nome: 'Mesa',
-    preco: formatarKz(9900),
-    detalhe: 'por mês',
-    descricao: 'O plano de quem já tem sala cheia.',
-    inclui: ['Mesas ilimitadas', 'Pratos ilimitados', 'Logo próprio no cardápio', 'Cartões de mesa em PDF'],
-    destaque: true,
-    cta: 'Escolher Mesa',
-  },
-  {
-    nome: 'Sala',
-    preco: formatarKz(19900),
-    detalhe: 'por mês',
-    descricao: 'Para grupos com mais do que uma casa.',
-    inclui: ['Tudo do plano Mesa', 'Estatísticas de vendas', 'Várias unidades', 'Sem marca Cardapp'],
-    destaque: false,
-    cta: 'Escolher Sala',
   },
 ];
 
@@ -288,62 +257,7 @@ Pagamento: na mesa
 
       <ProvaSocial />
 
-      {/* ---------------------------------------------------------- */}
-      {/* Preços                                                       */}
-      {/* ---------------------------------------------------------- */}
-      <section id="precos" className="mx-auto max-w-conteudo px-5 py-24 md:px-8 md:py-32">
-        <Revelar>
-          <span className="etiqueta text-ouro-fundo">Preços</span>
-          <h2 className="mt-5 font-display text-[36px] leading-[1.06] text-creme md:text-[50px]">
-            Comece grátis. Cresça quando a sala encher.
-          </h2>
-        </Revelar>
-
-        <div className="mt-14 grid gap-5 md:grid-cols-3">
-          {PLANOS.map((plano, i) => (
-            <Revelar key={plano.nome} atraso={i * 70}>
-              <div
-                className={`flex h-full flex-col rounded-cartao border p-7 transition-[transform,border-color,background-color] duration-300 ease-calmo hover:-translate-y-1 ${
-                  plano.destaque ? 'border-ouro/40 bg-ouro/[0.06] hover:border-ouro/70' : 'border-linha bg-grafite-alto/60 hover:border-creme/20'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <h3 className="font-display text-[25px] text-creme">{plano.nome}</h3>
-                  {plano.destaque ? <Distintivo tom="ouro">Mais escolhido</Distintivo> : null}
-                </div>
-
-                <p className="mt-5 font-sans text-[31px] font-extrabold tracking-[-0.03em] text-creme">
-                  {plano.preco}
-                </p>
-                <p className="mt-1 font-sans text-[13px] text-tenue">{plano.detalhe}</p>
-
-                <p className="mt-5 font-sans text-[14px] leading-[1.6] text-tenue">{plano.descricao}</p>
-
-                <ul className="mt-7 flex flex-col gap-3 border-t border-linha pt-7">
-                  {plano.inclui.map((linha) => (
-                    <li key={linha} className="flex items-start gap-3 font-sans text-[14px] text-creme/85">
-                      <span className="mt-[7px] block h-[5px] w-[5px] shrink-0 rounded-full bg-ouro" />
-                      {linha}
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="mt-8 pt-1">
-                  <Botao asChild largo variante={plano.destaque ? 'ouro' : 'contorno'} tamanho="md">
-                    <Link href="/criar-conta">{plano.cta}</Link>
-                  </Botao>
-                </div>
-              </div>
-            </Revelar>
-          ))}
-        </div>
-
-        <Revelar atraso={200}>
-          <p className="mt-8 font-sans text-[13px] text-tenue">
-            Activação assistida por um consultor Cardapp — Multicaixa Express em breve.
-          </p>
-        </Revelar>
-      </section>
+      <Precos />
 
       {/* ---------------------------------------------------------- */}
       {/* Fecho                                                        */}

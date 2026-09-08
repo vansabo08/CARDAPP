@@ -8,13 +8,19 @@ import { Distintivo } from '@/components/ui/distintivo';
 import { clienteNavegador } from '@/lib/supabase/cliente';
 import { NOME_PLANO, type Plano } from '@/lib/tipos';
 import { cn } from '@/lib/utils';
+import { Doca, type ItemDoca } from '@/components/ui/doca';
+import { BookOpen, LayoutGrid, QrCode, SlidersHorizontal } from 'lucide-react';
 
 const LIGACOES = [
-  { href: '/painel', rotulo: 'Resumo' },
-  { href: '/painel/cardapio', rotulo: 'Cardápio' },
-  { href: '/painel/mesas', rotulo: 'Mesas' },
-  { href: '/painel/definicoes', rotulo: 'Definições' },
+  { href: '/painel', rotulo: 'Resumo', icone: LayoutGrid },
+  { href: '/painel/cardapio', rotulo: 'Cardápio', icone: BookOpen },
+  { href: '/painel/mesas', rotulo: 'Mesas', icone: QrCode },
+  { href: '/painel/definicoes', rotulo: 'Definições', icone: SlidersHorizontal },
 ];
+
+function estaActiva(href: string, caminho: string) {
+  return href === '/painel' ? caminho === '/painel' : caminho.startsWith(href);
+}
 
 export function NavegacaoPainel({
   nomeRestaurante,
@@ -52,12 +58,9 @@ export function NavegacaoPainel({
           </div>
         ) : null}
 
-        <nav className="barra-esconde flex gap-1 overflow-x-auto px-4 pb-3 md:flex-col md:px-3 md:pb-0">
+        <nav className="barra-esconde hidden gap-1 overflow-x-auto px-4 pb-3 md:flex md:flex-col md:px-3 md:pb-0">
           {LIGACOES.map((ligacao) => {
-            const activa =
-              ligacao.href === '/painel'
-                ? caminho === '/painel'
-                : caminho.startsWith(ligacao.href);
+            const activa = estaActiva(ligacao.href, caminho);
             return (
               <Link
                 key={ligacao.href}
@@ -94,6 +97,30 @@ export function NavegacaoPainel({
         </div>
       </div>
     </aside>
+  );
+}
+
+/**
+ * No telemóvel a navegação do painel era uma tira de texto apertada com
+ * scroll horizontal. Passa a doca, fixa no fundo, onde o polegar chega.
+ * No computador continua a barra lateral, que carrega o contexto todo
+ * (nome da casa, plano, sair).
+ */
+export function DocaPainel() {
+  const caminho = usePathname();
+
+  const itens: ItemDoca[] = LIGACOES.map((ligacao) => ({
+    href: ligacao.href,
+    rotulo: ligacao.rotulo,
+    icone: ligacao.icone,
+    activo: estaActiva(ligacao.href, caminho),
+  }));
+
+  return (
+    <div className="fixed inset-x-0 bottom-0 z-50 pb-[max(12px,env(safe-area-inset-bottom))] pt-6 md:hidden">
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-grafite via-grafite/85 to-transparent" />
+      <Doca itens={itens} className="relative" />
+    </div>
   );
 }
 
