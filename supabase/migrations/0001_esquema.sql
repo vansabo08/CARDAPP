@@ -243,25 +243,44 @@ insert into storage.buckets (id, name, public)
 values ('cardapp', 'cardapp', true)
 on conflict (id) do nothing;
 
-drop policy if exists cardapp_leitura_publica on storage.objects;
-create policy cardapp_leitura_publica on storage.objects
-  for select using (bucket_id = 'cardapp');
+-- As politicas de storage.objects podem ser recusadas por falta de dono
+-- da tabela, consoante o projecto. Se isso acontecer, o resto da
+-- migracao nao pode ir abaixo: apanhamos o erro e avisamos no fim.
+do $$
+begin
+  execute $p$drop policy if exists cardapp_leitura_publica on storage.objects$p$;
+  execute $p$
+    create policy cardapp_leitura_publica on storage.objects
+      for select using (bucket_id = 'cardapp')
+  $p$;
 
--- Cada dono escreve apenas dentro da sua propria pasta: <uid>/...
-drop policy if exists cardapp_escrita_dono on storage.objects;
-create policy cardapp_escrita_dono on storage.objects
-  for insert to authenticated
-  with check (
-    bucket_id = 'cardapp'
-    and (storage.foldername(name))[1] = auth.uid()::text
-  );
+  -- Cada dono escreve apenas dentro da sua propria pasta: <uid>/...
+  execute $p$drop policy if exists cardapp_escrita_dono on storage.objects$p$;
+  execute $p$
+    create policy cardapp_escrita_dono on storage.objects
+      for insert to authenticated
+      with check (
+        bucket_id = 'cardapp'
+        and (storage.foldername(name))[1] = auth.uid()::text
+      )
+  $p$;
 
-drop policy if exists cardapp_alteracao_dono on storage.objects;
-create policy cardapp_alteracao_dono on storage.objects
-  for update to authenticated
-  using (bucket_id = 'cardapp' and (storage.foldername(name))[1] = auth.uid()::text);
+  execute $p$drop policy if exists cardapp_alteracao_dono on storage.objects$p$;
+  execute $p$
+    create policy cardapp_alteracao_dono on storage.objects
+      for update to authenticated
+      using (bucket_id = 'cardapp' and (storage.foldername(name))[1] = auth.uid()::text)
+  $p$;
 
-drop policy if exists cardapp_remocao_dono on storage.objects;
-create policy cardapp_remocao_dono on storage.objects
-  for delete to authenticated
-  using (bucket_id = 'cardapp' and (storage.foldername(name))[1] = auth.uid()::text);
+  execute $p$drop policy if exists cardapp_remocao_dono on storage.objects$p$;
+  execute $p$
+    create policy cardapp_remocao_dono on storage.objects
+      for delete to authenticated
+      using (bucket_id = 'cardapp' and (storage.foldername(name))[1] = auth.uid()::text)
+  $p$;
+
+  raise notice 'Politicas de Storage criadas.';
+exception
+  when insufficient_privilege or others then
+    raise warning 'Nao foi possivel criar as politicas de Storage (%). Crie-as a mao em Storage > Policies, no bucket cardapp.', sqlerrm;
+end $$;
