@@ -40,7 +40,9 @@ export function CardapioPublico({
   const fimDoSalto = React.useRef<number | undefined>(undefined);
 
   const todos = React.useMemo(() => categorias.flatMap((c) => c.itens), [categorias]);
-  const capa = todos.find((i) => i.foto_url)?.foto_url ?? null;
+  // A capa escolhida manda; sem ela, a primeira fotografia de prato
+  // ainda é melhor do que um rectângulo vazio.
+  const capa = restaurante.capa_url ?? todos.find((i) => i.foto_url)?.foto_url ?? null;
   const destaques = React.useMemo(
     () => todos.filter((i) => i.disponivel && i.foto_url).slice(0, 6),
     [todos],

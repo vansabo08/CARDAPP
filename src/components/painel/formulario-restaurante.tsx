@@ -12,6 +12,7 @@ export type ValoresRestaurante = {
   slug: string;
   whatsapp: string;
   logo_url: string | null;
+  capa_url: string | null;
   cor_marca: string;
 };
 
@@ -96,6 +97,8 @@ export function CamposIdentidade({
         {erroFoto ? <Erro>{erroFoto}</Erro> : null}
       </div>
 
+      <CampoCapa valor={valores.capa_url} aoMudar={(capa_url) => aoMudar({ capa_url })} />
+
       <div>
         <Rotulo htmlFor="slug">Endereço do cardápio</Rotulo>
         <div className="flex items-center gap-0 rounded-campo border border-linha px-3.5 focus-within:border-ouro">
@@ -131,6 +134,91 @@ export function CamposIdentidade({
         </div>
         <Ajuda>Usada no distintivo da mesa, no cardápio público.</Ajuda>
       </div>
+    </div>
+  );
+}
+
+/* --------------------------------- capa --------------------------------- */
+
+/**
+ * Fotografia de capa do cardápio.
+ *
+ * Antes o topo do cardápio ia buscar a primeira foto de prato que
+ * encontrasse — mudava sozinho quando o dono reordenava os pratos.
+ * Agora é escolha dele, e a pré-visualização mostra a proporção real
+ * com que vai aparecer.
+ */
+function CampoCapa({
+  valor,
+  aoMudar,
+}: {
+  valor: string | null;
+  aoMudar: (url: string | null) => void;
+}) {
+  const [aEnviar, setAEnviar] = React.useState(false);
+  const [erro, setErro] = React.useState<string | null>(null);
+
+  async function escolher(evento: React.ChangeEvent<HTMLInputElement>) {
+    const ficheiro = evento.target.files?.[0];
+    if (!ficheiro) return;
+
+    setAEnviar(true);
+    setErro(null);
+    const resultado = await enviarImagem(ficheiro, 'capas');
+    setAEnviar(false);
+
+    if (!resultado.ok) return setErro(resultado.erro);
+    if (resultado.demonstracao) return setErro('Sem Supabase ligado não há onde guardar a capa.');
+    aoMudar(resultado.url);
+  }
+
+  return (
+    <div>
+      <Rotulo>Fotografia de capa</Rotulo>
+
+      <div className="relative aspect-[21/9] w-full overflow-hidden rounded-cartao border border-linha bg-grafite-alto">
+        {valor ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={valor} alt="" className="h-full w-full object-cover" />
+            {/* o mesmo véu do cardápio, para se ver como fica com texto */}
+            <div className="veu-foto absolute inset-0" />
+            <span className="absolute bottom-3 left-4 font-display text-[19px] text-creme">
+              O seu restaurante
+            </span>
+          </>
+        ) : (
+          <div className="flex h-full items-center justify-center px-6 text-center">
+            <span className="font-sans text-[13px] leading-[1.5] text-tenue">
+              Sem capa, o cardápio usa a primeira fotografia de prato.
+            </span>
+          </div>
+        )}
+      </div>
+
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+        <input
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/avif"
+          onChange={escolher}
+          aria-label="Escolher fotografia de capa"
+          className="block font-sans text-[13px] text-tenue file:mr-3 file:rounded-campo file:border file:border-linha file:bg-transparent file:px-3 file:py-2 file:font-sans file:text-[13px] file:text-creme"
+        />
+        {valor ? (
+          <button
+            type="button"
+            onClick={() => aoMudar(null)}
+            className="font-sans text-[12.5px] text-tenue underline underline-offset-4 transition-colors hover:text-creme"
+          >
+            Remover capa
+          </button>
+        ) : null}
+      </div>
+
+      <Ajuda>
+        {aEnviar ? 'A enviar…' : 'Larga e escura resulta melhor — o nome fica por cima dela.'}
+      </Ajuda>
+      {erro ? <Erro>{erro}</Erro> : null}
     </div>
   );
 }

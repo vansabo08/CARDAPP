@@ -12,6 +12,7 @@ export type DadosRestaurante = {
   slug: string;
   whatsapp: string;
   logo_url: string | null;
+  capa_url: string | null;
   cor_marca: string;
   plano?: Plano;
 };
@@ -59,6 +60,7 @@ export async function criarRestaurante(
       slug,
       whatsapp: normalizarWhatsApp(dados.whatsapp),
       logo_url: dados.logo_url,
+      capa_url: dados.capa_url,
       cor_marca: dados.cor_marca || '#D9B36B',
     })
     .select('id, slug')
@@ -130,6 +132,7 @@ export async function guardarRestaurante(dados: DadosRestaurante): Promise<Resul
       slug,
       whatsapp: normalizarWhatsApp(dados.whatsapp),
       logo_url: dados.logo_url,
+      capa_url: dados.capa_url,
       cor_marca: dados.cor_marca || '#D9B36B',
     })
     .eq('id', actual.id);

@@ -5,6 +5,8 @@ export type Restaurante = {
   nome: string;
   slug: string;
   logo_url: string | null;
+  /** Fotografia larga do topo do cardápio. */
+  capa_url: string | null;
   whatsapp: string;
   cor_marca: string;
   plano: Plano;

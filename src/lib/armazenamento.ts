@@ -43,7 +43,10 @@ async function encolher(ficheiro: File, ladoMaximo = 1000): Promise<Blob> {
 }
 
 /** Envia uma imagem para o Storage e devolve o URL publico. */
-export async function enviarImagem(ficheiro: File, pasta: 'pratos' | 'logos'): Promise<ResultadoUpload> {
+export async function enviarImagem(
+  ficheiro: File,
+  pasta: 'pratos' | 'logos' | 'capas',
+): Promise<ResultadoUpload> {
   if (!TIPOS.includes(ficheiro.type)) {
     return { ok: false, erro: 'Use uma imagem JPG, PNG ou WebP.' };
   }
@@ -62,7 +65,8 @@ export async function enviarImagem(ficheiro: File, pasta: 'pratos' | 'logos'): P
   } = await supabase.auth.getUser();
   if (!user) return { ok: false, erro: 'Sessão terminada. Entre outra vez.' };
 
-  const reduzida = await encolher(ficheiro);
+  // A capa atravessa o ecrã todo; um prato aparece a 82px.
+  const reduzida = await encolher(ficheiro, pasta === 'capas' ? 1800 : 1000);
   const extensao = reduzida.type === 'image/webp' ? 'webp' : ficheiro.name.split('.').pop() || 'jpg';
   const caminho = `${user.id}/${pasta}/${crypto.randomUUID()}.${extensao}`;
 

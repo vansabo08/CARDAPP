@@ -12,6 +12,7 @@ export const RESTAURANTE_DEMO: Restaurante = {
   nome: 'Tia Bela',
   slug: 'tia-bela',
   logo_url: null,
+  capa_url: '/pratos/ambiente.webp',
   whatsapp: '244923456789',
   cor_marca: '#D9B36B',
   plano: 'sala',

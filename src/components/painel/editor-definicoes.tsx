@@ -39,6 +39,7 @@ export function EditorDefinicoes({
     slug: restaurante.slug,
     whatsapp: restaurante.whatsapp.replace(/^244/, ''),
     logo_url: restaurante.logo_url,
+    capa_url: restaurante.capa_url,
     cor_marca: restaurante.cor_marca || '#D9B36B',
   });
   const [estado, setEstado] = React.useState<'parado' | 'a-guardar' | 'guardado'>('parado');

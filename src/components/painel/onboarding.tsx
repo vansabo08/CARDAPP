@@ -55,6 +55,7 @@ export function Onboarding({ demonstracao }: { demonstracao: boolean }) {
     slug: '',
     whatsapp: '',
     logo_url: null,
+    capa_url: null,
     cor_marca: '#D9B36B',
   });
   const [mesas, setMesas] = React.useState('8');

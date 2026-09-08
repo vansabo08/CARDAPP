@@ -45,7 +45,7 @@ export async function obterRestaurantePorSlug(slug: string): Promise<Restaurante
 
   const { data } = await supabase
     .from('restaurants')
-    .select('id, nome, slug, logo_url, whatsapp, cor_marca, plano, activo')
+    .select('id, nome, slug, logo_url, capa_url, whatsapp, cor_marca, plano, activo')
     .eq('slug', slug)
     .eq('activo', true)
     .maybeSingle();
@@ -120,7 +120,7 @@ export async function obterRestauranteDoDono(): Promise<Restaurante | null> {
 
   const { data } = await supabase
     .from('restaurants')
-    .select('id, nome, slug, logo_url, whatsapp, cor_marca, plano, activo')
+    .select('id, nome, slug, logo_url, capa_url, whatsapp, cor_marca, plano, activo')
     .eq('owner_id', user.id)
     .order('created_at', { ascending: true })
     .limit(1)
