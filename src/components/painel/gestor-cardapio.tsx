@@ -194,7 +194,7 @@ export function GestorCardapio({
       ) : null}
 
       {atingiuLimite ? (
-        <p className="mt-6 rounded-cartao border border-linha bg-grafite-alto px-4 py-3 font-sans text-[13.5px] leading-[1.55] text-tenue">
+        <p className="vidro-leve mt-6 rounded-cartao px-4 py-3 font-sans text-[13.5px] leading-[1.55] text-tenue">
           O plano Balcão vai até {limites.pratos} pratos e já lá chegou. Mude para o plano Mesa para
           continuar a acrescentar.
         </p>
@@ -210,7 +210,7 @@ export function GestorCardapio({
             onDragOver={(e) => e.preventDefault()}
             onDrop={() => largarSobre(categoria.id)}
             className={cn(
-              'rounded-cartao border border-linha bg-grafite-alto transition-opacity duration-200',
+              'vidro rounded-cartao transition-opacity duration-200',
               arrastada === categoria.id && 'opacity-40',
             )}
           >

@@ -7,7 +7,7 @@ const nextConfig = {
   // O gerador das imagens de partilha le estes ficheiros em tempo de
   // execucao; sem isto, o tracing da Vercel nao os leva no pacote.
   outputFileTracingIncludes: {
-    '/opengraph-image': ['./src/app/_fontes/**', './public/og/**'],
+    '/opengraph-image': ['./src/app/_fontes/**', './public/og/**', './public/simbolo.png'],
     '/[slug]/opengraph-image': ['./src/app/_fontes/**', './public/og/**'],
   },
   images: {

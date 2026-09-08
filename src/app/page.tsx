@@ -39,7 +39,7 @@ export default function PaginaInicial() {
       {/* ---------------------------------------------------------- */}
       {/* Navegação                                                    */}
       {/* ---------------------------------------------------------- */}
-      <header className="sticky top-0 z-50 border-b border-linha bg-grafite/80 backdrop-blur-xl">
+      <header className="vidro sticky top-0 z-50 rounded-none border-x-0 border-t-0 shadow-[inset_0_1px_0_0_rgba(250,247,242,0.11)]">
         <nav className="mx-auto flex h-[68px] max-w-conteudo items-center justify-between px-5 md:px-8">
           <Marca />
           <div className="hidden items-center gap-9 md:flex">
@@ -200,7 +200,7 @@ export default function PaginaInicial() {
 
           <Revelar atraso={80} className="flex flex-col">
             <PassoCabecalho {...PASSOS[1]} />
-            <div className="mt-9 flex flex-1 items-center justify-center rounded-cartao border border-linha bg-grafite-alto/55 px-6 py-11 backdrop-blur-md transition-colors duration-300 hover:border-ouro/25">
+            <div className="vidro mt-9 flex flex-1 items-center justify-center rounded-cartao px-6 py-11 transition-colors duration-300 hover:border-ouro/30">
               <Telemovel largura={216} sombra={false}>
                 <EcraCardapio />
               </Telemovel>
@@ -209,7 +209,7 @@ export default function PaginaInicial() {
 
           <Revelar atraso={160} className="flex flex-col">
             <PassoCabecalho {...PASSOS[2]} />
-            <div className="mt-9 flex flex-1 items-center justify-center rounded-cartao border border-linha bg-grafite-alto/55 px-6 py-11 backdrop-blur-md transition-colors duration-300 hover:border-ouro/25">
+            <div className="vidro mt-9 flex flex-1 items-center justify-center rounded-cartao px-6 py-11 transition-colors duration-300 hover:border-ouro/30">
               <Telemovel largura={216} sombra={false}>
                 <EcraWhatsApp />
               </Telemovel>
@@ -221,7 +221,7 @@ export default function PaginaInicial() {
       {/* ---------------------------------------------------------- */}
       {/* A mensagem                                                   */}
       {/* ---------------------------------------------------------- */}
-      <section className="border-y border-linha bg-grafite-alto/55 backdrop-blur-md">
+      <section className="vidro border-x-0 border-y/55 backdrop-blur-md">
         <div className="mx-auto grid max-w-conteudo items-center gap-14 px-5 py-24 md:grid-cols-2 md:px-8 md:py-28">
           <Revelar>
             <span className="etiqueta text-ouro-fundo">A mensagem</span>
@@ -235,7 +235,7 @@ export default function PaginaInicial() {
           </Revelar>
 
           <Revelar atraso={80}>
-            <div className="overflow-x-auto rounded-cartao border border-linha bg-grafite/70 p-6 backdrop-blur-md">
+            <div className="vidro-leve overflow-x-auto rounded-cartao p-6">
               <pre className="whitespace-pre font-mono text-[12px] leading-[1.7] text-creme/90 sm:text-[13px]">
 {`🍽 NOVO PEDIDO — Mesa 07
 Tia Bela · 19:42

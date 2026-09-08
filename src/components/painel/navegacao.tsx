@@ -44,7 +44,7 @@ export function NavegacaoPainel({
   }
 
   return (
-    <aside className="border-b border-linha md:sticky md:top-0 md:h-dvh md:w-[248px] md:shrink-0 md:border-b-0 md:border-r">
+    <aside className="vidro rounded-none border-x-0 border-t-0 shadow-[inset_0_1px_0_0_rgba(250,247,242,0.11)] md:sticky md:top-0 md:h-dvh md:w-[248px] md:shrink-0 md:border-b-0 md:border-r">
       <div className="flex h-full flex-col">
         <div className="flex items-center justify-between px-5 py-5 md:px-6">
           <Marca tamanho="sm" href="/painel" />

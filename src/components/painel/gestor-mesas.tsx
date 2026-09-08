@@ -136,7 +136,7 @@ export function GestorMesas({
       </div>
 
       {!mesas.length ? (
-        <p className="mt-10 rounded-cartao border border-linha bg-grafite-alto px-6 py-12 text-center font-sans text-[15px] text-tenue">
+        <p className="vidro mt-10 rounded-cartao px-6 py-12 text-center font-sans text-[15px] text-tenue">
           Ainda não há mesas. Junte as que tem na sala e imprima os cartões.
         </p>
       ) : null}
@@ -169,7 +169,7 @@ function CartaoMesaQr({
   }, [url]);
 
   return (
-    <div className="group relative flex flex-col items-center rounded-cartao border border-linha bg-grafite-alto p-4">
+    <div className="vidro-leve group relative flex flex-col items-center rounded-cartao p-4">
       <button
         type="button"
         onClick={aoRemover}

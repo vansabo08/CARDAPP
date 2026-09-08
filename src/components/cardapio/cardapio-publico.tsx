@@ -223,7 +223,7 @@ export function CardapioPublico({
       >
         <div
           ref={barra}
-          className="sticky top-0 z-30 rounded-t-folha bg-creme-folha/95 backdrop-blur-md"
+          className="vidro-claro sticky top-0 z-30 rounded-t-folha"
         >
           <div className="flex justify-center pt-3">
             <span className="block h-[4px] w-[38px] rounded-full bg-grafite/10" />
@@ -343,7 +343,7 @@ export function CardapioPublico({
           <button
             type="button"
             onClick={() => setResumoAberto(true)}
-            className="flex min-w-0 flex-1 items-center gap-3 rounded-full border border-linha bg-grafite-alto py-2.5 pl-2.5 pr-4 text-left transition-colors duration-200 hover:border-creme/22"
+            className="vidro flex min-w-0 flex-1 items-center gap-3 rounded-full py-2.5 pl-2.5 pr-4 text-left transition-colors duration-200 hover:border-creme/25"
           >
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ouro font-sans text-[14px] font-bold text-grafite">
               {carrinho.quantidadeTotal}
@@ -434,11 +434,11 @@ function CartaoDestaque({ prato, aoAbrir }: { prato: Prato; aoAbrir: () => void 
         <FotoPrato nome={prato.nome} url={prato.foto_url} tamanhos="256px" />
       </span>
       <span className="block px-3.5 pb-3.5 pt-3">
-        <span className="line-clamp-2 block min-h-[2.4em] font-display text-[15px] leading-[1.2] text-creme">
+        <span className="line-clamp-2 min-h-[2.4em] font-display text-[15px] leading-[1.2] text-creme">
           {prato.nome}
         </span>
         {prato.descricao ? (
-          <span className="mt-1 line-clamp-1 block font-sans text-[11.5px] text-tenue">
+          <span className="mt-1 line-clamp-1 font-sans text-[11.5px] text-tenue">
             {prato.descricao}
           </span>
         ) : null}

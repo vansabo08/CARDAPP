@@ -50,10 +50,13 @@ export async function imagemDePartilha({
   etiqueta?: string;
   foto?: string | null;
 }) {
-  const [fonte, chapa] = await Promise.all([
+  const [fonte, chapa, simbolo] = await Promise.all([
     fonteDisplay(),
     ficheiro('public', 'og', 'prato.jpg'),
+    ficheiro('public', 'simbolo.png'),
   ]);
+
+  const simboloUrl = `data:image/png;base64,${simbolo.toString('base64')}`;
 
   const usarRemota = typeof foto === 'string' && /^https:\/\//.test(foto);
   const fundoFoto = usarRemota
@@ -82,18 +85,10 @@ export async function imagemDePartilha({
             padding: '64px 56px',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={simboloUrl} width={32} height={32} alt="" />
             <span style={{ fontSize: 34, color: CREME, letterSpacing: -0.5 }}>Cardapp</span>
-            <span
-              style={{
-                width: 9,
-                height: 9,
-                borderRadius: 9,
-                backgroundColor: OURO,
-                marginLeft: 7,
-                marginTop: 14,
-              }}
-            />
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column' }}>

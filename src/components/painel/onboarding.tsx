@@ -300,7 +300,7 @@ function EditorCardapioInicial({
   return (
     <div className="flex flex-col gap-4">
       {cardapio.map((categoria, ci) => (
-        <div key={ci} className="rounded-cartao border border-linha bg-grafite-alto">
+        <div key={ci} className="vidro rounded-cartao">
           <div className="border-b border-linha px-4 py-3">
             <input
               value={categoria.nome}

@@ -36,8 +36,7 @@ export function Doca({ itens, className }: { itens: ItemDoca[]; className?: stri
       <div
         onPointerLeave={() => setApontado(null)}
         className={cn(
-          'pointer-events-auto flex items-end gap-1 rounded-full border border-linha px-2.5 py-2',
-          'bg-grafite-alto/85 shadow-[0_18px_44px_-18px_rgba(0,0,0,0.9)] backdrop-blur-xl',
+          'vidro pointer-events-auto flex items-end gap-1 rounded-full px-2.5 py-2',
         )}
       >
         {itens.map((item, i) => {

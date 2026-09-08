@@ -99,7 +99,7 @@ export function Precos() {
           </h2>
 
           {/* selector de período */}
-          <div className="mt-9 inline-flex rounded-full border border-linha bg-grafite-alto p-1">
+          <div className="mt-9 inline-flex vidro-leve rounded-full p-1">
             <button
               type="button"
               onClick={() => setPeriodo('mensal')}
@@ -129,10 +129,10 @@ export function Precos() {
             <article
               className={cn(
                 'flex w-full flex-col rounded-[28px] p-7 transition-[transform,border-color] duration-300 ease-calmo md:p-8',
-                'bg-gradient-to-b from-white/[0.05] to-transparent',
+                'vidro',
                 plano.destaque
-                  ? 'border border-creme/25 shadow-[0_30px_70px_-40px_rgba(0,0,0,0.95)] md:-my-3 md:py-11'
-                  : 'border border-linha hover:border-creme/18',
+                  ? 'border-creme/25 shadow-[0_34px_80px_-40px_rgba(0,0,0,0.95)] md:-my-3 md:py-11'
+                  : 'hover:border-creme/18',
               )}
             >
               <div className="flex items-center gap-2.5">

@@ -1,31 +1,46 @@
 import Link from 'next/link';
+import { MarcaSimbolo } from '@/components/marca-simbolo';
 import { cn } from '@/lib/utils';
 
+/**
+ * A marca: símbolo + palavra.
+ *
+ * O ponto dourado que estava a seguir a "Cardapp" saiu — o símbolo já
+ * faz esse trabalho, e dois acentos ao lado um do outro só se roubavam
+ * atenção.
+ */
 export function Marca({
   className,
   href = '/',
   tamanho = 'md',
+  soSimbolo = false,
 }: {
   className?: string;
   href?: string | null;
   tamanho?: 'sm' | 'md';
+  soSimbolo?: boolean;
 }) {
+  const ladoSimbolo = tamanho === 'sm' ? 'h-[22px] w-[22px]' : 'h-[26px] w-[26px]';
+
   const conteudo = (
-    <span
-      className={cn(
-        'inline-flex items-baseline font-display tracking-[-0.02em]',
-        tamanho === 'sm' ? 'text-[17px]' : 'text-[20px]',
-        className,
-      )}
-    >
-      Cardapp
-      <span className="ml-[3px] inline-block h-[5px] w-[5px] translate-y-[-1px] rounded-full bg-ouro" />
+    <span className={cn('inline-flex items-center gap-2.5', className)}>
+      <MarcaSimbolo className={cn(ladoSimbolo, 'text-ouro')} />
+      {!soSimbolo ? (
+        <span
+          className={cn(
+            'font-display tracking-[-0.02em]',
+            tamanho === 'sm' ? 'text-[17px]' : 'text-[20px]',
+          )}
+        >
+          Cardapp
+        </span>
+      ) : null}
     </span>
   );
 
   if (!href) return conteudo;
   return (
-    <Link href={href} className="transition-opacity duration-200 hover:opacity-80">
+    <Link href={href} className="inline-flex transition-opacity duration-200 hover:opacity-80">
       {conteudo}
     </Link>
   );
@@ -37,11 +52,12 @@ export function AssinaturaCardapp({ claro = false }: { claro?: boolean }) {
     <a
       href="/"
       className={cn(
-        'etiqueta inline-flex items-center gap-1.5 transition-opacity duration-200 hover:opacity-70',
+        'etiqueta inline-flex items-center gap-2 transition-opacity duration-200 hover:opacity-70',
         claro ? 'text-tenue-escuro' : 'text-tenue',
       )}
     >
       feito com
+      <MarcaSimbolo className="h-[13px] w-[13px]" />
       <span className="font-display text-[13px] normal-case tracking-normal">Cardapp</span>
     </a>
   );

@@ -4,6 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Marca } from '@/components/marca';
+import { MarcaSimbolo } from '@/components/marca-simbolo';
 import { FundoVivo } from '@/components/marketing/fundo-vivo';
 import { clienteNavegador } from '@/lib/supabase/cliente';
 import { cn } from '@/lib/utils';
@@ -122,8 +123,8 @@ export function FormularioAuth({ modo }: { modo: Modo }) {
               'shadow-[0_28px_70px_-30px_rgba(0,0,0,0.95)] backdrop-blur-2xl',
             )}
           >
-            <span className="flex h-11 w-11 items-center justify-center rounded-full border border-linha bg-white/[0.05]">
-              <span className="block h-[9px] w-[9px] rounded-full bg-ouro" />
+            <span className="flex h-12 w-12 items-center justify-center rounded-full border border-linha bg-white/[0.05]">
+              <MarcaSimbolo className="h-6 w-6 text-ouro" />
             </span>
 
             <h1 className="mt-7 font-display text-[30px] leading-[1.12] text-creme">

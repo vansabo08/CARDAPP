@@ -31,7 +31,7 @@ export function FolhaInferior({
           className={cn(
             'fixed inset-x-0 bottom-0 z-50 mx-auto flex max-h-[88dvh] w-full max-w-[560px] flex-col overflow-hidden rounded-t-[20px] outline-none',
             'data-[state=open]:animate-folha',
-            claro ? 'bg-creme text-grafite' : 'bg-grafite-alto text-creme',
+            'vidro-claro text-grafite',
             className,
           )}
         >

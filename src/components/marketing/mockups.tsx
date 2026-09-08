@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { formatarKz } from '@/lib/format';
 import { buildWhatsAppMessage } from '@/lib/whatsapp';
 import { cn } from '@/lib/utils';
+import { MarcaSimbolo } from '@/components/marca-simbolo';
 
 /**
  * Os ecrãs que vão dentro dos telemóveis da página inicial.
@@ -214,7 +215,8 @@ export function QrDecorativo({ tamanho = 84, seed = 7 }: { tamanho?: number; see
 export function CartaoMesa({ numero = 7, nome = 'Tia Bela' }: { numero?: number; nome?: string }) {
   return (
     <div className="relative w-full max-w-[248px] overflow-hidden rounded-cartao bg-creme-folha px-7 py-8 text-center text-grafite shadow-cartao">
-      <p className="font-display text-[21px] leading-none">{nome}</p>
+      <MarcaSimbolo className="mx-auto h-5 w-5 text-grafite/70" />
+      <p className="mt-3 font-display text-[21px] leading-none">{nome}</p>
       <div className="my-6 flex justify-center">
         <QrDecorativo tamanho={116} seed={numero} />
       </div>
