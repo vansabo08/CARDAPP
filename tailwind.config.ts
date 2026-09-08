@@ -62,6 +62,10 @@ const config: Config = {
           from: { opacity: '0' },
           to: { opacity: '1' },
         },
+        marca: {
+          from: { opacity: '0', transform: 'scale(0.6)' },
+          to: { opacity: '1', transform: 'scale(1)' },
+        },
         folha: {
           from: { opacity: '0', transform: 'translateY(16px)' },
           to: { opacity: '1', transform: 'translateY(0)' },
@@ -71,6 +75,7 @@ const config: Config = {
         subir: 'subir 240ms ease-out both',
         aparecer: 'aparecer 240ms ease-out both',
         folha: 'folha 240ms ease-out both',
+        marca: 'marca 180ms cubic-bezier(0.22, 1, 0.36, 1) both',
       },
       transitionTimingFunction: {
         calmo: 'cubic-bezier(0.22, 1, 0.36, 1)',

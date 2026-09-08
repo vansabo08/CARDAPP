@@ -10,6 +10,7 @@ import { FotoPrato } from '@/components/prato-visual';
 import { formatarKz, numeroMesa } from '@/lib/format';
 import { buildWhatsAppUrl } from '@/lib/whatsapp';
 import { cn } from '@/lib/utils';
+import { categoriaActiva } from '@/lib/cardapio';
 import type { CategoriaComPratos, Prato, Restaurante } from '@/lib/tipos';
 import { useCarrinho, type LinhaCarrinho } from './carrinho';
 
@@ -34,6 +35,9 @@ export function CardapioPublico({
 
   const seccoes = React.useRef<Record<string, HTMLElement | null>>({});
   const pilulas = React.useRef<Record<string, HTMLButtonElement | null>>({});
+  const barra = React.useRef<HTMLDivElement>(null);
+  const saltoEmCurso = React.useRef(false);
+  const fimDoSalto = React.useRef<number | undefined>(undefined);
 
   const todos = React.useMemo(() => categorias.flatMap((c) => c.itens), [categorias]);
   const capa = todos.find((i) => i.foto_url)?.foto_url ?? null;
@@ -42,38 +46,87 @@ export function CardapioPublico({
     [todos],
   );
 
-  /* Barra de categorias: segue a secção que está a ser lida. */
+  /*
+   * Barra de categorias.
+   *
+   * A versão anterior usava IntersectionObserver com uma faixa alta do
+   * ecrã e escolhia a primeira secção a intersectá-la — com secções de
+   * alturas diferentes, mostrava "Grelhados" enquanto se lia "Pratos
+   * Principais".
+   *
+   * Agora a conta é directa: a categoria activa é a última cujo topo já
+   * passou por baixo da barra fixa. Não tem casos limite, acompanha o
+   * scroll suave enquanto ele decorre, e custa uma leitura por frame,
+   * só enquanto o dedo está a deslizar.
+   */
   React.useEffect(() => {
-    const nos = categorias
-      .map((c) => seccoes.current[c.id])
-      .filter((n): n is HTMLElement => Boolean(n));
-    if (!nos.length || typeof IntersectionObserver === 'undefined') return;
+    let pedido = 0;
 
-    const observador = new IntersectionObserver(
-      (entradas) => {
-        const visivel = entradas
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
-        if (visivel?.target instanceof HTMLElement) {
-          const id = visivel.target.dataset.categoria;
-          if (id) setActiva(id);
-        }
-      },
-      { rootMargin: '-120px 0px -62% 0px', threshold: 0 },
-    );
+    function medir() {
+      pedido = 0;
+      if (saltoEmCurso.current) return;
 
-    nos.forEach((n) => observador.observe(n));
-    return () => observador.disconnect();
+      const limite = (barra.current?.offsetHeight ?? 96) + 12;
+      const noFim = window.innerHeight + window.scrollY >= document.body.scrollHeight - 2;
+
+      const topos = categorias
+        .map((categoria) => {
+          const no = seccoes.current[categoria.id];
+          return no ? { id: categoria.id, topo: no.getBoundingClientRect().top } : null;
+        })
+        .filter((t): t is { id: string; topo: number } => t !== null);
+
+      const escolhida = categoriaActiva(topos, limite, noFim);
+      setActiva((anterior) => (anterior === escolhida ? anterior : escolhida));
+    }
+
+    function aoDeslizar() {
+      if (pedido) return;
+      pedido = requestAnimationFrame(medir);
+    }
+
+    medir();
+    window.addEventListener('scroll', aoDeslizar, { passive: true });
+    window.addEventListener('resize', aoDeslizar, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', aoDeslizar);
+      window.removeEventListener('resize', aoDeslizar);
+      if (pedido) cancelAnimationFrame(pedido);
+    };
   }, [categorias]);
 
+  /* A pastilha activa desliza para dentro do campo de visão. */
   React.useEffect(() => {
-    pilulas.current[activa]?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+    const pilula = pilulas.current[activa];
+    const carril = pilula?.parentElement;
+    if (!pilula || !carril) return;
+
+    const alvo = pilula.offsetLeft - (carril.clientWidth - pilula.offsetWidth) / 2;
+    carril.scrollTo({
+      left: Math.max(0, alvo),
+      behavior: saltoEmCurso.current ? 'auto' : 'smooth',
+    });
   }, [activa]);
 
   function irPara(id: string) {
     const no = seccoes.current[id];
     if (!no) return;
-    window.scrollTo({ top: no.getBoundingClientRect().top + window.scrollY - 100, behavior: 'smooth' });
+
+    // Enquanto o scroll suave corre, o observador dispara em cascata:
+    // fixamos a categoria escolhida para a barra não piscar pelo
+    // caminho todo até lá.
+    setActiva(id);
+    saltoEmCurso.current = true;
+    window.clearTimeout(fimDoSalto.current);
+    fimDoSalto.current = window.setTimeout(() => {
+      saltoEmCurso.current = false;
+    }, 700);
+
+    const altura = barra.current?.offsetHeight ?? 96;
+    window.scrollTo({
+      top: no.getBoundingClientRect().top + window.scrollY - altura - 4,
+      behavior: 'smooth',
+    });
   }
 
   async function enviarPedido() {
@@ -168,7 +221,10 @@ export function CardapioPublico({
         data-superficie="clara"
         className="relative z-10 -mt-5 min-h-[70dvh] rounded-t-folha pb-40"
       >
-        <div className="sticky top-0 z-30 rounded-t-folha bg-creme-folha/95 backdrop-blur-md">
+        <div
+          ref={barra}
+          className="sticky top-0 z-30 rounded-t-folha bg-creme-folha/95 backdrop-blur-md"
+        >
           <div className="flex justify-center pt-3">
             <span className="block h-[4px] w-[38px] rounded-full bg-grafite/10" />
           </div>
@@ -212,14 +268,22 @@ export function CardapioPublico({
                 Mais pedidos
               </h2>
             </div>
-            <div className="barra-esconde mt-4 flex gap-3 overflow-x-auto px-5 pb-1 [scroll-padding-left:20px] [scroll-snap-type:x_mandatory] sm:mx-auto sm:max-w-[600px]">
-              {destaques.map((prato) => (
-                <CartaoDestaque
-                  key={prato.id}
-                  prato={prato}
-                  aoAbrir={() => setPratoAberto(prato)}
-                />
-              ))}
+            <div className="relative mt-4">
+              <div className="barra-esconde flex gap-3 overflow-x-auto px-5 pb-1 [scroll-padding-left:20px] [scroll-snap-type:x_mandatory] sm:mx-auto sm:max-w-[600px]">
+                {destaques.map((prato) => (
+                  <CartaoDestaque
+                    key={prato.id}
+                    prato={prato}
+                    aoAbrir={() => setPratoAberto(prato)}
+                  />
+                ))}
+              </div>
+
+              {/* diz ao polegar que há mais fila do lado de lá */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-y-0 right-0 w-14 bg-gradient-to-l from-creme-folha via-creme-folha/70 to-transparent"
+              />
             </div>
           </section>
         ) : null}
@@ -239,7 +303,7 @@ export function CardapioPublico({
                 {categoria.nome}
               </h2>
 
-              <ul className="mt-4 flex flex-col">
+              <ul className="mt-4 flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-8">
                 {categoria.itens.map((prato) => (
                   <li key={prato.id}>
                     <LinhaPrato
@@ -370,11 +434,11 @@ function CartaoDestaque({ prato, aoAbrir }: { prato: Prato; aoAbrir: () => void 
         <FotoPrato nome={prato.nome} url={prato.foto_url} tamanhos="256px" />
       </span>
       <span className="block px-3.5 pb-3.5 pt-3">
-        <span className="block truncate font-display text-[15px] leading-tight text-creme">
+        <span className="line-clamp-2 block min-h-[2.4em] font-display text-[15px] leading-[1.2] text-creme">
           {prato.nome}
         </span>
         {prato.descricao ? (
-          <span className="mt-0.5 block truncate font-sans text-[11.5px] text-tenue">
+          <span className="mt-1 line-clamp-1 block font-sans text-[11.5px] text-tenue">
             {prato.descricao}
           </span>
         ) : null}
@@ -438,11 +502,14 @@ function LinhaPrato({
           type="button"
           onClick={aoAdicionar}
           aria-label={`Adicionar ${prato.nome}`}
-          className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-grafite-carta text-creme transition-transform duration-200 ease-calmo active:scale-95"
+          className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-grafite-carta text-creme transition-transform duration-[180ms] ease-calmo active:scale-90"
         >
-          <span className="text-[19px] leading-none">+</span>
+          <span className="text-[20px] leading-none">+</span>
           {quantidade > 0 ? (
-            <span className="absolute -right-1 -top-1 flex h-[19px] min-w-[19px] items-center justify-center rounded-full bg-ouro px-1 font-sans text-[10px] font-bold text-grafite">
+            <span
+              key={quantidade}
+              className="animate-marca absolute -right-1.5 -top-1.5 flex h-[24px] min-w-[24px] items-center justify-center rounded-full bg-ouro px-1.5 font-sans text-[12px] font-extrabold tabular-nums text-grafite ring-2 ring-creme-folha"
+            >
               {quantidade}
             </span>
           ) : null}
