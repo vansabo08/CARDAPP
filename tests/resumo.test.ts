@@ -1,3 +1,4 @@
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { dataPorExtenso, janelaDoDiaEmLuanda, resumoDoDia } from '../src/lib/resumo';
 import { assuntoResumo, htmlResumo, textoResumo } from '../src/lib/email/molde-resumo';
@@ -150,6 +151,13 @@ describe('email do resumo', () => {
   it('a versão em texto também trata o dia vazio', () => {
     const texto = textoResumo({ ...dados, resumo: resumoDoDia([]) });
     expect(texto).toContain('não entrou nenhum pedido');
+  });
+
+  it('deixa uma pré-visualização em tests/saida para se poder abrir', () => {
+    mkdirSync('tests/saida', { recursive: true });
+    writeFileSync('tests/saida/email-resumo.html', htmlResumo(dados));
+    writeFileSync('tests/saida/email-resumo-vazio.html', htmlResumo({ ...dados, resumo: resumoDoDia([]) }));
+    expect(existsSync('tests/saida/email-resumo.html')).toBe(true);
   });
 });
 
