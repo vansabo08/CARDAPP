@@ -184,7 +184,7 @@ export default function PaginaInicial() {
             <PassoCabecalho {...PASSOS[0]} />
             <div className="relative mt-9 flex flex-1 items-center justify-center overflow-hidden rounded-cartao">
               <Image
-                src="/pratos/sala.jpg"
+                src="/pratos/sala.webp"
                 alt=""
                 fill
                 sizes="(max-width: 768px) 100vw, 360px"
@@ -318,7 +318,7 @@ Pagamento: na mesa
       {/* ---------------------------------------------------------- */}
       <section className="relative overflow-hidden border-t border-linha">
         <Image
-          src="/pratos/ambiente.jpg"
+          src="/pratos/ambiente.webp"
           alt=""
           fill
           sizes="100vw"

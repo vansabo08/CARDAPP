@@ -41,7 +41,7 @@ for (let i = 0; i < linhas.length; i++) {
     const ficheiro = FOTOS[idActual];
     const espacos = linhas[i].match(/^\s*/)[0];
     linhas[i] = ficheiro
-      ? `${espacos}foto_url: '/pratos/${ficheiro}.jpg',`
+      ? `${espacos}foto_url: '/pratos/${ficheiro}.webp',`
       : `${espacos}foto_url: null,`;
     if (ficheiro) ligadas++;
     idActual = null;

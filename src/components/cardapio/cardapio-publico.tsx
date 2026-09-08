@@ -367,7 +367,7 @@ function CartaoDestaque({ prato, aoAbrir }: { prato: Prato; aoAbrir: () => void 
       className="w-[168px] shrink-0 overflow-hidden rounded-cartao bg-grafite-carta text-left shadow-cartao [scroll-snap-align:start] transition-transform duration-200 ease-calmo active:scale-[0.98]"
     >
       <span className="relative block aspect-[4/3] w-full">
-        <FotoPrato nome={prato.nome} url={prato.foto_url} tamanhos="168px" />
+        <FotoPrato nome={prato.nome} url={prato.foto_url} tamanhos="256px" />
       </span>
       <span className="block px-3.5 pb-3.5 pt-3">
         <span className="block truncate font-display text-[15px] leading-tight text-creme">
@@ -413,7 +413,7 @@ function LinhaPrato({
         aria-label={prato.nome}
         className="relative block h-[82px] w-[82px] shrink-0 overflow-hidden rounded-[16px] bg-grafite/5"
       >
-        <FotoPrato nome={prato.nome} url={prato.foto_url} tamanhos="82px" />
+        <FotoPrato nome={prato.nome} url={prato.foto_url} tamanhos="128px" />
       </button>
 
       <button type="button" onClick={aoAbrir} disabled={esgotado} className="min-w-0 flex-1 text-left">

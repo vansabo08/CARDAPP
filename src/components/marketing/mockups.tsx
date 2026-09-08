@@ -12,14 +12,14 @@ import { cn } from '@/lib/utils';
  */
 
 const DESTAQUES = [
-  { nome: 'Muamba de Galinha', desc: 'Óleo de palma e quiabo', preco: 4500, foto: '/pratos/muamba-galinha.jpg' },
-  { nome: 'Calulu de Peixe', desc: 'Folhas de batata-doce', preco: 5500, foto: '/pratos/calulu.jpg' },
-  { nome: 'Mufete', desc: 'Carapau grelhado', preco: 7500, foto: '/pratos/mufete.jpg' },
+  { nome: 'Muamba de Galinha', desc: 'Óleo de palma e quiabo', preco: 4500, foto: '/pratos/muamba-galinha.webp' },
+  { nome: 'Calulu de Peixe', desc: 'Folhas de batata-doce', preco: 5500, foto: '/pratos/calulu.webp' },
+  { nome: 'Mufete', desc: 'Carapau grelhado', preco: 7500, foto: '/pratos/mufete.webp' },
 ];
 
 const LISTA = [
-  { nome: 'Espetada de Vaca', desc: 'Lombo marinado, cebola e pimento', preco: 6800, foto: '/pratos/espetada.jpg' },
-  { nome: 'Garoupa Grelhada', desc: 'Peixe do dia com batata-doce', preco: 9500, foto: '/pratos/garoupa.jpg' },
+  { nome: 'Espetada de Vaca', desc: 'Lombo marinado, cebola e pimento', preco: 6800, foto: '/pratos/espetada.webp' },
+  { nome: 'Garoupa Grelhada', desc: 'Peixe do dia com batata-doce', preco: 9500, foto: '/pratos/garoupa.webp' },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -32,7 +32,7 @@ export function EcraCardapio() {
       {/* herói */}
       <div className="relative h-[260px] w-full overflow-hidden">
         <Image
-          src="/pratos/kitaba.jpg"
+          src="/pratos/kitaba.webp"
           alt=""
           fill
           sizes="400px"
@@ -89,7 +89,7 @@ export function EcraCardapio() {
               className="w-[168px] shrink-0 overflow-hidden rounded-cartao bg-grafite-carta"
             >
               <span className="relative block aspect-[4/3] w-full">
-                <Image src={prato.foto} alt="" fill sizes="180px" className="object-cover" />
+                <Image src={prato.foto} alt="" fill sizes="256px" className="object-cover" />
               </span>
               <span className="block px-3.5 pb-3.5 pt-3">
                 <span className="block truncate font-display text-[15px] leading-tight text-creme">
@@ -114,7 +114,7 @@ export function EcraCardapio() {
           {LISTA.map((prato) => (
             <div key={prato.nome} className="flex items-center gap-4 border-b border-linha-escura py-3.5">
               <span className="relative block h-[82px] w-[82px] shrink-0 overflow-hidden rounded-[16px]">
-                <Image src={prato.foto} alt="" fill sizes="90px" className="object-cover" />
+                <Image src={prato.foto} alt="" fill sizes="128px" className="object-cover" />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate font-display text-[17px] leading-snug">

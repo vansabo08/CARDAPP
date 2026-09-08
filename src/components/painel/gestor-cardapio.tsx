@@ -277,7 +277,7 @@ export function GestorCardapio({
                         !prato.disponivel && 'opacity-40',
                       )}
                     >
-                      <FotoPrato nome={prato.nome} url={prato.foto_url} tamanhos="44px" />
+                      <FotoPrato nome={prato.nome} url={prato.foto_url} tamanhos="96px" />
                     </span>
                     <span className={cn('min-w-0 flex-1', !prato.disponivel && 'opacity-45')}>
                       <span className="block truncate font-display text-[16px] text-creme">
@@ -444,7 +444,7 @@ function FolhaPrato({
 
         <div className="mt-6 flex items-start gap-4">
           <span className="relative block h-[84px] w-[84px] shrink-0 overflow-hidden rounded-cartao border border-linha">
-            <FotoPrato nome={dados.nome || 'Prato'} url={dados.foto_url} tamanhos="84px" />
+            <FotoPrato nome={dados.nome || 'Prato'} url={dados.foto_url} tamanhos="128px" />
           </span>
           <div className="min-w-0 flex-1">
             <Rotulo htmlFor="foto">Fotografia</Rotulo>
