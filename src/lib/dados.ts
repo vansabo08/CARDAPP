@@ -32,6 +32,11 @@ function numeroSeguro(valor: unknown) {
 /* Cardapio publico                                                     */
 /* ------------------------------------------------------------------ */
 
+/** O restaurante de exemplo tem um id que nunca é um uuid da base. */
+export function eDemonstracao(restaurantId: string) {
+  return restaurantId === RESTAURANTE_DEMO.id;
+}
+
 export async function obterRestaurantePorSlug(slug: string): Promise<Restaurante | null> {
   const supabase = clientePublico();
   if (!supabase) {
@@ -45,10 +50,17 @@ export async function obterRestaurantePorSlug(slug: string): Promise<Restaurante
     .eq('activo', true)
     .maybeSingle();
 
-  return (data as Restaurante | null) ?? null;
+  if (data) return data as Restaurante;
+
+  // A página inicial mostra este cardápio como exemplo vivo. Continua a
+  // responder mesmo com o Supabase ligado — mas só enquanto ninguém
+  // registar de facto este endereço, e aí manda a base de dados.
+  return slug === RESTAURANTE_DEMO.slug ? RESTAURANTE_DEMO : null;
 }
 
 export async function obterCardapio(restaurantId: string): Promise<CategoriaComPratos[]> {
+  if (eDemonstracao(restaurantId)) return CARDAPIO_DEMO;
+
   const supabase = clientePublico();
   if (!supabase) return CARDAPIO_DEMO;
 
@@ -76,6 +88,10 @@ export async function obterMesaPorNumero(
   restaurantId: string,
   numero: number,
 ): Promise<Mesa | null> {
+  if (eDemonstracao(restaurantId)) {
+    return MESAS_DEMO.find((m) => m.numero === numero) ?? null;
+  }
+
   const supabase = clientePublico();
   if (!supabase) return MESAS_DEMO.find((m) => m.numero === numero) ?? null;
 

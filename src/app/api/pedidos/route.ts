@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { clienteServidor } from '@/lib/supabase/servidor';
-import { obterRestaurantePorSlug } from '@/lib/dados';
+import { eDemonstracao, obterRestaurantePorSlug } from '@/lib/dados';
 import type { ItemPedido } from '@/lib/tipos';
 
 /**
@@ -60,8 +60,10 @@ export async function POST(pedido: Request) {
   const total = itens.reduce((soma, i) => soma + i.preco * i.qtd, 0);
 
   const supabase = await clienteServidor();
-  if (!supabase) {
-    // Modo demonstração: não há onde gravar, mas o fluxo continua.
+
+  // O cardápio de exemplo da página inicial não tem linha na base de
+  // dados: o pedido segue para o WhatsApp, mas não se grava nada.
+  if (!supabase || eDemonstracao(restaurante.id)) {
     return NextResponse.json({ ok: true, demonstracao: true, total });
   }
 

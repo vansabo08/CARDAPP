@@ -109,16 +109,32 @@ async function principal() {
 
   /* ------------------------------- rede ------------------------------ */
 
+  // Sonda contra uma tabela real: o endpoint raiz /rest/v1/ exige chave
+  // secreta e devolvia 401 mesmo com a chave certa.
   try {
-    const resposta = await pedir('/rest/v1/');
+    const resposta = await pedir('/rest/v1/restaurants?select=id&limit=1');
+    const corpo = await resposta.text();
+
     if (resposta.status === 401) {
-      anotar('erro', 'A chave foi recusada (401)', 'Confirme que copiou a anon public deste projecto.');
+      anotar('erro', 'A chave foi recusada (401)', corpo.slice(0, 160));
       return mostrar();
     }
+
+    if (resposta.status === 404 && corpo.includes('PGRST205')) {
+      anotar('ok', 'A chave é aceite pela API');
+      anotar(
+        'erro',
+        'O esquema ainda não existe',
+        'Corra supabase/migrations/0001_esquema.sql no SQL Editor do Supabase.',
+      );
+      return mostrar();
+    }
+
     if (!resposta.ok) {
-      anotar('erro', `A API respondeu ${resposta.status}`);
+      anotar('erro', `A API respondeu ${resposta.status}`, corpo.slice(0, 160));
       return mostrar();
     }
+
     anotar('ok', 'A API REST responde e aceita a chave');
   } catch (e) {
     anotar('erro', 'Não foi possível chegar ao projecto', String(e.message ?? e));
