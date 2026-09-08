@@ -27,11 +27,13 @@ export function NavegacaoPainel({
   slug,
   plano,
   demonstracao,
+  administrador = false,
 }: {
   nomeRestaurante: string | null;
   slug: string | null;
   plano: Plano;
   demonstracao: boolean;
+  administrador?: boolean;
 }) {
   const caminho = usePathname();
   const router = useRouter();
@@ -86,6 +88,14 @@ export function NavegacaoPainel({
             >
               Ver o cardápio ↗
             </a>
+          ) : null}
+          {administrador ? (
+            <Link
+              href="/admin"
+              className="rounded-full px-3.5 py-2.5 font-sans text-[14px] text-ouro transition-colors duration-200 hover:text-ouro-claro"
+            >
+              Administração
+            </Link>
           ) : null}
           <button
             type="button"

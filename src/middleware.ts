@@ -30,5 +30,5 @@ export async function middleware(pedido: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/painel/:path*', '/comecar', '/entrar', '/criar-conta'],
+  matcher: ['/painel/:path*', '/admin/:path*', '/comecar', '/entrar', '/criar-conta'],
 };
