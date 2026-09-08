@@ -56,6 +56,7 @@ export function GestorCardapio({
   const [novaCategoria, setNovaCategoria] = React.useState('');
   const [aCriarCategoria, setACriarCategoria] = React.useState(false);
   const [arrastada, setArrastada] = React.useState<string | null>(null);
+  const [aApagar, setAApagar] = React.useState<string | null>(null);
 
   const limites = LIMITES_PLANO[plano];
   const totalPratos = categorias.reduce((s, c) => s + c.itens.length, 0);
@@ -90,6 +91,7 @@ export function GestorCardapio({
   }
 
   async function removerCategoria(id: string) {
+    setAApagar(null);
     setCategorias((c) => c.filter((x) => x.id !== id));
     await apagarCategoria(id);
   }
@@ -214,23 +216,27 @@ export function GestorCardapio({
               arrastada === categoria.id && 'opacity-40',
             )}
           >
-            <header className="flex items-center gap-2 border-b border-linha px-4 py-3.5">
+            <header className="flex items-center gap-2 border-b border-linha px-3 py-3">
               <span
                 aria-hidden
                 title="Arraste para reordenar"
-                className="cursor-grab select-none px-1 text-tenue"
+                className="flex h-9 w-7 cursor-grab items-center justify-center text-[15px] leading-none text-tenue transition-colors hover:text-creme active:cursor-grabbing"
               >
                 ⠿
               </span>
 
+              {/* Um campo que não parece campo não convida a ser editado:
+                  o sublinhado só aparece quando o rato passa ou tem foco. */}
               <input
                 value={categoria.nome}
                 onChange={(e) => mudarNome(categoria.id, e.target.value)}
                 aria-label="Nome da categoria"
-                className="min-w-0 flex-1 border-none bg-transparent font-display text-[20px] text-creme outline-none focus:text-ouro"
+                className="min-w-0 flex-1 rounded-campo border border-transparent bg-transparent px-2 py-1 font-display text-[21px] text-creme outline-none transition-colors duration-200 hover:border-linha focus:border-ouro/50 focus:bg-white/[0.04]"
               />
 
-              <span className="etiqueta shrink-0 text-tenue">{categoria.itens.length}</span>
+              <span className="etiqueta shrink-0 rounded-full border border-linha px-2.5 py-1 tabular-nums text-tenue">
+                {categoria.itens.length}
+              </span>
 
               <div className="flex shrink-0 items-center">
                 <BotaoIcone
@@ -247,15 +253,56 @@ export function GestorCardapio({
                 >
                   ↓
                 </BotaoIcone>
-                <BotaoIcone rotulo="Apagar categoria" onClick={() => removerCategoria(categoria.id)}>
+                <BotaoIcone
+                  rotulo="Apagar categoria"
+                  onClick={() => setAApagar(categoria.id)}
+                >
                   ×
                 </BotaoIcone>
               </div>
             </header>
 
+            {/* Apagar uma categoria leva os pratos todos atrás dela — a
+                base de dados faz cascade. Um clique só é pouco para uma
+                coisa que não se desfaz. */}
+            {aApagar === categoria.id ? (
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-linha bg-[#e0655a]/10 px-4 py-3">
+                <p className="font-sans text-[13.5px] leading-snug text-creme">
+                  Apagar <span className="font-semibold">{categoria.nome || 'esta categoria'}</span>
+                  {categoria.itens.length > 0 ? (
+                    <>
+                      {' '}e os{' '}
+                      <span className="font-semibold">
+                        {categoria.itens.length} {categoria.itens.length === 1 ? 'prato' : 'pratos'}
+                      </span>{' '}
+                      lá dentro?
+                    </>
+                  ) : (
+                    '?'
+                  )}{' '}
+                  <span className="text-tenue">Não se desfaz.</span>
+                </p>
+                <div className="flex shrink-0 items-center gap-2">
+                  <Botao variante="discreto" tamanho="sm" onClick={() => setAApagar(null)}>
+                    Cancelar
+                  </Botao>
+                  <button
+                    type="button"
+                    onClick={() => removerCategoria(categoria.id)}
+                    className="rounded-full bg-[#e0655a] px-4 py-2 font-sans text-[13px] font-semibold text-grafite transition-opacity duration-200 hover:opacity-90"
+                  >
+                    Apagar
+                  </button>
+                </div>
+              </div>
+            ) : null}
+
             <ul className="divide-y divide-linha">
               {categoria.itens.map((prato) => (
-                <li key={prato.id} className="flex items-center gap-3.5 px-4 py-3">
+                <li
+                  key={prato.id}
+                  className="group flex items-center gap-3.5 px-3 py-2.5 transition-colors duration-200 hover:bg-white/[0.03]"
+                >
                   <button
                     type="button"
                     onClick={() =>
@@ -269,56 +316,87 @@ export function GestorCardapio({
                         disponivel: prato.disponivel,
                       })
                     }
-                    className="flex min-w-0 flex-1 items-center gap-3.5 text-left"
+                    className="flex min-w-0 flex-1 items-center gap-3.5 rounded-campo text-left"
                   >
                     <span
                       className={cn(
-                        'relative block h-11 w-11 shrink-0 overflow-hidden rounded-campo',
-                        !prato.disponivel && 'opacity-40',
+                        'relative block h-14 w-14 shrink-0 overflow-hidden rounded-campo bg-white/[0.04]',
+                        !prato.disponivel && 'opacity-35 grayscale',
                       )}
                     >
-                      <FotoPrato nome={prato.nome} url={prato.foto_url} tamanhos="96px" />
+                      <FotoPrato nome={prato.nome} url={prato.foto_url} tamanhos="128px" />
                     </span>
-                    <span className={cn('min-w-0 flex-1', !prato.disponivel && 'opacity-45')}>
-                      <span className="block truncate font-display text-[16px] text-creme">
-                        {prato.nome}
+
+                    <span className="min-w-0 flex-1">
+                      <span className="flex items-center gap-2">
+                        <span
+                          className={cn(
+                            'truncate font-display text-[17px] leading-snug text-creme',
+                            !prato.disponivel && 'text-tenue line-through decoration-1',
+                          )}
+                        >
+                          {prato.nome}
+                        </span>
+                        {!prato.disponivel ? (
+                          <span className="etiqueta shrink-0 rounded-full bg-white/[0.07] px-2 py-0.5 text-[9.5px] text-tenue">
+                            Esgotado
+                          </span>
+                        ) : null}
                       </span>
+
                       {prato.descricao ? (
-                        <span className="block truncate font-sans text-[12.5px] text-tenue">
+                        <span className="mt-0.5 block truncate font-sans text-[12.5px] text-tenue">
                           {prato.descricao}
                         </span>
-                      ) : null}
+                      ) : (
+                        <span className="mt-0.5 block font-sans text-[12.5px] italic text-tenue/70">
+                          sem descrição
+                        </span>
+                      )}
                     </span>
+
                     <span
                       className={cn(
-                        'shrink-0 font-sans text-[14px] font-bold text-creme',
-                        !prato.disponivel && 'opacity-45',
+                        'shrink-0 text-right font-sans text-[15px] font-extrabold tabular-nums tracking-[-0.02em]',
+                        prato.disponivel ? 'text-creme' : 'text-tenue',
                       )}
                     >
                       {formatarKz(prato.preco)}
                     </span>
                   </button>
 
-                  <span className="flex shrink-0 items-center gap-2 pl-1">
+                  <label className="flex shrink-0 cursor-pointer items-center gap-2 pl-3">
+                    <span className="hidden font-sans text-[11.5px] text-tenue sm:block">
+                      {prato.disponivel ? 'Hoje há' : 'Esgotou'}
+                    </span>
                     <Interruptor
                       checked={prato.disponivel}
                       onCheckedChange={(v) => mudarDisponivel(prato.id, v)}
                       aria-label={`${prato.nome} disponível hoje`}
                     />
-                  </span>
+                  </label>
                 </li>
               ))}
             </ul>
 
-            <div className="px-4 py-3">
-              <Botao
-                variante="discreto"
-                tamanho="sm"
+            {!categoria.itens.length ? (
+              <p className="px-4 py-6 text-center font-sans text-[13.5px] text-tenue">
+                Ainda sem pratos nesta categoria.
+              </p>
+            ) : null}
+
+            <div className="border-t border-linha px-3 py-2.5">
+              <button
+                type="button"
                 disabled={atingiuLimite}
                 onClick={() => setRascunho(RASCUNHO_VAZIO(categoria.id))}
+                className="flex w-full items-center gap-2.5 rounded-campo px-2 py-2 font-sans text-[13.5px] font-semibold text-tenue transition-colors duration-200 hover:bg-white/[0.05] hover:text-creme disabled:pointer-events-none disabled:opacity-40"
               >
-                + Novo prato
-              </Botao>
+                <span className="flex h-6 w-6 items-center justify-center rounded-full border border-linha text-[15px] leading-none">
+                  +
+                </span>
+                Novo prato em {categoria.nome || 'esta categoria'}
+              </button>
             </div>
           </article>
         ))}
