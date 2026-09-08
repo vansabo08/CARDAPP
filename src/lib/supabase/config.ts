@@ -16,7 +16,14 @@ export function supabaseConfigurado() {
 
 export const BUCKET = 'cardapp';
 
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000').replace(
-  /\/+$/,
-  '',
-);
+const SITE_URL_BRUTO = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+
+/**
+ * Uma variavel definida mas vazia na Vercel devolve '' e nao undefined,
+ * por isso o ?? nao chega: validamos que ha mesmo um endereco http(s).
+ */
+export const SITE_URL = (
+  SITE_URL_BRUTO && /^https?:\/\//.test(SITE_URL_BRUTO)
+    ? SITE_URL_BRUTO
+    : 'http://localhost:3000'
+).replace(/\/+$/, '');
