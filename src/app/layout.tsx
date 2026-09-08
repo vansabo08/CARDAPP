@@ -67,8 +67,12 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
+    // A classe do `sans` vai também no body, e não só a variável CSS: é
+    // o que faz o Next associar a fonte à rota e emitir o <link
+    // rel="preload">. Só com a variável, o browser só descobre o ficheiro
+    // depois de ler o CSS — e o texto espera por ele.
     <html lang="pt-AO" className={`${display.variable} ${sans.variable}`}>
-      <body>{children}</body>
+      <body className={sans.className}>{children}</body>
     </html>
   );
 }

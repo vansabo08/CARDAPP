@@ -99,6 +99,36 @@ export default function PaginaInicial() {
       {/* Herói                                                        */}
       {/* ---------------------------------------------------------- */}
       <section className="relative overflow-hidden">
+        {/* ------------------------------------------------------------
+            Fotografia de sala por trás de tudo. Fica muito escurecida de
+            propósito: é atmosfera, não assunto — o assunto é o título e
+            o telemóvel. Dois véus, um a fechar o lado do texto e outro a
+            derreter a base na página, para não haver costura visível.
+            ------------------------------------------------------------ */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+          <Image
+            src="/pratos/ambiente.webp"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            quality={55}
+            /* Desfocada como numa objectiva aberta: separa o fundo do
+               telemóvel, que é o que tem de estar nítido. */
+            className="scale-105 object-cover object-center opacity-[0.32] blur-[2px]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-grafite via-grafite/92 to-grafite/70" />
+          <div className="absolute inset-0 bg-gradient-to-b from-grafite/80 via-transparent to-grafite" />
+          {/* mancha escura por trás do aparelho, para ele destacar */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'radial-gradient(46% 58% at 74% 52%, rgba(15,14,13,0.66) 0%, transparent 72%)',
+            }}
+          />
+        </div>
+
         <div className="relative mx-auto max-w-conteudo px-5 pb-24 pt-16 md:px-8 md:pb-32 md:pt-24">
           <div className="grid items-center gap-16 lg:grid-cols-[1fr_460px]">
             <div>
