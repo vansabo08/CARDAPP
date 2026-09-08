@@ -8,6 +8,7 @@ import { Telemovel } from '@/components/marketing/telemovel';
 import { CartaoMesa, EcraCardapio, EcraWhatsApp } from '@/components/marketing/mockups';
 import { FundoVivo } from '@/components/marketing/fundo-vivo';
 import { FaixaPratos } from '@/components/marketing/faixa-pratos';
+import { ProvaSocial } from '@/components/marketing/prova-social';
 import { formatarKz } from '@/lib/format';
 
 const PASSOS = [
@@ -255,6 +256,8 @@ Pagamento: na mesa
         </div>
       </section>
 
+      <ProvaSocial />
+
       {/* ---------------------------------------------------------- */}
       {/* Preços                                                       */}
       {/* ---------------------------------------------------------- */}
@@ -307,8 +310,7 @@ Pagamento: na mesa
 
         <Revelar atraso={200}>
           <p className="mt-8 font-sans text-[13px] text-tenue">
-            Pagamentos por Multicaixa Express e AppyPay em breve. Por agora, a subscrição é
-            combinada directamente connosco.
+            Activação assistida por um consultor Cardapp — Multicaixa Express em breve.
           </p>
         </Revelar>
       </section>
@@ -354,7 +356,17 @@ Pagamento: na mesa
               Cardápio de exemplo
             </Link>
           </div>
-          <p className="font-sans text-[13px] text-tenue">Luanda, Angola</p>
+
+          {/* [TODO] Substituir pelos contactos reais de suporte. */}
+          <div className="flex flex-col gap-1.5 font-sans text-[13px] text-tenue sm:items-end">
+            <a href="https://wa.me/244000000000" className="transition-colors hover:text-creme">
+              WhatsApp [TODO — +244 000 000 000]
+            </a>
+            <a href="mailto:ola@cardapp.ao" className="transition-colors hover:text-creme">
+              [TODO — ola@cardapp.ao]
+            </a>
+            <span>Luanda, Angola</span>
+          </div>
         </div>
       </footer>
     </div>
