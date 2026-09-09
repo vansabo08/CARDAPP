@@ -292,6 +292,21 @@
   }
 }
 
+/* ------------------------------------------------------------------
+   Movimento reduzido
+   ------------------------------------------------------------------
+   Quem liga esta preferência no sistema costuma fazê-lo por enjoo ou
+   vertigem, e o que provoca isso é deslocação — coisas a deslizar, a
+   saltar, a crescer. Não é a mudança de opacidade.
+
+   Por isso não se apaga tudo: apaga-se o movimento e deixa-se o fade.
+   Uma interface onde tudo aparece de golpe fica difícil de seguir, e
+   trocar enjoo por confusão não é acessibilidade.
+
+   As entradas com deslize passam a fade puro — mesmo tempo, sem
+   translação. As transições de opacidade guardam uma duração curta; o
+   resto vai a zero.
+   ------------------------------------------------------------------ */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -299,5 +314,19 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Fica o fade, sai o deslize. */
+  .animate-subir,
+  .animate-folha,
+  .animate-marca {
+    animation: aparecer 150ms linear both !important;
+  }
+
+  /* A opacidade continua a transitar; o transform deixa de se mover. */
+  [class*='transition'] {
+    transition-property: opacity, color, background-color, border-color !important;
+    transition-duration: 150ms !important;
   }
 }
