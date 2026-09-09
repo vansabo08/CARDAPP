@@ -1,0 +1,116 @@
+import { Revelar } from '@/components/ui/revelar';
+import { formatarKz } from '@/lib/format';
+
+/**
+ * As dúvidas que travam a decisão, respondidas antes de alguém ter de
+ * perguntar. Vão em `<details>` nativo: abre sem JavaScript, é navegável
+ * por teclado e o browser trata do estado sozinho.
+ *
+ * A mesma lista alimenta o texto e o schema — se um dia divergirem, a
+ * culpa não pode ser de haver duas cópias.
+ */
+const PERGUNTAS: { pergunta: string; resposta: string }[] = [
+  {
+    pergunta: 'O cliente precisa de instalar alguma aplicação?',
+    resposta:
+      'Não. A câmara do telemóvel lê o QR da mesa e o cardápio abre no browser. Não há aplicação para descarregar nem conta para criar — nem sequer um ecrã de login.',
+  },
+  {
+    pergunta: 'Os pedidos chegam ao meu WhatsApp normal?',
+    resposta:
+      'Chegam. É o mesmo número que já usa. A mensagem vem escrita de uma vez, com o número da mesa, os pratos, as quantidades, as observações e o total em Kwanzas. Ninguém tem de decifrar nada.',
+  },
+  {
+    pergunta: 'E se a internet da zona estiver fraca?',
+    resposta:
+      'O cardápio foi feito para abrir em 3G num telemóvel modesto: as fotografias vão comprimidas e cada página carrega só o que desenha. O pedido em si segue pelo WhatsApp, que é a aplicação que costuma aguentar quando as outras já não aguentam.',
+  },
+  {
+    pergunta: 'Tenho de imprimir alguma coisa?',
+    resposta:
+      'Só os cartões das mesas. O Cardapp gera um PDF A4 com seis cartões por página, já com o QR de cada mesa. Imprime, corta e põe na mesa.',
+  },
+  {
+    pergunta: 'Posso mudar um preço a meio do serviço?',
+    resposta:
+      'Pode. Altera no painel e o cardápio passa a mostrar o valor novo na abertura seguinte. Não é preciso reimprimir cartão nenhum, porque o QR aponta para o cardápio, não para os preços.',
+  },
+  {
+    pergunta: 'Quanto custa?',
+    resposta: `O plano Balcão é grátis para sempre: uma mesa e até quinze pratos. O plano Mesa custa ${formatarKz(9900)} por mês e o plano Sala ${formatarKz(19900)} por mês.`,
+  },
+  {
+    pergunta: 'Preciso de cartão de crédito para experimentar?',
+    resposta:
+      'Não. O plano grátis abre sem cartão e sem prazo. Só passa a pagar se e quando quiser mais mesas ou mais pratos.',
+  },
+  {
+    pergunta: 'O cardápio funciona fora do restaurante?',
+    resposta:
+      'Funciona. O endereço é público, por isso pode partilhar a ligação no WhatsApp, no Instagram ou no Facebook. Quem abrir sem ler o QR vê o cardápio na mesma, apenas sem o número da mesa preenchido.',
+  },
+];
+
+export function Perguntas() {
+  return (
+    <section id="perguntas" className="border-t border-linha">
+      <div className="mx-auto max-w-conteudo px-5 py-24 md:px-8 md:py-28">
+        <div className="grid gap-12 md:grid-cols-[minmax(0,340px)_1fr] md:gap-16">
+          <Revelar>
+            <span className="etiqueta text-ouro-fundo">Perguntas</span>
+            <h2 className="mt-5 text-balance font-display text-[34px] leading-[1.08] text-creme md:text-[44px]">
+              O que costumam querer saber.
+            </h2>
+            <p className="mt-5 max-w-[34ch] text-pretty font-sans text-[15px] leading-[1.65] text-tenue">
+              Se ficar alguma por responder, escreva. Respondemos pelo mesmo sítio por onde os
+              pedidos chegam.
+            </p>
+          </Revelar>
+
+          <Revelar atraso={80}>
+            <dl className="border-t border-linha">
+              {PERGUNTAS.map(({ pergunta, resposta }) => (
+                <details key={pergunta} className="group border-b border-linha">
+                  <summary
+                    className="flex cursor-pointer list-none items-start justify-between gap-6 py-6 outline-none transition-colors duration-200 ease-calmo hover:text-creme focus-visible:ring-2 focus-visible:ring-ouro/60"
+                    // O marcador nativo some, e o sinal fica a cargo do traço.
+                  >
+                    <dt className="text-pretty font-display text-[19px] leading-[1.3] text-creme md:text-[21px]">
+                      {pergunta}
+                    </dt>
+                    <span
+                      aria-hidden
+                      className="relative mt-2 h-[9px] w-[9px] shrink-0 text-ouro"
+                    >
+                      <span className="absolute left-0 top-1/2 h-[1.5px] w-full -translate-y-1/2 bg-current" />
+                      <span className="absolute left-1/2 top-0 h-full w-[1.5px] -translate-x-1/2 bg-current transition-transform duration-300 ease-calmo group-open:scale-y-0" />
+                    </span>
+                  </summary>
+                  <dd className="max-w-[62ch] pb-7 pr-8 text-pretty font-sans text-[15px] leading-[1.68] text-tenue">
+                    {resposta}
+                  </dd>
+                </details>
+              ))}
+            </dl>
+          </Revelar>
+        </div>
+      </div>
+
+      {/* Para quem pergunta ao motor de busca em vez de perguntar aqui. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: PERGUNTAS.map(({ pergunta, resposta }) => ({
+              '@type': 'Question',
+              name: pergunta,
+              acceptedAnswer: { '@type': 'Answer', text: resposta },
+            })),
+          }),
+        }}
+      />
+    </section>
+  );
+}

@@ -8,7 +8,9 @@ import { Telemovel } from '@/components/marketing/telemovel';
 import { CartaoMesa, EcraCardapio, EcraWhatsApp } from '@/components/marketing/mockups';
 import { FundoVivo } from '@/components/marketing/fundo-vivo';
 import { FaixaPratos } from '@/components/marketing/faixa-pratos';
-import { ProvaSocial } from '@/components/marketing/prova-social';
+import { FraseRevelada } from '@/components/marketing/frase-revelada';
+import { Prova } from '@/components/marketing/prova';
+import { Perguntas } from '@/components/marketing/perguntas';
 import { Precos } from '@/components/marketing/precos';
 
 /**
@@ -55,6 +57,18 @@ export default function PaginaInicial() {
     <div className={`relative min-h-dvh ${displayItalico.variable}`}>
       <FundoVivo />
 
+      {/*
+        Para quem navega por teclado: primeira paragem do tabulador, e
+        invisível até lá. Sem isto, chegar ao conteúdo obriga a passar por
+        toda a navegação em cada página.
+      */}
+      <a
+        href="#conteudo"
+        className="sr-only rounded-campo bg-ouro px-4 py-2 font-sans text-[14px] font-semibold text-grafite focus:not-sr-only focus:absolute focus:left-5 focus:top-5 focus:z-[60]"
+      >
+        Saltar para o conteúdo
+      </a>
+
       {/* ---------------------------------------------------------- */}
       {/* Navegação                                                    */}
       {/* ---------------------------------------------------------- */}
@@ -67,6 +81,9 @@ export default function PaginaInicial() {
             </a>
             <a href="#precos" className="font-sans text-[14px] text-tenue transition-colors hover:text-creme">
               Preços
+            </a>
+            <a href="#perguntas" className="font-sans text-[14px] text-tenue transition-colors hover:text-creme">
+              Perguntas
             </a>
             <Link href="/tia-bela?mesa=7" className="font-sans text-[14px] text-tenue transition-colors hover:text-creme">
               Ver um cardápio
@@ -83,6 +100,7 @@ export default function PaginaInicial() {
         </nav>
       </header>
 
+      <main id="conteudo">
       {/* ---------------------------------------------------------- */}
       {/* Herói                                                        */}
       {/* ---------------------------------------------------------- */}
@@ -125,7 +143,7 @@ export default function PaginaInicial() {
               </Revelar>
 
               <Revelar atraso={60}>
-                <h1 className="mt-6 max-w-[12ch] font-display text-[46px] leading-[0.98] tracking-[-0.025em] text-creme sm:text-[62px] md:text-[76px]">
+                <h1 className="mt-6 max-w-[12ch] text-balance font-display text-[46px] leading-[0.98] tracking-[-0.025em] text-creme sm:text-[62px] md:text-[76px]">
                   O cardápio que cabe numa{' '}
                   <span className="ouro-display italic">mesa.</span>
                 </h1>
@@ -193,7 +211,7 @@ export default function PaginaInicial() {
       <section id="como-funciona" className="mx-auto max-w-conteudo px-5 py-24 md:px-8 md:py-32">
         <Revelar>
           <span className="etiqueta text-ouro-fundo">Como funciona</span>
-          <h2 className="mt-5 max-w-[16ch] font-display text-[36px] leading-[1.06] text-creme md:text-[50px]">
+          <h2 className="mt-5 max-w-[16ch] text-balance font-display text-[36px] leading-[1.06] text-creme md:text-[50px]">
             Três passos. Nenhum deles é instalar uma aplicação.
           </h2>
         </Revelar>
@@ -238,13 +256,25 @@ export default function PaginaInicial() {
       </section>
 
       {/* ---------------------------------------------------------- */}
+      {/* A frase                                                      */}
+      {/* ---------------------------------------------------------- */}
+      <section className="border-t border-linha">
+        <div className="mx-auto max-w-conteudo px-5 py-28 md:px-8 md:py-36">
+          <FraseRevelada
+            texto="O cliente lê, escolhe e envia. A cozinha começa a trabalhar antes de alguém se levantar da mesa."
+            className="mx-auto max-w-[680px] font-display text-[36px] leading-[1.14] tracking-[-0.015em] md:text-[52px]"
+          />
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------- */}
       {/* A mensagem                                                   */}
       {/* ---------------------------------------------------------- */}
       <section className="vidro border-x-0 border-y/55 backdrop-blur-md">
         <div className="mx-auto grid max-w-conteudo items-center gap-14 px-5 py-24 md:grid-cols-2 md:px-8 md:py-28">
           <Revelar>
             <span className="etiqueta text-ouro-fundo">A mensagem</span>
-            <h2 className="mt-5 max-w-[18ch] font-display text-[34px] leading-[1.08] text-creme md:text-[44px]">
+            <h2 className="mt-5 max-w-[18ch] text-balance font-display text-[34px] leading-[1.08] text-creme md:text-[44px]">
               Escrita para ser lida na cozinha, não por um computador.
             </h2>
             <p className="mt-6 max-w-[44ch] font-sans text-[16px] leading-[1.68] text-tenue">
@@ -274,9 +304,11 @@ Pagamento: na mesa
         </div>
       </section>
 
-      <ProvaSocial />
+      <Prova />
 
       <Precos />
+
+      <Perguntas />
 
       {/* ---------------------------------------------------------- */}
       {/* Fecho                                                        */}
@@ -293,7 +325,7 @@ Pagamento: na mesa
         <div className="absolute inset-0 bg-grafite/88" />
         <div className="relative mx-auto max-w-conteudo px-5 py-28 text-center md:px-8 md:py-36">
           <Revelar>
-            <h2 className="mx-auto max-w-[18ch] font-display text-[38px] leading-[1.04] text-creme md:text-[56px]">
+            <h2 className="mx-auto max-w-[18ch] text-balance font-display text-[38px] leading-[1.04] text-creme md:text-[56px]">
               O seu cardápio pode estar pronto ao almoço.
             </h2>
             <div className="mt-10">
@@ -304,6 +336,8 @@ Pagamento: na mesa
           </Revelar>
         </div>
       </section>
+
+      </main>
 
       <footer className="border-t border-linha">
         <div className="mx-auto flex max-w-conteudo flex-col gap-6 px-5 py-10 sm:flex-row sm:items-center sm:justify-between md:px-8">
@@ -318,16 +352,19 @@ Pagamento: na mesa
             <Link href="/tia-bela" className="font-sans text-[13px] text-tenue transition-colors hover:text-creme">
               Cardápio de exemplo
             </Link>
+            <a href="#perguntas" className="font-sans text-[13px] text-tenue transition-colors hover:text-creme">
+              Perguntas
+            </a>
           </div>
 
-          {/* [TODO] Substituir pelos contactos reais de suporte. */}
+          {/*
+            Aqui estiveram um número de WhatsApp e um email marcados como
+            [TODO], visíveis para quem visitasse o site — e a ligação
+            apontava mesmo para +244 000 000 000. Um contacto por acabar é
+            pior do que contacto nenhum: quem tenta e falha desconfia da
+            casa toda. Fica só o que é verdade até haver os reais.
+          */}
           <div className="flex flex-col gap-1.5 font-sans text-[13px] text-tenue sm:items-end">
-            <a href="https://wa.me/244000000000" className="transition-colors hover:text-creme">
-              WhatsApp [TODO — +244 000 000 000]
-            </a>
-            <a href="mailto:ola@cardapp.ao" className="transition-colors hover:text-creme">
-              [TODO — ola@cardapp.ao]
-            </a>
             <span>Luanda, Angola</span>
           </div>
         </div>
@@ -340,7 +377,7 @@ function PassoCabecalho({ numero, titulo, texto }: { numero: string; titulo: str
   return (
     <div>
       <span className="font-display text-[15px] text-ouro">{numero}</span>
-      <h3 className="mt-3 font-display text-[24px] leading-[1.18] text-creme">{titulo}</h3>
+      <h3 className="mt-3 text-balance font-display text-[24px] leading-[1.18] text-creme">{titulo}</h3>
       <p className="mt-3 font-sans text-[15px] leading-[1.62] text-tenue">{texto}</p>
     </div>
   );
