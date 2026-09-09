@@ -17,6 +17,8 @@ export const RESTAURANTE_DEMO: Restaurante = {
   cor_marca: '#D9B36B',
   plano: 'sala',
   activo: true,
+  // O exemplo acompanha dentro da aplicacao, que e a novidade a mostrar.
+  modo_pedido: 'app',
 };
 
 export const CARDAPIO_DEMO: CategoriaComPratos[] = [
@@ -243,6 +245,8 @@ export const PEDIDOS_DEMO: Pedido[] = [
     ],
     total: 16300,
     created_at: '2026-09-07T18:42:00Z',
+    estado: 'preparar',
+    actualizado_em: '2026-09-07T18:42:00Z',
   },
   {
     id: 'p2',
@@ -255,6 +259,8 @@ export const PEDIDOS_DEMO: Pedido[] = [
     ],
     total: 16400,
     created_at: '2026-09-07T18:10:00Z',
+    estado: 'pronto',
+    actualizado_em: '2026-09-07T18:10:00Z',
   },
   {
     id: 'p3',
@@ -268,6 +274,8 @@ export const PEDIDOS_DEMO: Pedido[] = [
     ],
     total: 7500,
     created_at: '2026-09-07T17:55:00Z',
+    estado: 'entregue',
+    actualizado_em: '2026-09-07T17:55:00Z',
   },
   {
     id: 'p4',
@@ -280,6 +288,8 @@ export const PEDIDOS_DEMO: Pedido[] = [
     ],
     total: 10700,
     created_at: '2026-09-07T17:30:00Z',
+    estado: 'novo',
+    actualizado_em: '2026-09-07T17:30:00Z',
   },
   {
     id: 'p5',
@@ -293,6 +303,8 @@ export const PEDIDOS_DEMO: Pedido[] = [
     ],
     total: 24600,
     created_at: '2026-09-07T16:48:00Z',
+    estado: 'caminho',
+    actualizado_em: '2026-09-07T16:48:00Z',
   },
   {
     id: 'p6',
@@ -305,6 +317,8 @@ export const PEDIDOS_DEMO: Pedido[] = [
     ],
     total: 6000,
     created_at: '2026-09-07T16:20:00Z',
+    estado: 'entregue',
+    actualizado_em: '2026-09-07T16:20:00Z',
   },
   {
     id: 'p7',
@@ -317,6 +331,8 @@ export const PEDIDOS_DEMO: Pedido[] = [
     ],
     total: 11800,
     created_at: '2026-09-07T15:58:00Z',
+    estado: 'preparar',
+    actualizado_em: '2026-09-07T15:58:00Z',
   },
   {
     id: 'p8',
@@ -329,6 +345,8 @@ export const PEDIDOS_DEMO: Pedido[] = [
     ],
     total: 10700,
     created_at: '2026-09-07T15:32:00Z',
+    estado: 'pronto',
+    actualizado_em: '2026-09-07T15:32:00Z',
   },
   {
     id: 'p9',
@@ -341,6 +359,8 @@ export const PEDIDOS_DEMO: Pedido[] = [
     ],
     total: 5200,
     created_at: '2026-09-07T14:47:00Z',
+    estado: 'entregue',
+    actualizado_em: '2026-09-07T14:47:00Z',
   },
   {
     id: 'p10',
@@ -353,6 +373,8 @@ export const PEDIDOS_DEMO: Pedido[] = [
     ],
     total: 12100,
     created_at: '2026-09-07T14:05:00Z',
+    estado: 'novo',
+    actualizado_em: '2026-09-07T14:05:00Z',
   },
 ];
 

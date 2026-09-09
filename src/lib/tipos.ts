@@ -1,5 +1,19 @@
 export type Plano = 'balcao' | 'mesa' | 'sala';
 
+/**
+ * Por onde o pedido sai do cardápio.
+ *
+ * Escolha da casa, nas definições, e não do cliente: quem decide por
+ * onde entram os pedidos é quem os tem de atender. Pôr os dois botões à
+ * frente do cliente dividia cada pedido em dois caminhos possíveis e
+ * obrigava a casa a vigiar ambos.
+ *
+ * `whatsapp` é o que sempre existiu e o que vem por omissão — nenhuma
+ * casa muda de funcionamento sem o pedir. `app` guarda o pedido no
+ * Cardapp e dá ao cliente um ecrã para acompanhar o estado.
+ */
+export type ModoPedido = 'whatsapp' | 'app';
+
 export type Restaurante = {
   id: string;
   nome: string;
@@ -11,6 +25,7 @@ export type Restaurante = {
   cor_marca: string;
   plano: Plano;
   activo: boolean;
+  modo_pedido: ModoPedido;
 };
 
 export type Mesa = {
@@ -49,6 +64,15 @@ export type ItemPedido = {
   obs?: string | null;
 };
 
+/** O percurso de um pedido. `cancelado` sai de lado, em qualquer ponto. */
+export type EstadoPedido =
+  | 'novo'
+  | 'preparar'
+  | 'pronto'
+  | 'caminho'
+  | 'entregue'
+  | 'cancelado';
+
 export type Pedido = {
   id: string;
   restaurant_id: string;
@@ -56,7 +80,28 @@ export type Pedido = {
   itens: ItemPedido[];
   total: number;
   created_at: string;
+  estado: EstadoPedido;
+  actualizado_em: string;
   mesa?: number | null;
+};
+
+/**
+ * O pedido como o cliente o vê, sem sessão nenhuma.
+ *
+ * Vem da função `pedido_publico`, que recebe o id e devolve uma linha
+ * só — com o nome da casa e o número da mesa já resolvidos, para o ecrã
+ * de acompanhamento não ter de fazer mais perguntas.
+ */
+export type PedidoPublico = {
+  id: string;
+  estado: EstadoPedido;
+  itens: ItemPedido[];
+  total: number;
+  created_at: string;
+  actualizado_em: string;
+  mesa: number | null;
+  restaurante: string;
+  restaurante_slug: string;
 };
 
 /** Tudo o que a mensagem de WhatsApp precisa de saber. */

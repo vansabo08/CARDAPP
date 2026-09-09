@@ -5,7 +5,7 @@ import { clienteServidor } from '@/lib/supabase/servidor';
 import { obterRestauranteDoDono } from '@/lib/dados';
 import { normalizarWhatsApp, whatsAppValido } from '@/lib/format';
 import { gerarToken, slugify } from '@/lib/utils';
-import type { Plano } from '@/lib/tipos';
+import type { ModoPedido, Plano } from '@/lib/tipos';
 
 export type DadosRestaurante = {
   nome: string;
@@ -14,20 +14,30 @@ export type DadosRestaurante = {
   logo_url: string | null;
   capa_url: string | null;
   cor_marca: string;
+  modo_pedido?: ModoPedido;
   plano?: Plano;
 };
+
+const MODOS_ACEITES: ModoPedido[] = ['whatsapp', 'app'];
+
+/** O que vier de fora não manda: um modo desconhecido cai no de sempre. */
+function modoSeguro(valor: unknown): ModoPedido {
+  return MODOS_ACEITES.includes(valor as ModoPedido) ? (valor as ModoPedido) : 'whatsapp';
+}
 
 type Resultado = { ok: boolean; demonstracao?: boolean; erro?: string; slug?: string };
 
 /**
- * A capa foi acrescentada depois de o esquema estar em produção. Enquanto
- * a migração 0002 não correr, escrevê-la faz a gravação falhar inteira —
- * e o dono fica sem conseguir criar ou guardar o restaurante por causa de
- * um campo opcional. Por isso as escritas tentam com a capa e recuam sem
- * ela; é o campo que se perde, não o formulário.
+ * As colunas novas chegaram depois de o esquema estar em produção — a
+ * capa na migração 0002, o modo de pedido na 0003. Enquanto uma delas
+ * não existir, escrevê-la faz a gravação falhar inteira, e o dono fica
+ * sem conseguir criar nem guardar o restaurante por causa de um campo
+ * acessório. Por isso as escritas tentam com tudo e recuam para o que
+ * existe desde o primeiro dia: perdem-se os campos, não o formulário.
  */
-function faltaAColunaDaCapa(erro: { code?: string; message?: string } | null) {
-  return erro?.code === '42703' || /capa_url/.test(erro?.message ?? '');
+function faltaUmaColunaNova(erro: { code?: string; message?: string } | null) {
+  // 42703 = undefined_column, no PostgreSQL.
+  return erro?.code === '42703';
 }
 
 function validar(dados: DadosRestaurante): string | null {
@@ -72,13 +82,15 @@ export async function criarRestaurante(
     cor_marca: dados.cor_marca || '#D9B36B',
   };
 
+  const novas = { capa_url: dados.capa_url, modo_pedido: modoSeguro(dados.modo_pedido) };
+
   let { data: restaurante, error } = await supabase
     .from('restaurants')
-    .insert({ ...base, capa_url: dados.capa_url })
+    .insert({ ...base, ...novas })
     .select('id, slug')
     .single();
 
-  if (error && faltaAColunaDaCapa(error)) {
+  if (error && faltaUmaColunaNova(error)) {
     ({ data: restaurante, error } = await supabase
       .from('restaurants')
       .insert(base)
@@ -154,12 +166,14 @@ export async function guardarRestaurante(dados: DadosRestaurante): Promise<Resul
     cor_marca: dados.cor_marca || '#D9B36B',
   };
 
+  const novas = { capa_url: dados.capa_url, modo_pedido: modoSeguro(dados.modo_pedido) };
+
   let { error } = await supabase
     .from('restaurants')
-    .update({ ...base, capa_url: dados.capa_url })
+    .update({ ...base, ...novas })
     .eq('id', actual.id);
 
-  if (error && faltaAColunaDaCapa(error)) {
+  if (error && faltaUmaColunaNova(error)) {
     ({ error } = await supabase.from('restaurants').update(base).eq('id', actual.id));
   }
 

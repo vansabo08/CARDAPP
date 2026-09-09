@@ -6,6 +6,7 @@ import { mostrarWhatsApp, normalizarWhatsApp, whatsAppValido } from '@/lib/forma
 import { enviarImagem } from '@/lib/armazenamento';
 import { slugify } from '@/lib/utils';
 import { SITE_URL } from '@/lib/supabase/config';
+import type { ModoPedido } from '@/lib/tipos';
 
 export type ValoresRestaurante = {
   nome: string;
@@ -14,7 +15,73 @@ export type ValoresRestaurante = {
   logo_url: string | null;
   capa_url: string | null;
   cor_marca: string;
+  modo_pedido: ModoPedido;
 };
+
+/**
+ * Como é que a casa quer receber os pedidos.
+ *
+ * A ordem importa: o WhatsApp está primeiro por ser o que já funciona e
+ * o que a casa reconhece. Quem quiser o acompanhamento dentro da
+ * aplicação escolhe-o, em vez de ser mudado sem pedir.
+ */
+export const MODOS: { id: ModoPedido; titulo: string; texto: string }[] = [
+  {
+    id: 'whatsapp',
+    titulo: 'Pelo WhatsApp',
+    texto:
+      'O cliente carrega e a conversa abre com o pedido já escrito. É como sempre funcionou, e não exige nada de novo a ninguém.',
+  },
+  {
+    id: 'app',
+    titulo: 'Dentro do Cardapp',
+    texto:
+      'O pedido cai no painel, o aparelho toca, e o cliente fica com uma página que mostra o estado a mudar. Exige alguém de olho no painel durante o serviço.',
+  },
+];
+
+export function EscolhaDoModo({
+  valor,
+  aoMudar,
+}: {
+  valor: ModoPedido;
+  aoMudar: (v: ModoPedido) => void;
+}) {
+  return (
+    <fieldset className="flex flex-col gap-2.5">
+      <legend className="sr-only">Como recebe os pedidos</legend>
+
+      {MODOS.map((modo) => {
+        const escolhido = modo.id === valor;
+        return (
+          <label
+            key={modo.id}
+            className={`flex cursor-pointer gap-3.5 rounded-cartao border p-4 transition-colors duration-200 ease-calmo ${
+              escolhido ? 'border-ouro/55 bg-ouro/[0.06]' : 'border-linha hover:border-creme/25'
+            }`}
+          >
+            <input
+              type="radio"
+              name="modo_pedido"
+              value={modo.id}
+              checked={escolhido}
+              onChange={() => aoMudar(modo.id)}
+              className="mt-1 h-4 w-4 shrink-0 accent-[#C9A227]"
+            />
+            <span className="min-w-0">
+              <span className="block font-sans text-[15px] font-semibold text-creme">
+                {modo.titulo}
+              </span>
+              <span className="mt-1 block text-pretty font-sans text-[13.5px] leading-[1.55] text-tenue">
+                {modo.texto}
+              </span>
+            </span>
+          </label>
+        );
+      })}
+    </fieldset>
+  );
+}
 
 const CORES = ['#D9B36B', '#C2703C', '#2F6F4E', '#3B5B8C', '#8A4A6B', '#8C6A4A'];
 

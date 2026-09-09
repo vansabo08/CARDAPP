@@ -8,7 +8,13 @@ import {
   PEDIDOS_DEMO,
   RESTAURANTE_DEMO,
 } from '@/data/demo';
-import type { CategoriaComPratos, Mesa, Pedido, Restaurante } from './tipos';
+import type {
+  CategoriaComPratos,
+  Mesa,
+  Pedido,
+  PedidoPublico,
+  Restaurante,
+} from './tipos';
 
 /**
  * Camada de leitura do lado do servidor.
@@ -38,28 +44,38 @@ export function eDemonstracao(restaurantId: string) {
 }
 
 /**
- * Colunas do restaurante, com e sem a capa.
+ * Colunas do restaurante, na versão completa e na de recurso.
  *
  * Código e migrações não chegam ao mesmo tempo: houve um deploy que
  * lia `capa_url` antes de a coluna existir, e o painel inteiro deixou
  * de ver o restaurante — porque a consulta falhava toda, não só aquele
- * campo. As leituras passam a recuar para a lista curta quando a
- * coluna ainda não lá está, e a capa aparece assim que a migração
- * correr. Um deploy à frente da base de dados degrada uma
+ * campo. As leituras recuam para a lista curta quando alguma das
+ * colunas novas ainda não lá está, e cada uma aparece assim que a sua
+ * migração correr. Um deploy à frente da base de dados degrada uma
  * funcionalidade, não a aplicação.
  */
-const COLUNAS_RESTAURANTE = 'id, nome, slug, logo_url, capa_url, whatsapp, cor_marca, plano, activo';
-const COLUNAS_RESTAURANTE_SEM_CAPA = 'id, nome, slug, logo_url, whatsapp, cor_marca, plano, activo';
+const COLUNAS_RESTAURANTE =
+  'id, nome, slug, logo_url, capa_url, whatsapp, cor_marca, plano, activo, modo_pedido';
 
-function faltaAColunaDaCapa(erro: { code?: string; message?: string } | null) {
+/** As que existem desde o primeiro dia, e por isso nunca faltam. */
+const COLUNAS_RESTAURANTE_BASE = 'id, nome, slug, logo_url, whatsapp, cor_marca, plano, activo';
+
+function faltaUmaColunaNova(erro: { code?: string; message?: string } | null) {
   // 42703 = undefined_column, no PostgreSQL.
-  return erro?.code === '42703' || /capa_url/.test(erro?.message ?? '');
+  return erro?.code === '42703';
 }
 
-/** Garante o campo mesmo quando a linha veio sem ele. */
-function comCapa(linha: unknown): Restaurante {
+/**
+ * Preenche as colunas novas quando a linha veio sem elas.
+ *
+ * O `modo_pedido` recua para 'whatsapp', que é como a aplicação sempre
+ * funcionou: uma casa que fique a ler de uma base antiga continua a
+ * mandar os pedidos para onde já os mandava, em vez de os prender num
+ * ecrã que ainda não existe do lado dela.
+ */
+function comColunasNovas(linha: unknown): Restaurante {
   const r = linha as Restaurante;
-  return { ...r, capa_url: r.capa_url ?? null };
+  return { ...r, capa_url: r.capa_url ?? null, modo_pedido: r.modo_pedido ?? 'whatsapp' };
 }
 
 export async function obterRestaurantePorSlug(slug: string): Promise<Restaurante | null> {
@@ -75,16 +91,16 @@ export async function obterRestaurantePorSlug(slug: string): Promise<Restaurante
     .eq('activo', true)
     .maybeSingle();
 
-  if (error && faltaAColunaDaCapa(error)) {
+  if (error && faltaUmaColunaNova(error)) {
     ({ data } = await supabase
       .from('restaurants')
-      .select(COLUNAS_RESTAURANTE_SEM_CAPA)
+      .select(COLUNAS_RESTAURANTE_BASE)
       .eq('slug', slug)
       .eq('activo', true)
       .maybeSingle());
   }
 
-  if (data) return comCapa(data);
+  if (data) return comColunasNovas(data);
 
   // A página inicial mostra este cardápio como exemplo vivo. Continua a
   // responder mesmo com o Supabase ligado — mas só enquanto ninguém
@@ -139,6 +155,37 @@ export async function obterMesaPorNumero(
   return (data as Mesa | null) ?? null;
 }
 
+/**
+ * O pedido de um cliente que não tem sessão nenhuma.
+ *
+ * Passa pela função `pedido_publico` em vez de ler a tabela: uma
+ * política de leitura pública sobre `orders` deixaria qualquer pessoa
+ * listar os pedidos todos da casa, e o que se quer é dar uma linha a
+ * quem tem o id dela.
+ */
+export async function obterPedidoPublico(id: string): Promise<PedidoPublico | null> {
+  const supabase = clientePublico();
+  if (!supabase) return null;
+
+  // O cliente é criado sem tipos gerados do esquema, por isso o `rpc`
+  // não conhece esta função. A assinatura declara-se aqui, à vista, em
+  // vez de se calar o compilador com um `any`.
+  //
+  // O molde vai no cliente inteiro e não no método: tirar `supabase.rpc`
+  // para uma variável desliga-o do `this` e rebenta lá dentro, num
+  // `Cannot read properties of undefined`. A chamada tem de ficar presa
+  // ao objecto.
+  const comRpc = supabase as unknown as {
+    rpc: (nome: string, argumentos: Record<string, unknown>) => Promise<{ data: unknown }>;
+  };
+
+  const { data } = await comRpc.rpc('pedido_publico', { pid: id });
+  const linha = Array.isArray(data) ? data[0] : data;
+  if (!linha) return null;
+
+  return { ...(linha as PedidoPublico), total: numeroSeguro((linha as PedidoPublico).total) };
+}
+
 /* ------------------------------------------------------------------ */
 /* Painel                                                              */
 /* ------------------------------------------------------------------ */
@@ -160,17 +207,17 @@ export async function obterRestauranteDoDono(): Promise<Restaurante | null> {
     .limit(1)
     .maybeSingle();
 
-  if (error && faltaAColunaDaCapa(error)) {
+  if (error && faltaUmaColunaNova(error)) {
     ({ data } = await supabase
       .from('restaurants')
-      .select(COLUNAS_RESTAURANTE_SEM_CAPA)
+      .select(COLUNAS_RESTAURANTE_BASE)
       .eq('owner_id', user.id)
       .order('created_at', { ascending: true })
       .limit(1)
       .maybeSingle());
   }
 
-  return data ? comCapa(data) : null;
+  return data ? comColunasNovas(data) : null;
 }
 
 export async function obterMesas(restaurantId: string): Promise<Mesa[]> {
@@ -195,7 +242,9 @@ export async function obterPedidosDeHoje(restaurantId: string): Promise<Pedido[]
 
   const { data } = await supabase
     .from('orders')
-    .select('id, restaurant_id, table_id, itens, total, created_at, tables (numero)')
+    .select(
+      'id, restaurant_id, table_id, itens, total, created_at, estado, actualizado_em, tables (numero)',
+    )
     .eq('restaurant_id', restaurantId)
     .gte('created_at', inicio.toISOString())
     .order('created_at', { ascending: false });

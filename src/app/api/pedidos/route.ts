@@ -69,7 +69,22 @@ export async function POST(pedido: Request) {
 
   const tableId = typeof corpo.table_id === 'string' && corpo.table_id ? corpo.table_id : null;
 
+  /**
+   * O id gera-se aqui em vez de se ler de volta.
+   *
+   * O caminho óbvio era `insert(...).select('id')`, mas devolver a linha
+   * inserida exige permissão de **leitura** sobre `orders` — e o cliente
+   * anónimo não a tem, de propósito: quem pudesse ler a tabela lia os
+   * pedidos todos da casa. A alternativa seria abrir essa leitura, o que
+   * troca uma comodidade por um buraco.
+   *
+   * Um uuid v4 gerado no servidor resolve as duas pontas: entra na
+   * gravação e volta para o cliente sem precisar de a reler.
+   */
+  const id = crypto.randomUUID();
+
   const { error } = await supabase.from('orders').insert({
+    id,
     restaurant_id: restaurante.id,
     table_id: tableId,
     itens,
@@ -80,5 +95,5 @@ export async function POST(pedido: Request) {
     return NextResponse.json({ erro: 'Não foi possível gravar o pedido' }, { status: 500 });
   }
 
-  return NextResponse.json({ ok: true, total });
+  return NextResponse.json({ ok: true, total, id });
 }

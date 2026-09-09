@@ -57,6 +57,8 @@ export function Onboarding({ demonstracao }: { demonstracao: boolean }) {
     logo_url: null,
     capa_url: null,
     cor_marca: '#D9B36B',
+    // Quem comeca comeca pelo WhatsApp, que e o que ja sabe usar.
+    modo_pedido: 'whatsapp',
   });
   const [mesas, setMesas] = React.useState('8');
   const [cardapio, setCardapio] = React.useState<CategoriaInicial[]>(SUGESTAO);

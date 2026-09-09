@@ -7,6 +7,7 @@ import { Erro } from '@/components/ui/campo';
 import {
   CampoWhatsApp,
   CamposIdentidade,
+  EscolhaDoModo,
   type ValoresRestaurante,
 } from '@/components/painel/formulario-restaurante';
 import { formatarKz } from '@/lib/format';
@@ -41,6 +42,7 @@ export function EditorDefinicoes({
     logo_url: restaurante.logo_url,
     capa_url: restaurante.capa_url,
     cor_marca: restaurante.cor_marca || '#D9B36B',
+    modo_pedido: restaurante.modo_pedido ?? 'whatsapp',
   });
   const [estado, setEstado] = React.useState<'parado' | 'a-guardar' | 'guardado'>('parado');
   const [erro, setErro] = React.useState<string | null>(null);
@@ -77,7 +79,19 @@ export function EditorDefinicoes({
 
       <section>
         <h2 className="font-display text-[21px] text-creme">Para onde vão os pedidos</h2>
-        <div className="mt-5 max-w-[460px]">
+        <p className="mt-2 max-w-[54ch] font-sans text-[14.5px] leading-[1.6] text-tenue">
+          Escolha como quer receber. Pode mudar de ideias a qualquer hora, e a mudança vale para o
+          pedido seguinte.
+        </p>
+
+        <div className="mt-5 max-w-[560px]">
+          <EscolhaDoModo
+            valor={valores.modo_pedido}
+            aoMudar={(modo_pedido) => mudar({ modo_pedido })}
+          />
+        </div>
+
+        <div className="mt-7 max-w-[460px]">
           <CampoWhatsApp valor={valores.whatsapp} aoMudar={(v) => mudar({ whatsapp: v })} />
         </div>
       </section>

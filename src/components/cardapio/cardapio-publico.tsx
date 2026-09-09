@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Botao } from '@/components/ui/botao';
 import { FolhaInferior } from '@/components/ui/folha-inferior';
 import { AreaTexto } from '@/components/ui/campo';
@@ -27,9 +28,16 @@ export function CardapioPublico({
   tableId: string | null;
   marcaVisivel: boolean;
 }) {
+  const router = useRouter();
   const carrinho = useCarrinho();
   const [pratoAberto, setPratoAberto] = React.useState<Prato | null>(null);
   const [resumoAberto, setResumoAberto] = React.useState(false);
+  const [falhou, setFalhou] = React.useState<string | null>(null);
+
+  // Quem manda é a casa, nas definições. O cliente não escolhe a via:
+  // vê um botão só, e é o da casa. Uma base antiga, sem a coluna, cai em
+  // 'whatsapp' — que é como isto sempre funcionou.
+  const peloApp = (restaurante.modo_pedido ?? 'whatsapp') === 'app';
   const [aEnviar, setAEnviar] = React.useState(false);
   const [activa, setActiva] = React.useState(categorias[0]?.id ?? '');
 
@@ -131,27 +139,45 @@ export function CardapioPublico({
     });
   }
 
-  async function enviarPedido() {
+  function corpoDoPedido() {
+    const itens = carrinho.linhas.map(({ nome, qtd, preco, obs }) => ({ nome, qtd, preco, obs }));
+    return {
+      itens,
+      json: JSON.stringify({
+        slug: restaurante.slug,
+        table_id: tableId,
+        itens,
+        total: carrinho.total,
+      }),
+    };
+  }
+
+  /**
+   * O caminho de sempre: grava-se sem esperar e abre-se o WhatsApp.
+   *
+   * A gravação vai sem `await` de propósito. O que interessa ao cliente
+   * é chegar à conversa; se a gravação falhar, o pedido segue na mesma e
+   * a casa recebe-o pelo WhatsApp, que é a fonte da verdade neste modo.
+   */
+  async function enviarPeloWhatsApp() {
     if (!carrinho.linhas.length || aEnviar) return;
     setAEnviar(true);
+    setFalhou(null);
 
-    const itens = carrinho.linhas.map(({ nome, qtd, preco, obs }) => ({ nome, qtd, preco, obs }));
-    const pedido = { restaurante: restaurante.nome, mesa, itens, total: carrinho.total };
-    const url = buildWhatsAppUrl(restaurante.whatsapp, pedido);
+    const { itens, json } = corpoDoPedido();
+    const url = buildWhatsAppUrl(restaurante.whatsapp, {
+      restaurante: restaurante.nome,
+      mesa,
+      itens,
+      total: carrinho.total,
+    });
 
-    // Gravamos sem esperar pela resposta: o que interessa ao cliente é
-    // chegar ao WhatsApp. Se a gravação falhar, o pedido segue na mesma.
     try {
       fetch('/api/pedidos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         keepalive: true,
-        body: JSON.stringify({
-          slug: restaurante.slug,
-          table_id: tableId,
-          itens,
-          total: carrinho.total,
-        }),
+        body: json,
       }).catch(() => {});
     } catch {
       /* sem rede: seguimos para o WhatsApp na mesma */
@@ -165,6 +191,48 @@ export function CardapioPublico({
     document.body.appendChild(ligacao);
     ligacao.click();
     ligacao.remove();
+  }
+
+  /**
+   * O caminho novo: o pedido fica no Cardapp e o cliente segue o estado.
+   *
+   * Aqui espera-se pela resposta, ao contrário do WhatsApp. Neste modo
+   * não há segunda via: se a gravação falhar e seguíssemos em frente, o
+   * cliente ficava a olhar para um ecrã de acompanhamento de um pedido
+   * que a cozinha nunca viu. Mais vale dizer que falhou e deixar o
+   * carrinho intacto para tentar outra vez.
+   */
+  async function enviarPelaAplicacao() {
+    if (!carrinho.linhas.length || aEnviar) return;
+    setAEnviar(true);
+    setFalhou(null);
+
+    try {
+      const resposta = await fetch('/api/pedidos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: corpoDoPedido().json,
+      });
+
+      const dados = (await resposta.json()) as { id?: string; demonstracao?: boolean };
+
+      if (!resposta.ok || !dados.id) {
+        // O cardápio de exemplo não grava nada, e não tem para onde ir.
+        setFalhou(
+          dados.demonstracao
+            ? 'Este é o cardápio de exemplo — o pedido não chega a nenhuma cozinha.'
+            : 'Não conseguimos enviar o pedido. Verifique a ligação e tente outra vez.',
+        );
+        setAEnviar(false);
+        return;
+      }
+
+      carrinho.limpar();
+      router.push(`/pedido/${dados.id}`);
+    } catch {
+      setFalhou('Não conseguimos enviar o pedido. Verifique a ligação e tente outra vez.');
+      setAEnviar(false);
+    }
   }
 
   const temCarrinho = carrinho.quantidadeTotal > 0;
@@ -360,8 +428,15 @@ export function CardapioPublico({
             </span>
           </button>
 
-          <Botao variante="verde" tamanho="lg" onClick={enviarPedido} disabled={aEnviar} className="shrink-0">
-            {aEnviar ? 'A abrir…' : 'Enviar pedido'}
+          {/* Na barra cabe um botão só: leva ao caminho que a casa prefere. */}
+          <Botao
+            variante="verde"
+            tamanho="lg"
+            onClick={peloApp ? enviarPelaAplicacao : enviarPeloWhatsApp}
+            disabled={aEnviar}
+            className="shrink-0"
+          >
+            {aEnviar ? (peloApp ? 'A enviar…' : 'A abrir…') : 'Enviar pedido'}
           </Botao>
         </div>
       </div>
@@ -406,12 +481,32 @@ export function CardapioPublico({
           </div>
 
           <p className="mt-3 font-sans text-[13px] text-tenue-escuro">
-            O pedido segue para o WhatsApp do restaurante. O pagamento é feito na mesa.
+            {peloApp
+              ? 'O pedido segue para o restaurante e pode acompanhá-lo aqui. O pagamento é feito na mesa.'
+              : 'O pedido segue para o WhatsApp do restaurante. O pagamento é feito na mesa.'}
           </p>
 
+          {falhou ? (
+            <p role="alert" className="mt-3 font-sans text-[13px] text-[#b4402f]">
+              {falhou}
+            </p>
+          ) : null}
+
           <div className="mt-6 flex flex-col gap-2.5">
-            <Botao variante="verde" tamanho="lg" largo onClick={enviarPedido} disabled={aEnviar}>
-              {aEnviar ? 'A abrir o WhatsApp…' : 'Enviar pedido pelo WhatsApp'}
+            <Botao
+              variante="verde"
+              tamanho="lg"
+              largo
+              onClick={peloApp ? enviarPelaAplicacao : enviarPeloWhatsApp}
+              disabled={aEnviar}
+            >
+              {peloApp
+                ? aEnviar
+                  ? 'A enviar…'
+                  : 'Enviar pedido'
+                : aEnviar
+                  ? 'A abrir o WhatsApp…'
+                  : 'Enviar pedido pelo WhatsApp'}
             </Botao>
             <Botao variante="discreto-escuro" tamanho="md" largo onClick={() => setResumoAberto(false)}>
               Continuar a escolher

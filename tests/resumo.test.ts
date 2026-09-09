@@ -16,6 +16,10 @@ function pedido(
     itens,
     total: itens.reduce((s, i) => s + i.qtd * i.preco, 0),
     created_at: hora,
+    // O resumo do dia conta pedidos, nao estados: fica no que a base
+    // poe por omissao quando um pedido cai.
+    estado: 'novo',
+    actualizado_em: hora,
   };
 }
 

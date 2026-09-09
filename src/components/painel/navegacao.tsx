@@ -9,10 +9,18 @@ import { clienteNavegador } from '@/lib/supabase/cliente';
 import { NOME_PLANO, type Plano } from '@/lib/tipos';
 import { cn } from '@/lib/utils';
 import { Doca, type ItemDoca } from '@/components/ui/doca';
-import { BookOpen, LayoutGrid, QrCode, SlidersHorizontal } from 'lucide-react';
+import {
+  BookOpen,
+  ChevronDown,
+  LayoutGrid,
+  QrCode,
+  ReceiptText,
+  SlidersHorizontal,
+} from 'lucide-react';
 
 const LIGACOES = [
   { href: '/painel', rotulo: 'Resumo', icone: LayoutGrid },
+  { href: '/painel/pedidos', rotulo: 'Pedidos', icone: ReceiptText },
   { href: '/painel/cardapio', rotulo: 'Cardápio', icone: BookOpen },
   { href: '/painel/mesas', rotulo: 'Mesas', icone: QrCode },
   { href: '/painel/definicoes', rotulo: 'Definições', icone: SlidersHorizontal },
@@ -37,11 +45,15 @@ export function NavegacaoPainel({
 }) {
   const caminho = usePathname();
   const router = useRouter();
+  const [menuAberto, setMenuAberto] = React.useState(false);
+
+  // Fecha ao mudar de página, senão fica aberto por cima do ecrã novo.
+  React.useEffect(() => setMenuAberto(false), [caminho]);
 
   async function sair() {
     const supabase = clienteNavegador();
     await supabase?.auth.signOut();
-    router.push('/entrar');
+    router.push('/');
     router.refresh();
   }
 
@@ -50,8 +62,84 @@ export function NavegacaoPainel({
       <div className="flex h-full flex-col">
         <div className="flex items-center justify-between px-5 py-5 md:px-6">
           <Marca tamanho="sm" href="/painel" />
-          {demonstracao ? <Distintivo tom="ouro">Demonstração</Distintivo> : null}
+
+          <div className="flex items-center gap-3">
+            {demonstracao ? <Distintivo tom="ouro">Demonstração</Distintivo> : null}
+
+            {/*
+              No telemóvel, tudo o que não é navegação estava escondido
+              atrás de `md:` — o nome da casa, o cardápio e o Sair. Quem
+              entrasse pelo telefone ficava sem forma de sair da conta.
+              Este botão devolve-lhes isso.
+            */}
+            <button
+              type="button"
+              onClick={() => setMenuAberto((aberto) => !aberto)}
+              aria-expanded={menuAberto}
+              aria-controls="menu-da-conta"
+              className="flex items-center gap-2 rounded-full border border-linha px-3 py-1.5 font-sans text-[13px] text-tenue transition-colors duration-200 hover:text-creme md:hidden"
+            >
+              Conta
+              <ChevronDown
+                className={cn(
+                  'h-3.5 w-3.5 transition-transform duration-300 ease-calmo',
+                  menuAberto && 'rotate-180',
+                )}
+              />
+            </button>
+          </div>
         </div>
+
+        {menuAberto ? (
+          <div
+            id="menu-da-conta"
+            className="flex flex-col gap-1 border-t border-linha px-4 py-3 md:hidden"
+          >
+            {nomeRestaurante ? (
+              <p className="truncate px-3.5 pb-2 font-display text-[17px] text-creme">
+                {nomeRestaurante}
+                <span className="mt-0.5 block font-sans text-[12px] text-tenue">
+                  Plano {NOME_PLANO[plano]}
+                </span>
+              </p>
+            ) : null}
+
+            {slug ? (
+              <a
+                href={`/${slug}`}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-full px-3.5 py-2.5 font-sans text-[14px] text-tenue transition-colors duration-200 hover:text-creme"
+              >
+                Ver o cardápio ↗
+              </a>
+            ) : null}
+
+            <Link
+              href="/"
+              className="rounded-full px-3.5 py-2.5 font-sans text-[14px] text-tenue transition-colors duration-200 hover:text-creme"
+            >
+              Página inicial
+            </Link>
+
+            {administrador ? (
+              <Link
+                href="/admin"
+                className="rounded-full px-3.5 py-2.5 font-sans text-[14px] text-ouro transition-colors duration-200 hover:text-ouro-claro"
+              >
+                Administração
+              </Link>
+            ) : null}
+
+            <button
+              type="button"
+              onClick={sair}
+              className="rounded-full px-3.5 py-2.5 text-left font-sans text-[14px] font-semibold text-creme transition-colors duration-200 hover:text-ouro"
+            >
+              Sair da conta
+            </button>
+          </div>
+        ) : null}
 
         {nomeRestaurante ? (
           <div className="hidden px-6 pb-6 md:block">
@@ -89,6 +177,12 @@ export function NavegacaoPainel({
               Ver o cardápio ↗
             </a>
           ) : null}
+          <Link
+            href="/"
+            className="rounded-full px-3.5 py-2.5 font-sans text-[14px] text-tenue transition-colors duration-200 hover:text-creme"
+          >
+            Página inicial
+          </Link>
           {administrador ? (
             <Link
               href="/admin"
@@ -102,7 +196,7 @@ export function NavegacaoPainel({
             onClick={sair}
             className="rounded-full px-3.5 py-2.5 text-left font-sans text-[14px] text-tenue transition-colors duration-200 hover:text-creme"
           >
-            Sair
+            Sair da conta
           </button>
         </div>
       </div>
