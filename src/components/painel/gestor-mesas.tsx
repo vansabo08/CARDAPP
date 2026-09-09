@@ -156,6 +156,7 @@ function CartaoMesaQr({
   aoRemover: () => void;
 }) {
   const [qr, setQr] = React.useState<string | null>(null);
+  const [aGuardar, setAGuardar] = React.useState(false);
   const url = urlDaMesa(slug, mesa.numero, base);
 
   React.useEffect(() => {
@@ -167,6 +168,35 @@ function CartaoMesaQr({
       vivo = false;
     };
   }, [url]);
+
+  /**
+   * Guarda o código desta mesa, sozinho.
+   *
+   * O PDF com seis cartões por página serve para mobilar a sala de uma
+   * vez. Não serve para quando se parte um cartão, entra uma mesa nova
+   * na esplanada, ou se quer mandar o código de uma mesa pelo WhatsApp —
+   * e obrigar a reimprimir a folha toda por causa de uma mesa é desperdício.
+   *
+   * Sai em 1024px, e não nos 320px que se veem no ecrã: este ficheiro
+   * tanto pode ir para um autocolante como para um cartaz, e um QR
+   * esticado a partir de uma imagem pequena deixa de ler.
+   */
+  async function guardarCodigo() {
+    if (aGuardar) return;
+    setAGuardar(true);
+
+    try {
+      const grande = await qrDataUrl(url, 1024);
+      const ligacao = document.createElement('a');
+      ligacao.href = grande;
+      ligacao.download = `mesa-${numeroMesa(mesa.numero)}-${slug}.png`;
+      document.body.appendChild(ligacao);
+      ligacao.click();
+      ligacao.remove();
+    } finally {
+      setAGuardar(false);
+    }
+  }
 
   return (
     <div className="vidro-leve group relative flex flex-col items-center rounded-cartao p-4">
@@ -189,14 +219,28 @@ function CartaoMesaQr({
       </div>
 
       <p className="mt-3 font-display text-[19px] text-creme">Mesa {numeroMesa(mesa.numero)}</p>
-      <a
-        href={url}
-        target="_blank"
-        rel="noreferrer"
-        className="mt-1 max-w-full truncate font-sans text-[11.5px] text-tenue underline underline-offset-4 hover:text-creme"
-      >
-        abrir ↗
-      </a>
+
+      <div className="mt-1.5 flex items-center gap-3">
+        <button
+          type="button"
+          onClick={guardarCodigo}
+          disabled={aGuardar || !qr}
+          className="font-sans text-[11.5px] text-tenue underline underline-offset-4 transition-colors hover:text-creme disabled:opacity-50"
+        >
+          {aGuardar ? 'a guardar…' : 'guardar PNG'}
+        </button>
+
+        <span aria-hidden className="h-3 w-px bg-linha" />
+
+        <a
+          href={url}
+          target="_blank"
+          rel="noreferrer"
+          className="max-w-full truncate font-sans text-[11.5px] text-tenue underline underline-offset-4 hover:text-creme"
+        >
+          abrir ↗
+        </a>
+      </div>
     </div>
   );
 }

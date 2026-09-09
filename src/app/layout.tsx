@@ -1,22 +1,25 @@
 import type { Metadata, Viewport } from 'next';
-import { Familjen_Grotesk, Instrument_Serif } from 'next/font/google';
+import { Manrope, Playfair_Display } from 'next/font/google';
 import { SITE_URL } from '@/lib/supabase/config';
 import './globals.css';
 
-// Só o direito. O itálico desta serifa aparece em dois sítios, ambos na
-// página inicial, e é lá que está declarado — porque o que se declara no
-// layout de raiz é precarregado em *todas* as rotas. Aqui, o itálico
-// custava 15 KB de prioridade máxima ao cardápio público, que nunca o
-// desenha e é a rota que tem de abrir em 3G num telemóvel fraco.
-const display = Instrument_Serif({
+/**
+ * Regra fixa da casa: Playfair Display nos títulos, Manrope no resto.
+ *
+ * Só 400 e 600 — nada de 700 para cima. Uma serifa de contraste alto
+ * como esta engrossa muito depressa, e a partir do semibold as hastes
+ * finas fecham e o título passa a ler-se como um aviso. E sem itálico em
+ * lado nenhum, o que também poupa um ficheiro por família.
+ */
+const display = Playfair_Display({
   subsets: ['latin'],
-  weight: '400',
+  weight: ['400', '600'],
   style: 'normal',
   display: 'swap',
   variable: '--fonte-display',
 });
 
-const sans = Familjen_Grotesk({
+const sans = Manrope({
   subsets: ['latin'],
   display: 'swap',
   variable: '--fonte-sans',

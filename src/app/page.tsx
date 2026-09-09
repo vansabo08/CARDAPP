@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Instrument_Serif } from 'next/font/google';
 import { Botao } from '@/components/ui/botao';
 import { Revelar } from '@/components/ui/revelar';
 import { Marca } from '@/components/marca';
@@ -12,24 +11,6 @@ import { FraseRevelada } from '@/components/marketing/frase-revelada';
 import { Prova } from '@/components/marketing/prova';
 import { Perguntas } from '@/components/marketing/perguntas';
 import { Precos } from '@/components/marketing/precos';
-
-/**
- * O itálico da serifa, declarado na rota que o usa — o título da hero e a
- * faixa de pratos, e mais nenhures.
- *
- * O `@font-face` que isto gera dá pelo mesmo nome de família que o direito
- * do layout de raiz, por isso as duas declarações compõem-se sozinhas: o
- * `italic` do Tailwind escolhe esta face sem precisar da classe. O que a
- * classe faz, aplicada abaixo, é dizer ao Next que esta rota usa a fonte —
- * e é isso que faz sair o `<link rel="preload">` só aqui.
- */
-const displayItalico = Instrument_Serif({
-  subsets: ['latin'],
-  weight: '400',
-  style: 'italic',
-  display: 'swap',
-  variable: '--fonte-display-italica',
-});
 
 const PASSOS = [
   {
@@ -54,7 +35,7 @@ const PASSOS = [
 
 export default function PaginaInicial() {
   return (
-    <div className={`relative min-h-dvh ${displayItalico.variable}`}>
+    <div className="relative min-h-dvh">
       <FundoVivo />
 
       {/*
@@ -64,7 +45,7 @@ export default function PaginaInicial() {
       */}
       <a
         href="#conteudo"
-        className="sr-only rounded-campo bg-ouro px-4 py-2 font-sans text-[14px] font-semibold text-grafite focus:not-sr-only focus:absolute focus:left-5 focus:top-5 focus:z-[60]"
+        className="sr-only rounded-campo bg-ouro px-4 py-2 font-sans text-sm font-semibold text-grafite focus:not-sr-only focus:absolute focus:left-5 focus:top-5 focus:z-[60]"
       >
         Saltar para o conteúdo
       </a>
@@ -76,16 +57,16 @@ export default function PaginaInicial() {
         <nav className="mx-auto flex h-[68px] max-w-conteudo items-center justify-between px-5 md:px-8">
           <Marca />
           <div className="hidden items-center gap-9 md:flex">
-            <a href="#como-funciona" className="font-sans text-[14px] text-tenue transition-colors hover:text-creme">
+            <a href="#como-funciona" className="font-sans text-sm text-tenue transition-colors hover:text-creme">
               Como funciona
             </a>
-            <a href="#precos" className="font-sans text-[14px] text-tenue transition-colors hover:text-creme">
+            <a href="#precos" className="font-sans text-sm text-tenue transition-colors hover:text-creme">
               Preços
             </a>
-            <a href="#perguntas" className="font-sans text-[14px] text-tenue transition-colors hover:text-creme">
+            <a href="#perguntas" className="font-sans text-sm text-tenue transition-colors hover:text-creme">
               Perguntas
             </a>
-            <Link href="/tia-bela?mesa=7" className="font-sans text-[14px] text-tenue transition-colors hover:text-creme">
+            <Link href="/tia-bela?mesa=7" className="font-sans text-sm text-tenue transition-colors hover:text-creme">
               Ver um cardápio
             </Link>
           </div>
@@ -142,15 +123,21 @@ export default function PaginaInicial() {
                 <span className="etiqueta text-ouro-fundo">Premium · Angola · Kwanza</span>
               </Revelar>
 
+              {/*
+                Escala do Tailwind, sem valores arbitrários. O `text-6xl`
+                já traz a entrelinha 1, que é a que um display quer — por
+                isso não se lhe põe `leading` à mão. O `tracking-tight`
+                é da escala e a Playfair, com o contraste que tem,
+                precisa dele nos tamanhos grandes.
+              */}
               <Revelar atraso={60}>
-                <h1 className="mt-6 max-w-[12ch] text-balance font-display text-[46px] leading-[0.98] tracking-[-0.025em] text-creme sm:text-[62px] md:text-[76px]">
-                  O cardápio que cabe numa{' '}
-                  <span className="ouro-display italic">mesa.</span>
+                <h1 className="mt-6 max-w-[12ch] text-balance font-display text-4xl tracking-tight text-creme md:text-6xl">
+                  O cardápio que cabe numa <span className="ouro-display">mesa.</span>
                 </h1>
               </Revelar>
 
               <Revelar atraso={120}>
-                <p className="mt-8 max-w-[44ch] font-sans text-[17px] leading-[1.65] text-tenue">
+                <p className="mt-8 max-w-[44ch] font-sans text-lg leading-relaxed text-tenue">
                   O cliente lê o QR da mesa, escolhe o que quer e o pedido chega ao WhatsApp do
                   restaurante já escrito — sem aplicações, sem login, sem papel.
                 </p>
@@ -168,7 +155,7 @@ export default function PaginaInicial() {
               </Revelar>
 
               <Revelar atraso={240}>
-                <p className="mt-7 font-sans text-[13px] text-tenue">
+                <p className="mt-7 font-sans text-sm text-tenue">
                   Grátis para uma mesa e quinze pratos. Sem cartão de crédito.
                 </p>
               </Revelar>

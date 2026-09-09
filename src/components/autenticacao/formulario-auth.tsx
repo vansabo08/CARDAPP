@@ -4,8 +4,6 @@ import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Marca } from '@/components/marca';
-import { MarcaSimbolo } from '@/components/marca-simbolo';
-import { FundoVivo } from '@/components/marketing/fundo-vivo';
 import { clienteNavegador } from '@/lib/supabase/cliente';
 import { cn } from '@/lib/utils';
 
@@ -22,7 +20,7 @@ const TEXTOS: Record<
     alternativa: (
       <>
         Ainda não tem conta?{' '}
-        <Link href="/criar-conta" className="text-creme underline underline-offset-4">
+        <Link href="/criar-conta" className="font-semibold text-ouro hover:text-ouro-claro">
           Criar cardápio grátis
         </Link>
       </>
@@ -35,7 +33,7 @@ const TEXTOS: Record<
     alternativa: (
       <>
         Já tem conta?{' '}
-        <Link href="/entrar" className="text-creme underline underline-offset-4">
+        <Link href="/entrar" className="font-semibold text-ouro hover:text-ouro-claro">
           Entrar
         </Link>
       </>
@@ -44,12 +42,19 @@ const TEXTOS: Record<
 };
 
 /**
- * Cartão de vidro sobre o preto da marca.
+ * Cartão de vidro sobre uma fotografia desfocada.
  *
- * A referência trazia um botão de Google e uma prova social com caras —
- * ficaram de fora: não há OAuth de Google ligado neste projecto, e um
- * botão que não faz nada é pior do que botão nenhum. Os números de
- * utilizadores também não se inventam.
+ * O fundo é uma fotografia de mufete do Wikimedia Commons (Jrobal0,
+ * CC BY-SA 4.0), redimensionada e convertida para WebP. A licença obriga
+ * a creditar, e o crédito está no rodapé do ecrã — discreto, mas lá.
+ * Escolhi comida angolana em vez de uma fotografia de banco de imagens
+ * porque é o nicho da aplicação, e desfocada dá os âmbares que combinam
+ * com o ouro da marca.
+ *
+ * A referência trazia um botão de Google e um "remember me". Ficaram de
+ * fora: não há OAuth de Google ligado neste projecto, e um botão que não
+ * faz nada é pior do que botão nenhum; a sessão do Supabase já persiste
+ * sozinha, por isso a caixa seria decorativa.
  */
 export function FormularioAuth({ modo }: { modo: Modo }) {
   const router = useRouter();
@@ -105,34 +110,47 @@ export function FormularioAuth({ modo }: { modo: Modo }) {
   }
 
   return (
-    <div className="relative flex min-h-dvh flex-col">
-      <FundoVivo />
+    <div className="relative min-h-dvh w-full overflow-hidden">
+      {/* ------------------------------------------------------------ */}
+      {/* Fundo                                                         */}
+      {/* ------------------------------------------------------------ */}
+      {/*
+        A imagem vai em <div> com background-image e não em <Image>: está
+        desfocada a 8px e escurecida, por isso a nitidez não conta para
+        nada e não vale a pena o custo do optimizador. O `scale-110` evita
+        que o desfoque deixe as margens transparentes.
+      */}
+      <div
+        aria-hidden
+        className="absolute inset-0 scale-110 bg-cover bg-center"
+        style={{ backgroundImage: "url('/pratos/entrada.webp')", filter: 'blur(8px)' }}
+      />
+      <div aria-hidden className="absolute inset-0 bg-grafite/55" />
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-gradient-to-b from-grafite/70 via-grafite/30 to-grafite"
+      />
 
-      <header className="px-5 py-6 md:px-8">
-        <Marca />
-      </header>
+      <div className="relative flex min-h-dvh flex-col">
+        <header className="px-5 py-6 md:px-8">
+          <Marca />
+        </header>
 
-      <main className="flex flex-1 items-center justify-center px-5 pb-24">
-        <div className="w-full max-w-[400px] animate-subir">
-          <div
+        <main className="flex flex-1 items-center justify-center px-5 pb-10">
+          <form
+            onSubmit={submeter}
             className={cn(
-              'rounded-[26px] border border-linha p-8 sm:p-9',
-              // O vidro: um degradé quase invisível do canto superior
-              // esquerdo, e desfoque por trás.
-              'bg-gradient-to-br from-white/[0.07] via-white/[0.02] to-transparent',
-              'shadow-[0_28px_70px_-30px_rgba(0,0,0,0.95)] backdrop-blur-2xl',
+              'w-full max-w-[420px] animate-subir rounded-folha px-6 pb-8 pt-9 sm:px-8 sm:pb-9 sm:pt-10',
+              'border border-creme/25 bg-creme/[0.08]',
+              'shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-2xl backdrop-saturate-150',
             )}
           >
-            <span className="flex h-12 w-12 items-center justify-center rounded-full border border-linha bg-white/[0.05]">
-              <MarcaSimbolo className="h-6 w-6 text-ouro" />
-            </span>
-
-            <h1 className="mt-7 font-display text-[30px] leading-[1.12] text-creme">
+            <h1 className="font-display text-4xl leading-none tracking-tight text-creme">
               {texto.titulo}
             </h1>
-            <p className="mt-2.5 font-sans text-[14.5px] leading-[1.6] text-tenue">{texto.sub}</p>
+            <p className="mt-4 font-sans text-base leading-snug text-creme/70">{texto.sub}</p>
 
-            <form onSubmit={submeter} className="mt-8 flex flex-col gap-3">
+            <div className="mt-8 space-y-4">
               <label className="sr-only" htmlFor="email">
                 Email
               </label>
@@ -160,53 +178,119 @@ export function FormularioAuth({ modo }: { modo: Modo }) {
                   value={palavra}
                   onChange={(e) => setPalavra(e.target.value)}
                   placeholder={modo === 'criar' ? 'Palavra-passe (8+ caracteres)' : 'Palavra-passe'}
-                  className={cn(campo, 'pr-16')}
+                  className={cn(campo, 'pr-14')}
                 />
                 <button
                   type="button"
                   onClick={() => setVerPalavra((v) => !v)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 font-sans text-[12px] font-semibold text-tenue transition-colors hover:text-creme"
+                  aria-label={verPalavra ? 'Ocultar palavra-passe' : 'Mostrar palavra-passe'}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-creme/70 transition-colors hover:text-creme"
                 >
-                  {verPalavra ? 'Ocultar' : 'Ver'}
+                  {verPalavra ? <OlhoFechado /> : <Olho />}
                 </button>
               </div>
+            </div>
 
-              {erro ? <p className="font-sans text-[13px] text-[#e0655a]">{erro}</p> : null}
-              {aviso ? <p className="font-sans text-[13px] text-ouro">{aviso}</p> : null}
+            {erro ? (
+              <p role="alert" className="mt-4 font-sans text-sm text-[#ff9b8f]">
+                {erro}
+              </p>
+            ) : null}
+            {aviso ? <p className="mt-4 font-sans text-sm text-ouro">{aviso}</p> : null}
 
-              <hr className="my-2 border-linha" />
+            <button
+              type="submit"
+              disabled={ocupado}
+              className={cn(
+                'mt-6 h-[60px] w-full rounded-full bg-ouro font-sans text-base font-semibold text-grafite',
+                'transition-[background-color,transform] duration-200 ease-calmo',
+                'hover:bg-ouro-claro active:scale-[0.98]',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-creme/70',
+                'disabled:pointer-events-none disabled:opacity-40',
+              )}
+            >
+              {ocupado ? 'Um momento…' : texto.accao}
+            </button>
 
-              <button
-                type="submit"
-                disabled={ocupado}
-                className={cn(
-                  'h-[52px] w-full rounded-full bg-ouro font-sans text-[15px] font-semibold text-grafite',
-                  'transition-[background-color,transform] duration-200 ease-calmo',
-                  'hover:bg-ouro-claro active:scale-[0.985] disabled:pointer-events-none disabled:opacity-40',
-                )}
-              >
-                {ocupado ? 'Um momento…' : texto.accao}
-              </button>
+            {modo === 'criar' ? (
+              <p className="mt-4 text-center font-sans text-sm text-creme/70">
+                Grátis para uma mesa e quinze pratos. Sem cartão de crédito.
+              </p>
+            ) : null}
 
-              {modo === 'criar' ? (
-                <p className="mt-1 text-center font-sans text-[12.5px] text-tenue">
-                  Grátis para uma mesa e quinze pratos. Sem cartão de crédito.
-                </p>
-              ) : null}
-            </form>
-          </div>
+            <p className="mt-5 text-center font-sans text-sm text-creme/85">{texto.alternativa}</p>
+          </form>
+        </main>
 
-          <p className="mt-7 text-center font-sans text-[14px] text-tenue">{texto.alternativa}</p>
-        </div>
-      </main>
+        {/* A licenca da fotografia obriga a creditar. Fica discreto, mas fica. */}
+        <footer className="px-5 pb-6 text-center md:px-8">
+          <p className="font-sans text-xs text-creme/40">
+            Fotografia:{' '}
+            <a
+              href="https://commons.wikimedia.org/wiki/File:Mufete_completo.JPG"
+              target="_blank"
+              rel="noreferrer"
+              className="underline underline-offset-2 hover:text-creme/70"
+            >
+              Mufete completo
+            </a>
+            , Jrobal0,{' '}
+            <a
+              href="https://creativecommons.org/licenses/by-sa/4.0"
+              target="_blank"
+              rel="noreferrer"
+              className="underline underline-offset-2 hover:text-creme/70"
+            >
+              CC BY-SA 4.0
+            </a>
+          </p>
+        </footer>
+      </div>
     </div>
   );
 }
 
 const campo = cn(
-  'h-[52px] w-full rounded-full border border-linha bg-white/[0.05] px-5',
-  'font-sans text-[15px] text-creme placeholder:text-tenue',
-  'outline-none transition-colors duration-200 focus:border-ouro/60 focus:bg-white/[0.07]',
+  'h-[58px] w-full rounded-cartao border border-creme/35 bg-transparent px-5',
+  'font-sans text-base text-creme placeholder:text-creme/60',
+  'outline-none transition-colors duration-200 focus:border-creme/80',
+);
+
+/* ------------------------------------------------------------------ */
+/* Ícones                                                              */
+/* ------------------------------------------------------------------ */
+
+const Olho = () => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.8}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="h-5 w-5"
+    aria-hidden
+  >
+    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7" />
+    <circle cx="12" cy="12" r="3" />
+  </svg>
+);
+
+const OlhoFechado = () => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.8}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="h-5 w-5"
+    aria-hidden
+  >
+    <path d="M10.73 5.08A10.4 10.4 0 0 1 12 5c7 0 10 7 10 7a13.2 13.2 0 0 1-1.67 2.68M6.61 6.61A13.5 13.5 0 0 0 2 12s3 7 10 7a9.7 9.7 0 0 0 5.39-1.61" />
+    <path d="M9.88 9.88a3 3 0 0 0 4.24 4.24" />
+    <path d="m3 3 18 18" />
+  </svg>
 );
 
 /**

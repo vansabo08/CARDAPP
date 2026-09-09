@@ -349,7 +349,7 @@ export function GestorCardapio({
                           {prato.descricao}
                         </span>
                       ) : (
-                        <span className="mt-0.5 block font-sans text-[12.5px] italic text-tenue/70">
+                        <span className="mt-0.5 block font-sans text-xs text-tenue/70">
                           sem descrição
                         </span>
                       )}

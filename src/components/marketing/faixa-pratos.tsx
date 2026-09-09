@@ -37,7 +37,7 @@ export function FaixaPratos({ className }: { className?: string }) {
       <div className="faixa-correr flex w-max items-center gap-8">
         {lista.map((prato, i) => (
           <span key={`${prato}-${i}`} className="flex items-center gap-8">
-            <span className="whitespace-nowrap font-display text-[26px] italic text-creme/70">
+            <span className="whitespace-nowrap font-display text-2xl text-creme/70">
               {prato}
             </span>
             <span className="block h-[5px] w-[5px] shrink-0 rounded-full bg-ouro/70" />
