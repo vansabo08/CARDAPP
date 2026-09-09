@@ -3,10 +3,15 @@ import { Familjen_Grotesk, Instrument_Serif } from 'next/font/google';
 import { SITE_URL } from '@/lib/supabase/config';
 import './globals.css';
 
+// Só o direito. O itálico desta serifa aparece em dois sítios, ambos na
+// página inicial, e é lá que está declarado — porque o que se declara no
+// layout de raiz é precarregado em *todas* as rotas. Aqui, o itálico
+// custava 15 KB de prioridade máxima ao cardápio público, que nunca o
+// desenha e é a rota que tem de abrir em 3G num telemóvel fraco.
 const display = Instrument_Serif({
   subsets: ['latin'],
   weight: '400',
-  style: ['normal', 'italic'],
+  style: 'normal',
   display: 'swap',
   variable: '--fonte-display',
 });

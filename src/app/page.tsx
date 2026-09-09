@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { Instrument_Serif } from 'next/font/google';
 import { Botao } from '@/components/ui/botao';
 import { Revelar } from '@/components/ui/revelar';
 import { Marca } from '@/components/marca';
@@ -9,6 +10,24 @@ import { FundoVivo } from '@/components/marketing/fundo-vivo';
 import { FaixaPratos } from '@/components/marketing/faixa-pratos';
 import { ProvaSocial } from '@/components/marketing/prova-social';
 import { Precos } from '@/components/marketing/precos';
+
+/**
+ * O itálico da serifa, declarado na rota que o usa — o título da hero e a
+ * faixa de pratos, e mais nenhures.
+ *
+ * O `@font-face` que isto gera dá pelo mesmo nome de família que o direito
+ * do layout de raiz, por isso as duas declarações compõem-se sozinhas: o
+ * `italic` do Tailwind escolhe esta face sem precisar da classe. O que a
+ * classe faz, aplicada abaixo, é dizer ao Next que esta rota usa a fonte —
+ * e é isso que faz sair o `<link rel="preload">` só aqui.
+ */
+const displayItalico = Instrument_Serif({
+  subsets: ['latin'],
+  weight: '400',
+  style: 'italic',
+  display: 'swap',
+  variable: '--fonte-display-italica',
+});
 
 const PASSOS = [
   {
@@ -33,7 +52,7 @@ const PASSOS = [
 
 export default function PaginaInicial() {
   return (
-    <div className="relative min-h-dvh">
+    <div className={`relative min-h-dvh ${displayItalico.variable}`}>
       <FundoVivo />
 
       {/* ---------------------------------------------------------- */}

@@ -4,14 +4,14 @@
     {
       "name": "cardapp",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "dev",
-        "--",
-        "-p",
-        "3100"
-      ],
+      "runtimeArgs": ["run", "dev", "--", "-p", "3100"],
       "port": 3100
+    },
+    {
+      "name": "cardapp-producao",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start", "--", "-p", "3200"],
+      "port": 3200
     }
   ]
 }
