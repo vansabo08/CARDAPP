@@ -19,6 +19,17 @@ export type DadosRestaurante = {
 
 type Resultado = { ok: boolean; demonstracao?: boolean; erro?: string; slug?: string };
 
+/**
+ * A capa foi acrescentada depois de o esquema estar em produção. Enquanto
+ * a migração 0002 não correr, escrevê-la faz a gravação falhar inteira —
+ * e o dono fica sem conseguir criar ou guardar o restaurante por causa de
+ * um campo opcional. Por isso as escritas tentam com a capa e recuam sem
+ * ela; é o campo que se perde, não o formulário.
+ */
+function faltaAColunaDaCapa(erro: { code?: string; message?: string } | null) {
+  return erro?.code === '42703' || /capa_url/.test(erro?.message ?? '');
+}
+
 function validar(dados: DadosRestaurante): string | null {
   if (dados.nome.trim().length < 2) return 'Escreva o nome do restaurante.';
   if (!slugify(dados.slug || dados.nome)) return 'O endereço do cardápio não pode ficar vazio.';
@@ -52,22 +63,32 @@ export async function criarRestaurante(
 
   const slug = await slugLivre(supabase, slugify(dados.slug || dados.nome));
 
-  const { data: restaurante, error } = await supabase
+  const base = {
+    owner_id: user.id,
+    nome: dados.nome.trim().slice(0, 80),
+    slug,
+    whatsapp: normalizarWhatsApp(dados.whatsapp),
+    logo_url: dados.logo_url,
+    cor_marca: dados.cor_marca || '#D9B36B',
+  };
+
+  let { data: restaurante, error } = await supabase
     .from('restaurants')
-    .insert({
-      owner_id: user.id,
-      nome: dados.nome.trim().slice(0, 80),
-      slug,
-      whatsapp: normalizarWhatsApp(dados.whatsapp),
-      logo_url: dados.logo_url,
-      capa_url: dados.capa_url,
-      cor_marca: dados.cor_marca || '#D9B36B',
-    })
+    .insert({ ...base, capa_url: dados.capa_url })
     .select('id, slug')
     .single();
 
+  if (error && faltaAColunaDaCapa(error)) {
+    ({ data: restaurante, error } = await supabase
+      .from('restaurants')
+      .insert(base)
+      .select('id, slug')
+      .single());
+  }
+
   if (error || !restaurante) {
-    return { ok: false, erro: 'Não foi possível criar o restaurante.' };
+    // A mensagem crua diz o que corrigir; a genérica não dizia nada.
+    return { ok: false, erro: error?.message ?? 'Não foi possível criar o restaurante.' };
   }
 
   const quantas = Math.max(1, Math.min(80, Math.floor(numeroDeMesas)));
@@ -125,19 +146,24 @@ export async function guardarRestaurante(dados: DadosRestaurante): Promise<Resul
   const slug =
     novoSlug === actual.slug ? actual.slug : await slugLivre(supabase, novoSlug, actual.id);
 
-  const { error } = await supabase
+  const base = {
+    nome: dados.nome.trim().slice(0, 80),
+    slug,
+    whatsapp: normalizarWhatsApp(dados.whatsapp),
+    logo_url: dados.logo_url,
+    cor_marca: dados.cor_marca || '#D9B36B',
+  };
+
+  let { error } = await supabase
     .from('restaurants')
-    .update({
-      nome: dados.nome.trim().slice(0, 80),
-      slug,
-      whatsapp: normalizarWhatsApp(dados.whatsapp),
-      logo_url: dados.logo_url,
-      capa_url: dados.capa_url,
-      cor_marca: dados.cor_marca || '#D9B36B',
-    })
+    .update({ ...base, capa_url: dados.capa_url })
     .eq('id', actual.id);
 
-  if (error) return { ok: false, erro: 'Não foi possível guardar.' };
+  if (error && faltaAColunaDaCapa(error)) {
+    ({ error } = await supabase.from('restaurants').update(base).eq('id', actual.id));
+  }
+
+  if (error) return { ok: false, erro: error.message };
 
   revalidatePath('/painel/definicoes');
   revalidatePath(`/${slug}`);

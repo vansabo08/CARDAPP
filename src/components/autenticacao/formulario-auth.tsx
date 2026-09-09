@@ -156,11 +156,10 @@ export function FormularioAuth({ modo }: { modo: Modo }) {
                   id="palavra"
                   type={verPalavra ? 'text' : 'password'}
                   required
-                  minLength={8}
                   autoComplete={modo === 'criar' ? 'new-password' : 'current-password'}
                   value={palavra}
                   onChange={(e) => setPalavra(e.target.value)}
-                  placeholder="Palavra-passe"
+                  placeholder={modo === 'criar' ? 'Palavra-passe (8+ caracteres)' : 'Palavra-passe'}
                   className={cn(campo, 'pr-16')}
                 />
                 <button
@@ -210,10 +209,39 @@ const campo = cn(
   'outline-none transition-colors duration-200 focus:border-ouro/60 focus:bg-white/[0.07]',
 );
 
+/**
+ * Traduz o erro do Supabase — e, quando não o conhece, mostra o
+ * original em vez de o esconder.
+ *
+ * A versão anterior colapsava tudo o que não previa num "Não foi
+ * possível concluir. Tente outra vez.". Ficava bonito e não dizia nada:
+ * nem o utilizador percebia o que corrigir, nem quem dá apoio percebia
+ * o que perguntar. Uma mensagem crua é feia; uma mensagem vazia é pior.
+ */
 function traduzirErro(e: unknown) {
-  const mensagem = e instanceof Error ? e.message : String(e);
+  const erro = e as { code?: string; message?: string } | null;
+  const codigo = erro?.code ?? '';
+  const mensagem = erro?.message ?? String(e);
+
+  const conhecidos: Record<string, string> = {
+    invalid_credentials: 'Email ou palavra-passe errados.',
+    user_already_exists: 'Já existe uma conta com este email. Experimente entrar.',
+    email_exists: 'Já existe uma conta com este email. Experimente entrar.',
+    weak_password: 'A palavra-passe é demasiado fraca. Use pelo menos 8 caracteres.',
+    validation_failed: 'Confira o endereço de email — o formato não parece válido.',
+    over_request_rate_limit: 'Demasiadas tentativas. Espere um minuto e tente outra vez.',
+    over_email_send_rate_limit: 'Demasiados emails enviados. Espere um pouco.',
+    signup_disabled: 'Os registos estão fechados neste momento.',
+    email_not_confirmed: 'Confirme o email antes de entrar.',
+    email_address_invalid: 'Este endereço de email não é aceite.',
+  };
+
+  if (conhecidos[codigo]) return conhecidos[codigo];
+
+  // Casos antigos, que vinham só no texto.
   if (/invalid login credentials/i.test(mensagem)) return 'Email ou palavra-passe errados.';
   if (/already registered/i.test(mensagem)) return 'Já existe uma conta com este email.';
   if (/rate limit/i.test(mensagem)) return 'Demasiadas tentativas. Tente daqui a pouco.';
-  return 'Não foi possível concluir. Tente outra vez.';
+
+  return mensagem || 'Não foi possível concluir. Tente outra vez.';
 }

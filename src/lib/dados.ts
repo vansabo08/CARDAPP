@@ -37,20 +37,54 @@ export function eDemonstracao(restaurantId: string) {
   return restaurantId === RESTAURANTE_DEMO.id;
 }
 
+/**
+ * Colunas do restaurante, com e sem a capa.
+ *
+ * Código e migrações não chegam ao mesmo tempo: houve um deploy que
+ * lia `capa_url` antes de a coluna existir, e o painel inteiro deixou
+ * de ver o restaurante — porque a consulta falhava toda, não só aquele
+ * campo. As leituras passam a recuar para a lista curta quando a
+ * coluna ainda não lá está, e a capa aparece assim que a migração
+ * correr. Um deploy à frente da base de dados degrada uma
+ * funcionalidade, não a aplicação.
+ */
+const COLUNAS_RESTAURANTE = 'id, nome, slug, logo_url, capa_url, whatsapp, cor_marca, plano, activo';
+const COLUNAS_RESTAURANTE_SEM_CAPA = 'id, nome, slug, logo_url, whatsapp, cor_marca, plano, activo';
+
+function faltaAColunaDaCapa(erro: { code?: string; message?: string } | null) {
+  // 42703 = undefined_column, no PostgreSQL.
+  return erro?.code === '42703' || /capa_url/.test(erro?.message ?? '');
+}
+
+/** Garante o campo mesmo quando a linha veio sem ele. */
+function comCapa(linha: unknown): Restaurante {
+  const r = linha as Restaurante;
+  return { ...r, capa_url: r.capa_url ?? null };
+}
+
 export async function obterRestaurantePorSlug(slug: string): Promise<Restaurante | null> {
   const supabase = clientePublico();
   if (!supabase) {
     return slug === RESTAURANTE_DEMO.slug ? RESTAURANTE_DEMO : null;
   }
 
-  const { data } = await supabase
+  let { data, error } = await supabase
     .from('restaurants')
-    .select('id, nome, slug, logo_url, capa_url, whatsapp, cor_marca, plano, activo')
+    .select(COLUNAS_RESTAURANTE)
     .eq('slug', slug)
     .eq('activo', true)
     .maybeSingle();
 
-  if (data) return data as Restaurante;
+  if (error && faltaAColunaDaCapa(error)) {
+    ({ data } = await supabase
+      .from('restaurants')
+      .select(COLUNAS_RESTAURANTE_SEM_CAPA)
+      .eq('slug', slug)
+      .eq('activo', true)
+      .maybeSingle());
+  }
+
+  if (data) return comCapa(data);
 
   // A página inicial mostra este cardápio como exemplo vivo. Continua a
   // responder mesmo com o Supabase ligado — mas só enquanto ninguém
@@ -118,15 +152,25 @@ export async function obterRestauranteDoDono(): Promise<Restaurante | null> {
   } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const { data } = await supabase
+  let { data, error } = await supabase
     .from('restaurants')
-    .select('id, nome, slug, logo_url, capa_url, whatsapp, cor_marca, plano, activo')
+    .select(COLUNAS_RESTAURANTE)
     .eq('owner_id', user.id)
     .order('created_at', { ascending: true })
     .limit(1)
     .maybeSingle();
 
-  return (data as Restaurante | null) ?? null;
+  if (error && faltaAColunaDaCapa(error)) {
+    ({ data } = await supabase
+      .from('restaurants')
+      .select(COLUNAS_RESTAURANTE_SEM_CAPA)
+      .eq('owner_id', user.id)
+      .order('created_at', { ascending: true })
+      .limit(1)
+      .maybeSingle());
+  }
+
+  return data ? comCapa(data) : null;
 }
 
 export async function obterMesas(restaurantId: string): Promise<Mesa[]> {
