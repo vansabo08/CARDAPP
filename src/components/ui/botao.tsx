@@ -24,9 +24,9 @@ const botaoVariantes = cva(
         'discreto-escuro': 'bg-transparent text-tenue-escuro hover:text-grafite',
       },
       tamanho: {
-        sm: 'h-9 px-4 text-[13px]',
-        md: 'h-11 px-5 text-[14px]',
-        lg: 'h-[54px] px-8 text-[15px]',
+        sm: 'h-9 px-4 text-xs',
+        md: 'h-11 px-5 text-sm',
+        lg: 'h-[54px] px-8 text-sm',
         icone: 'h-11 w-11 p-0',
         'icone-sm': 'h-8 w-8 p-0',
       },

@@ -52,11 +52,11 @@ export async function Prova() {
           <Revelar>
             <span className="etiqueta text-ouro-fundo">Prova</span>
 
-            <h2 className="mt-5 max-w-[20ch] text-balance font-display text-[34px] leading-[1.08] text-creme md:text-[44px]">
+            <h2 className="mt-5 max-w-[20ch] text-balance font-display text-3xl leading-none text-creme md:text-4xl">
               Não lhe mostramos elogios que ainda não recebemos.
             </h2>
 
-            <p className="mt-6 max-w-[52ch] text-pretty font-sans text-[16px] leading-[1.68] text-tenue">
+            <p className="mt-6 max-w-[52ch] text-pretty font-sans text-base leading-relaxed text-tenue">
               O Cardapp é novo e ainda está a juntar as primeiras casas. Em vez de testemunhos,
               fica aqui o produto a trabalhar
               {qr
@@ -65,7 +65,7 @@ export async function Prova() {
             </p>
 
             {qr ? (
-              <p className="mt-4 max-w-[52ch] text-pretty font-sans text-[15px] leading-[1.65] text-tenue">
+              <p className="mt-4 max-w-[52ch] text-pretty font-sans text-sm leading-relaxed text-tenue">
                 É o mesmo cartão que o Cardapp imprime para as suas mesas, gerado pelo mesmo código.
               </p>
             ) : null}
@@ -96,7 +96,7 @@ export async function Prova() {
                   className="mt-4 h-auto w-full rounded-[6px]"
                 />
 
-                <p className="mt-4 text-center text-pretty font-sans text-[12.5px] leading-[1.5] text-grafite/60">
+                <p className="mt-4 text-center text-pretty font-sans text-xs leading-normal text-grafite/60">
                   Aponte a câmara. O cardápio abre sem instalar nada.
                 </p>
               </figure>

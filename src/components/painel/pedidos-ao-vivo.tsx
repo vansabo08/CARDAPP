@@ -123,7 +123,7 @@ export function PedidosAoVivo({
       <div className="mt-8 flex flex-wrap items-center gap-3">
         <span
           className={cn(
-            'inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 font-sans text-[13px]',
+            'inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 font-sans text-xs',
             ligado ? 'border-verde/40 text-verde' : 'border-linha text-tenue',
           )}
         >
@@ -138,7 +138,7 @@ export function PedidosAoVivo({
 
         {somSuportado() ? (
           somLigado ? (
-            <span className="inline-flex items-center gap-2 rounded-full border border-linha px-3.5 py-1.5 font-sans text-[13px] text-tenue">
+            <span className="inline-flex items-center gap-2 rounded-full border border-linha px-3.5 py-1.5 font-sans text-xs text-tenue">
               <Bell className="h-3.5 w-3.5" />
               O som está ligado
             </span>
@@ -146,14 +146,14 @@ export function PedidosAoVivo({
             <button
               type="button"
               onClick={ligarSom}
-              className="inline-flex items-center gap-2 rounded-full border border-ouro/50 bg-ouro/[0.08] px-3.5 py-1.5 font-sans text-[13px] font-semibold text-ouro transition-colors duration-200 hover:bg-ouro/[0.14]"
+              className="inline-flex items-center gap-2 rounded-full border border-ouro/50 bg-ouro/[0.08] px-3.5 py-1.5 font-sans text-xs font-semibold text-ouro transition-colors duration-200 hover:bg-ouro/[0.14]"
             >
               <Volume2 className="h-3.5 w-3.5" />
               Ligar o som dos pedidos
             </button>
           )
         ) : (
-          <span className="inline-flex items-center gap-2 rounded-full border border-linha px-3.5 py-1.5 font-sans text-[13px] text-tenue">
+          <span className="inline-flex items-center gap-2 rounded-full border border-linha px-3.5 py-1.5 font-sans text-xs text-tenue">
             <BellOff className="h-3.5 w-3.5" />
             Este aparelho não toca som
           </span>
@@ -161,7 +161,7 @@ export function PedidosAoVivo({
       </div>
 
       {!somLigado && somSuportado() ? (
-        <p className="mt-3 max-w-[60ch] font-sans text-[13px] leading-[1.6] text-tenue">
+        <p className="mt-3 max-w-[60ch] font-sans text-xs leading-normal text-tenue">
           O browser só deixa tocar som depois de alguém carregar uma vez. Ligue aqui no início do
           serviço e o aparelho avisa sempre que cair um pedido.
         </p>
@@ -172,8 +172,8 @@ export function PedidosAoVivo({
       {/* ------------------------------------------------------------ */}
       {porEstado.abertos.length === 0 && porEstado.fechados.length === 0 ? (
         <div className="vidro mt-10 rounded-cartao px-7 py-14 text-center">
-          <p className="font-display text-[22px] text-creme">Nenhum pedido por agora.</p>
-          <p className="mx-auto mt-3 max-w-[42ch] font-sans text-[15px] leading-[1.6] text-tenue">
+          <p className="font-display text-xl text-creme">Nenhum pedido por agora.</p>
+          <p className="mx-auto mt-3 max-w-[42ch] font-sans text-sm leading-normal text-tenue">
             Deixe este ecrã aberto. Assim que alguém enviar um pedido, ele cai aqui e o aparelho
             toca.
           </p>
@@ -190,7 +190,7 @@ export function PedidosAoVivo({
 
       {porEstado.fechados.length ? (
         <details className="mt-10 border-t border-linha pt-6">
-          <summary className="cursor-pointer font-sans text-[14px] text-tenue transition-colors hover:text-creme">
+          <summary className="cursor-pointer font-sans text-sm text-tenue transition-colors hover:text-creme">
             Fechados hoje ({porEstado.fechados.length})
           </summary>
           <ul className="mt-5 flex flex-col gap-3 opacity-60">
@@ -247,19 +247,19 @@ function CartaoPedido({
     <li className={cn('rounded-cartao border p-5 transition-colors duration-500 ease-calmo', TOM[pedido.estado])}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="font-display text-[20px] leading-tight text-creme">
+          <p className="font-display text-xl leading-tight text-creme">
             {pedido.mesa != null ? `Mesa ${pedido.mesa}` : 'Sem mesa'}
           </p>
-          <p className="mt-1 font-sans text-[13px] text-tenue">
+          <p className="mt-1 font-sans text-xs text-tenue">
             {hAQuantoTempo(pedido.created_at)} · {ROTULO_PAINEL[pedido.estado]}
           </p>
         </div>
-        <p className="font-display text-[22px] text-ouro">{formatarKz(pedido.total)}</p>
+        <p className="font-display text-xl text-ouro">{formatarKz(pedido.total)}</p>
       </div>
 
       <ul className="mt-4 flex flex-col gap-1.5 border-t border-linha pt-4">
         {pedido.itens.map((item, i) => (
-          <li key={`${item.nome}-${i}`} className="font-sans text-[14px] leading-snug text-creme/90">
+          <li key={`${item.nome}-${i}`} className="font-sans text-sm leading-snug text-creme/90">
             {item.qtd}x {item.nome}
             {item.obs ? <span className="text-tenue"> — {item.obs}</span> : null}
           </li>
@@ -267,7 +267,7 @@ function CartaoPedido({
       </ul>
 
       {erro ? (
-        <p role="alert" className="mt-4 font-sans text-[13px] text-[#e0655a]">
+        <p role="alert" className="mt-4 font-sans text-xs text-[#e0655a]">
           {erro}
         </p>
       ) : null}

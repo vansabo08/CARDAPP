@@ -90,12 +90,12 @@ export function TabelaContas({ contas }: { contas: ContaAdmin[] }) {
           aria-label="Procurar conta"
           className="w-full sm:w-[340px]"
         />
-        <span className="font-sans text-[13px] text-tenue">
+        <span className="font-sans text-xs text-tenue">
           {filtradas.length} de {lista.length}
         </span>
       </div>
 
-      {erro ? <p className="mt-4 font-sans text-[13px] text-[#e0655a]">{erro}</p> : null}
+      {erro ? <p className="mt-4 font-sans text-xs text-[#e0655a]">{erro}</p> : null}
 
       <div className="mt-6 flex flex-col gap-3">
         {filtradas.map((conta) => (
@@ -110,11 +110,11 @@ export function TabelaContas({ contas }: { contas: ContaAdmin[] }) {
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2.5">
-                  <h3 className="font-display text-[21px] text-creme">{conta.nome}</h3>
+                  <h3 className="font-display text-xl text-creme">{conta.nome}</h3>
                   {!conta.activo ? <Distintivo tom="linha">Desligado</Distintivo> : null}
                 </div>
 
-                <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 font-sans text-[13px] text-tenue">
+                <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 font-sans text-xs text-tenue">
                   <a
                     href={`/${conta.slug}`}
                     target="_blank"
@@ -129,7 +129,7 @@ export function TabelaContas({ contas }: { contas: ContaAdmin[] }) {
               </div>
 
               <label className="flex shrink-0 items-center gap-2.5">
-                <span className="font-sans text-[13px] text-tenue">
+                <span className="font-sans text-xs text-tenue">
                   {conta.activo ? 'No ar' : 'Fora do ar'}
                 </span>
                 <Interruptor
@@ -148,13 +148,13 @@ export function TabelaContas({ contas }: { contas: ContaAdmin[] }) {
                 <Numero rotulo="Pedidos (30 d)" valor={conta.pedidos30Dias} />
                 <div>
                   <dt className="etiqueta text-tenue">Última entrada</dt>
-                  <dd className="mt-1 font-sans text-[14px] text-creme">
+                  <dd className="mt-1 font-sans text-sm text-creme">
                     {haQuantoTempo(conta.ultimaEntrada)}
                   </dd>
                 </div>
                 <div>
                   <dt className="etiqueta text-tenue">Desde</dt>
-                  <dd className="mt-1 font-sans text-[14px] text-creme">
+                  <dd className="mt-1 font-sans text-sm text-creme">
                     {dataCurta(conta.criadoEm)}
                   </dd>
                 </div>
@@ -168,7 +168,7 @@ export function TabelaContas({ contas }: { contas: ContaAdmin[] }) {
                     disabled={ocupado === conta.id}
                     onClick={() => trocarPlano(conta, plano)}
                     className={cn(
-                      'rounded-full px-3.5 py-1.5 font-sans text-[13px] font-semibold transition-colors duration-200',
+                      'rounded-full px-3.5 py-1.5 font-sans text-xs font-semibold transition-colors duration-200',
                       conta.plano === plano
                         ? 'bg-ouro text-grafite'
                         : 'text-tenue hover:text-creme disabled:pointer-events-none',
@@ -184,7 +184,7 @@ export function TabelaContas({ contas }: { contas: ContaAdmin[] }) {
       </div>
 
       {!filtradas.length ? (
-        <p className="vidro mt-6 rounded-cartao px-6 py-14 text-center font-sans text-[15px] text-tenue">
+        <p className="vidro mt-6 rounded-cartao px-6 py-14 text-center font-sans text-sm text-tenue">
           {lista.length ? 'Nada corresponde a essa procura.' : 'Ainda não há contas registadas.'}
         </p>
       ) : null}
@@ -196,7 +196,7 @@ function Numero({ rotulo, valor }: { rotulo: string; valor: number }) {
   return (
     <div>
       <dt className="etiqueta text-tenue">{rotulo}</dt>
-      <dd className="mt-1 font-sans text-[18px] font-bold tabular-nums text-creme">{valor}</dd>
+      <dd className="mt-1 font-sans text-lg font-bold tabular-nums text-creme">{valor}</dd>
     </div>
   );
 }

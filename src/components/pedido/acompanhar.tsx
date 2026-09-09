@@ -78,14 +78,14 @@ export function Acompanhar({ inicial }: { inicial: PedidoPublico }) {
     <div className="mx-auto w-full max-w-[560px] px-5 py-10 md:py-14">
       <header className="text-center">
         <span className="etiqueta text-ouro-fundo">{pedido.restaurante}</span>
-        <h1 className="mt-4 text-balance font-display text-[34px] leading-[1.1] text-creme md:text-[42px]">
+        <h1 className="mt-4 text-balance font-display text-3xl leading-none text-creme md:text-4xl">
           {ROTULO_CLIENTE[pedido.estado]}
         </h1>
-        <p className="mt-3 text-pretty font-sans text-[15px] leading-[1.6] text-tenue">
+        <p className="mt-3 text-pretty font-sans text-sm leading-normal text-tenue">
           {EXPLICACAO_CLIENTE[pedido.estado]}
         </p>
         {pedido.mesa != null ? (
-          <p className="mt-2 font-sans text-[14px] text-tenue">Mesa {pedido.mesa}</p>
+          <p className="mt-2 font-sans text-sm text-tenue">Mesa {pedido.mesa}</p>
         ) : null}
       </header>
 
@@ -95,9 +95,15 @@ export function Acompanhar({ inicial }: { inicial: PedidoPublico }) {
       {cancelado ? null : (
         <div className="mt-10" aria-hidden>
           <div className="h-[3px] w-full overflow-hidden rounded-full bg-white/[0.08]">
+            {/*
+              Nunca a zero. No primeiro estado o cálculo dá 0% e a barra
+              desaparecia — e uma barra vazia não se lê como "acabou de
+              chegar", lê-se como avaria. Fica um traço curto, que também
+              dá de onde crescer quando o estado avançar.
+            */}
             <div
               className="h-full rounded-full bg-ouro transition-[width] duration-700 ease-calmo"
-              style={{ width: `${Math.round(avanco * 100)}%` }}
+              style={{ width: `${Math.max(6, Math.round(avanco * 100))}%` }}
             />
           </div>
 
@@ -108,8 +114,8 @@ export function Acompanhar({ inicial }: { inicial: PedidoPublico }) {
                 <li
                   key={estado}
                   className={cn(
-                    'font-sans text-[11px] transition-colors duration-500 ease-calmo',
-                    feito ? 'text-creme' : 'text-tenue/50',
+                    'font-sans text-xs transition-colors duration-500 ease-calmo',
+                    feito ? 'text-creme' : 'text-creme/30',
                   )}
                 >
                   {ROTULO_CURTO[estado]}
@@ -136,16 +142,16 @@ export function Acompanhar({ inicial }: { inicial: PedidoPublico }) {
           {pedido.itens.map((item, i) => (
             <li key={`${item.nome}-${i}`} className="flex items-start justify-between gap-4">
               <span className="min-w-0">
-                <span className="block font-display text-[16px] leading-snug text-creme">
+                <span className="block font-display text-base leading-snug text-creme">
                   {item.qtd}x {item.nome}
                 </span>
                 {item.obs ? (
-                  <span className="mt-0.5 block font-sans text-[13px] leading-snug text-tenue">
+                  <span className="mt-0.5 block font-sans text-xs leading-snug text-tenue">
                     {item.obs}
                   </span>
                 ) : null}
               </span>
-              <span className="shrink-0 font-sans text-[14px] text-tenue">
+              <span className="shrink-0 font-sans text-sm text-tenue">
                 {formatarKz(item.preco * item.qtd)}
               </span>
             </li>
@@ -153,12 +159,12 @@ export function Acompanhar({ inicial }: { inicial: PedidoPublico }) {
         </ul>
 
         <div className="mt-6 flex items-center justify-between border-t border-linha pt-5">
-          <span className="font-sans text-[14px] text-tenue">Total</span>
-          <span className="font-display text-[22px] text-ouro">{formatarKz(pedido.total)}</span>
+          <span className="font-sans text-sm text-tenue">Total</span>
+          <span className="font-display text-xl text-ouro">{formatarKz(pedido.total)}</span>
         </div>
       </section>
 
-      <p className="mt-8 text-center text-pretty font-sans text-[13px] leading-[1.6] text-tenue">
+      <p className="mt-8 text-center text-pretty font-sans text-xs leading-normal text-tenue">
         {acabou
           ? 'Este pedido está fechado.'
           : 'Esta página actualiza-se sozinha. Pode deixá-la aberta.'}
@@ -167,7 +173,7 @@ export function Acompanhar({ inicial }: { inicial: PedidoPublico }) {
       <div className="mt-6 text-center">
         <Link
           href={`/${pedido.restaurante_slug}${pedido.mesa != null ? `?mesa=${pedido.mesa}` : ''}`}
-          className="font-sans text-[14px] text-creme underline underline-offset-4"
+          className="font-sans text-sm text-creme underline underline-offset-4"
         >
           Voltar ao cardápio
         </Link>

@@ -25,10 +25,10 @@ export function AvisoDemonstracao({ className }: { className?: string }) {
       )}
     >
       <span className="etiqueta text-[#e0655a]">Modo de demonstração</span>
-      <span className="font-sans text-[13px] leading-snug text-creme/80">
+      <span className="font-sans text-xs leading-snug text-creme/80">
         O Supabase não está ligado — nenhum pedido é gravado.
       </span>
-      <span className="font-sans text-[12.5px] text-tenue">
+      <span className="font-sans text-xs text-tenue">
         Faltam <code className="font-mono">NEXT_PUBLIC_SUPABASE_URL</code> e{' '}
         <code className="font-mono">NEXT_PUBLIC_SUPABASE_ANON_KEY</code>.
       </span>

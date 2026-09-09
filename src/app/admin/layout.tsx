@@ -35,7 +35,7 @@ export default async function LayoutAdmin({ children }: { children: React.ReactN
           </div>
           <Link
             href="/painel"
-            className="font-sans text-[14px] text-tenue transition-colors hover:text-creme"
+            className="font-sans text-sm text-tenue transition-colors hover:text-creme"
           >
             Voltar ao painel
           </Link>

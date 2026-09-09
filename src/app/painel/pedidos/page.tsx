@@ -61,10 +61,10 @@ export default async function PaginaPedidos() {
 
       {soWhatsApp ? (
         <div className="vidro mt-8 rounded-cartao p-6">
-          <p className="font-display text-[19px] text-creme">
+          <p className="font-display text-lg text-creme">
             Esta casa está a receber pedidos pelo WhatsApp.
           </p>
-          <p className="mt-2.5 max-w-[62ch] font-sans text-[14.5px] leading-[1.6] text-tenue">
+          <p className="mt-2.5 max-w-[62ch] font-sans text-sm leading-normal text-tenue">
             Os pedidos ficam aqui registados na mesma, mas o cliente não vê o estado a mudar e este
             ecrã não toca. Para lhe dar acompanhamento em tempo real, mude a forma de receber nas
             definições.

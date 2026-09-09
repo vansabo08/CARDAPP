@@ -111,12 +111,12 @@ export function GestorMesas({
       </div>
 
       {cheio ? (
-        <p className="mt-4 font-sans text-[13.5px] text-tenue">
+        <p className="mt-4 font-sans text-xs text-tenue">
           O plano Balcão dá direito a uma mesa. O plano Mesa não tem limite.
         </p>
       ) : null}
       {demonstracao ? (
-        <p className="mt-4 font-sans text-[13.5px] text-tenue">
+        <p className="mt-4 font-sans text-xs text-tenue">
           Estes QR apontam para <span className="text-creme">{base}</span> — mude o endereço em
           NEXT_PUBLIC_SITE_URL antes de imprimir a sério.
         </p>
@@ -136,7 +136,7 @@ export function GestorMesas({
       </div>
 
       {!mesas.length ? (
-        <p className="vidro mt-10 rounded-cartao px-6 py-12 text-center font-sans text-[15px] text-tenue">
+        <p className="vidro mt-10 rounded-cartao px-6 py-12 text-center font-sans text-sm text-tenue">
           Ainda não há mesas. Junte as que tem na sala e imprima os cartões.
         </p>
       ) : null}
@@ -218,14 +218,14 @@ function CartaoMesaQr({
         )}
       </div>
 
-      <p className="mt-3 font-display text-[19px] text-creme">Mesa {numeroMesa(mesa.numero)}</p>
+      <p className="mt-3 font-display text-lg text-creme">Mesa {numeroMesa(mesa.numero)}</p>
 
       <div className="mt-1.5 flex items-center gap-3">
         <button
           type="button"
           onClick={guardarCodigo}
           disabled={aGuardar || !qr}
-          className="font-sans text-[11.5px] text-tenue underline underline-offset-4 transition-colors hover:text-creme disabled:opacity-50"
+          className="font-sans text-xs text-tenue underline underline-offset-4 transition-colors hover:text-creme disabled:opacity-50"
         >
           {aGuardar ? 'a guardar…' : 'guardar PNG'}
         </button>
@@ -236,7 +236,7 @@ function CartaoMesaQr({
           href={url}
           target="_blank"
           rel="noreferrer"
-          className="max-w-full truncate font-sans text-[11.5px] text-tenue underline underline-offset-4 hover:text-creme"
+          className="max-w-full truncate font-sans text-xs text-tenue underline underline-offset-4 hover:text-creme"
         >
           abrir ↗
         </a>

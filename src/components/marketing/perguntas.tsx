@@ -58,10 +58,10 @@ export function Perguntas() {
         <div className="grid gap-12 md:grid-cols-[minmax(0,340px)_1fr] md:gap-16">
           <Revelar>
             <span className="etiqueta text-ouro-fundo">Perguntas</span>
-            <h2 className="mt-5 text-balance font-display text-[34px] leading-[1.08] text-creme md:text-[44px]">
+            <h2 className="mt-5 text-balance font-display text-3xl leading-none text-creme md:text-4xl">
               O que costumam querer saber.
             </h2>
-            <p className="mt-5 max-w-[34ch] text-pretty font-sans text-[15px] leading-[1.65] text-tenue">
+            <p className="mt-5 max-w-[34ch] text-pretty font-sans text-sm leading-relaxed text-tenue">
               Se ficar alguma por responder, escreva. Respondemos pelo mesmo sítio por onde os
               pedidos chegam.
             </p>
@@ -75,7 +75,7 @@ export function Perguntas() {
                     className="flex cursor-pointer list-none items-start justify-between gap-6 py-6 outline-none transition-colors duration-200 ease-calmo hover:text-creme focus-visible:ring-2 focus-visible:ring-ouro/60"
                     // O marcador nativo some, e o sinal fica a cargo do traço.
                   >
-                    <dt className="text-pretty font-display text-[19px] leading-[1.3] text-creme md:text-[21px]">
+                    <dt className="text-pretty font-display text-lg leading-tight text-creme md:text-xl">
                       {pergunta}
                     </dt>
                     <span
@@ -86,7 +86,7 @@ export function Perguntas() {
                       <span className="absolute left-1/2 top-0 h-full w-[1.5px] -translate-x-1/2 bg-current transition-transform duration-300 ease-calmo group-open:scale-y-0" />
                     </span>
                   </summary>
-                  <dd className="max-w-[62ch] pb-7 pr-8 text-pretty font-sans text-[15px] leading-[1.68] text-tenue">
+                  <dd className="max-w-[62ch] pb-7 pr-8 text-pretty font-sans text-sm leading-relaxed text-tenue">
                     {resposta}
                   </dd>
                 </details>

@@ -62,7 +62,7 @@ export function Doca({ itens, className }: { itens: ItemDoca[]; className?: stri
                 aria-hidden
                 className={cn(
                   'pointer-events-none absolute -top-9 whitespace-nowrap rounded-full border border-linha',
-                  'bg-grafite px-2.5 py-1 font-sans text-[11px] font-semibold text-creme',
+                  'bg-grafite px-2.5 py-1 font-sans text-xs font-semibold text-creme',
                   'opacity-0 transition-opacity duration-200 ease-calmo',
                   'group-hover:opacity-100 group-focus-visible:opacity-100',
                 )}

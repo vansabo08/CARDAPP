@@ -45,7 +45,7 @@ export function EcraCardapio() {
           <div className="flex items-end gap-3">
             <div className="min-w-0 flex-1">
               <p className="etiqueta text-ouro">Cardápio</p>
-              <p className="ouro-display mt-2 font-display text-[34px] leading-[1.04] tracking-[-0.02em]">
+              <p className="ouro-display mt-2 font-display text-3xl leading-none tracking-[-0.02em]">
                 Tia Bela
               </p>
             </div>
@@ -67,7 +67,7 @@ export function EcraCardapio() {
             <span
               key={c}
               className={cn(
-                'shrink-0 whitespace-nowrap rounded-full px-4 py-2 font-sans text-[13px] font-semibold',
+                'shrink-0 whitespace-nowrap rounded-full px-4 py-2 font-sans text-xs font-semibold',
                 i === 1
                   ? 'bg-grafite-carta text-creme'
                   : 'border border-linha-escura text-tenue-escuro',
@@ -79,7 +79,7 @@ export function EcraCardapio() {
         </div>
         <div className="h-px bg-linha-escura" />
 
-        <p className="px-5 pt-6 font-sans text-[19px] font-extrabold tracking-[-0.02em]">
+        <p className="px-5 pt-6 font-sans text-lg font-extrabold tracking-[-0.02em]">
           Mais pedidos
         </p>
 
@@ -93,13 +93,13 @@ export function EcraCardapio() {
                 <Image src={prato.foto} alt="" fill sizes="256px" className="object-cover" />
               </span>
               <span className="block px-3.5 pb-3.5 pt-3">
-                <span className="block truncate font-display text-[15px] leading-tight text-creme">
+                <span className="block truncate font-display text-sm leading-tight text-creme">
                   {prato.nome}
                 </span>
-                <span className="mt-0.5 block truncate font-sans text-[11.5px] text-tenue">
+                <span className="mt-0.5 block truncate font-sans text-xs text-tenue">
                   {prato.desc}
                 </span>
-                <span className="mt-2 block font-sans text-[16px] font-extrabold tracking-[-0.02em] text-creme">
+                <span className="mt-2 block font-sans text-base font-extrabold tracking-[-0.02em] text-creme">
                   {formatarKz(prato.preco)}
                 </span>
               </span>
@@ -107,7 +107,7 @@ export function EcraCardapio() {
           ))}
         </div>
 
-        <p className="px-5 pt-7 font-sans text-[19px] font-extrabold tracking-[-0.02em]">
+        <p className="px-5 pt-7 font-sans text-lg font-extrabold tracking-[-0.02em]">
           Grelhados
         </p>
 
@@ -118,17 +118,17 @@ export function EcraCardapio() {
                 <Image src={prato.foto} alt="" fill sizes="128px" className="object-cover" />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block truncate font-display text-[17px] leading-snug">
+                <span className="block truncate font-display text-base leading-snug">
                   {prato.nome}
                 </span>
-                <span className="mt-1 block truncate font-sans text-[13px] text-tenue-escuro">
+                <span className="mt-1 block truncate font-sans text-xs text-tenue-escuro">
                   {prato.desc}
                 </span>
-                <span className="mt-1.5 block font-sans text-[15.5px] font-extrabold tracking-[-0.02em]">
+                <span className="mt-1.5 block font-sans text-sm font-extrabold tracking-[-0.02em]">
                   {formatarKz(prato.preco)}
                 </span>
               </span>
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-grafite-carta text-[19px] leading-none text-creme">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-grafite-carta text-lg leading-none text-creme">
                 +
               </span>
             </div>
@@ -140,19 +140,19 @@ export function EcraCardapio() {
       <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-grafite via-grafite/92 to-transparent px-4 pb-6 pt-8">
         <div className="flex items-center gap-2.5">
           <div className="flex min-w-0 flex-1 items-center gap-3 rounded-full border border-linha bg-grafite-alto py-2.5 pl-2.5 pr-4">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ouro font-sans text-[14px] font-bold text-grafite">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ouro font-sans text-sm font-bold text-grafite">
               6
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block font-sans text-[10.5px] uppercase tracking-[0.14em] text-tenue">
+              <span className="block font-sans text-xs uppercase tracking-[0.14em] text-tenue">
                 Ver pedido
               </span>
-              <span className="block font-sans text-[16px] font-bold text-creme">
+              <span className="block font-sans text-base font-bold text-creme">
                 {formatarKz(16300)}
               </span>
             </span>
           </div>
-          <span className="flex h-[54px] shrink-0 items-center rounded-full bg-verde px-8 font-sans text-[15px] font-semibold text-white">
+          <span className="flex h-[54px] shrink-0 items-center rounded-full bg-verde px-8 font-sans text-sm font-semibold text-white">
             Enviar pedido
           </span>
         </div>
@@ -216,12 +216,12 @@ export function CartaoMesa({ numero = 7, nome = 'Tia Bela' }: { numero?: number;
   return (
     <div className="relative w-full max-w-[248px] overflow-hidden rounded-cartao bg-creme-folha px-7 py-8 text-center text-grafite shadow-cartao">
       <MarcaSimbolo className="mx-auto h-5 w-5 text-grafite/70" />
-      <p className="mt-3 font-display text-[21px] leading-none">{nome}</p>
+      <p className="mt-3 font-display text-xl leading-none">{nome}</p>
       <div className="my-6 flex justify-center">
         <QrDecorativo tamanho={116} seed={numero} />
       </div>
       <p className="etiqueta text-tenue-escuro">Scaneie para ver o cardápio</p>
-      <p className="mt-3 font-display text-[30px] leading-none">
+      <p className="mt-3 font-display text-3xl leading-none">
         Mesa {String(numero).padStart(2, '0')}
       </p>
     </div>
@@ -247,21 +247,21 @@ export function EcraWhatsApp() {
   return (
     <div className="relative h-full w-full bg-[#0b141a]">
       <div className="flex items-center gap-3 border-b border-white/[0.06] bg-[#111b21] px-4 pb-3 pt-14">
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-verde/20 font-display text-[15px] text-verde">
+        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-verde/20 font-display text-sm text-verde">
           TB
         </span>
         <div className="min-w-0">
-          <p className="truncate font-sans text-[15px] font-semibold text-[#e9edef]">Tia Bela</p>
-          <p className="font-sans text-[12px] text-[#8696a0]">online</p>
+          <p className="truncate font-sans text-sm font-semibold text-[#e9edef]">Tia Bela</p>
+          <p className="font-sans text-xs text-[#8696a0]">online</p>
         </div>
       </div>
 
       <div className="flex justify-end p-3.5">
         <div className="max-w-[92%] rounded-[14px] rounded-tr-[5px] bg-[#005c4b] px-3 py-2.5">
-          <pre className="whitespace-pre font-mono text-[9.5px] leading-[1.55] text-[#e9edef]">
+          <pre className="whitespace-pre font-mono text-xs leading-normal text-[#e9edef]">
             {MENSAGEM_EXEMPLO}
           </pre>
-          <p className="mt-1.5 text-right font-sans text-[10px] text-white/50">19:42 ✓✓</p>
+          <p className="mt-1.5 text-right font-sans text-xs text-white/50">19:42 ✓✓</p>
         </div>
       </div>
     </div>

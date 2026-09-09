@@ -77,7 +77,7 @@ export function NavegacaoPainel({
               onClick={() => setMenuAberto((aberto) => !aberto)}
               aria-expanded={menuAberto}
               aria-controls="menu-da-conta"
-              className="flex items-center gap-2 rounded-full border border-linha px-3 py-1.5 font-sans text-[13px] text-tenue transition-colors duration-200 hover:text-creme md:hidden"
+              className="flex items-center gap-2 rounded-full border border-linha px-3 py-1.5 font-sans text-xs text-tenue transition-colors duration-200 hover:text-creme md:hidden"
             >
               Conta
               <ChevronDown
@@ -96,9 +96,9 @@ export function NavegacaoPainel({
             className="flex flex-col gap-1 border-t border-linha px-4 py-3 md:hidden"
           >
             {nomeRestaurante ? (
-              <p className="truncate px-3.5 pb-2 font-display text-[17px] text-creme">
+              <p className="truncate px-3.5 pb-2 font-display text-base text-creme">
                 {nomeRestaurante}
-                <span className="mt-0.5 block font-sans text-[12px] text-tenue">
+                <span className="mt-0.5 block font-sans text-xs text-tenue">
                   Plano {NOME_PLANO[plano]}
                 </span>
               </p>
@@ -109,7 +109,7 @@ export function NavegacaoPainel({
                 href={`/${slug}`}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-full px-3.5 py-2.5 font-sans text-[14px] text-tenue transition-colors duration-200 hover:text-creme"
+                className="rounded-full px-3.5 py-2.5 font-sans text-sm text-tenue transition-colors duration-200 hover:text-creme"
               >
                 Ver o cardápio ↗
               </a>
@@ -117,7 +117,7 @@ export function NavegacaoPainel({
 
             <Link
               href="/"
-              className="rounded-full px-3.5 py-2.5 font-sans text-[14px] text-tenue transition-colors duration-200 hover:text-creme"
+              className="rounded-full px-3.5 py-2.5 font-sans text-sm text-tenue transition-colors duration-200 hover:text-creme"
             >
               Página inicial
             </Link>
@@ -125,7 +125,7 @@ export function NavegacaoPainel({
             {administrador ? (
               <Link
                 href="/admin"
-                className="rounded-full px-3.5 py-2.5 font-sans text-[14px] text-ouro transition-colors duration-200 hover:text-ouro-claro"
+                className="rounded-full px-3.5 py-2.5 font-sans text-sm text-ouro transition-colors duration-200 hover:text-ouro-claro"
               >
                 Administração
               </Link>
@@ -134,7 +134,7 @@ export function NavegacaoPainel({
             <button
               type="button"
               onClick={sair}
-              className="rounded-full px-3.5 py-2.5 text-left font-sans text-[14px] font-semibold text-creme transition-colors duration-200 hover:text-ouro"
+              className="rounded-full px-3.5 py-2.5 text-left font-sans text-sm font-semibold text-creme transition-colors duration-200 hover:text-ouro"
             >
               Sair da conta
             </button>
@@ -143,8 +143,8 @@ export function NavegacaoPainel({
 
         {nomeRestaurante ? (
           <div className="hidden px-6 pb-6 md:block">
-            <p className="truncate font-display text-[19px] text-creme">{nomeRestaurante}</p>
-            <p className="mt-1 font-sans text-[12.5px] text-tenue">Plano {NOME_PLANO[plano]}</p>
+            <p className="truncate font-display text-lg text-creme">{nomeRestaurante}</p>
+            <p className="mt-1 font-sans text-xs text-tenue">Plano {NOME_PLANO[plano]}</p>
           </div>
         ) : null}
 
@@ -156,7 +156,7 @@ export function NavegacaoPainel({
                 key={ligacao.href}
                 href={ligacao.href}
                 className={cn(
-                  'shrink-0 rounded-full px-3.5 py-2 font-sans text-[14px] font-semibold transition-colors duration-200 md:py-2.5',
+                  'shrink-0 rounded-full px-3.5 py-2 font-sans text-sm font-semibold transition-colors duration-200 md:py-2.5',
                   activa ? 'bg-white/[0.07] text-creme' : 'text-tenue hover:text-creme',
                 )}
               >
@@ -172,21 +172,21 @@ export function NavegacaoPainel({
               href={`/${slug}`}
               target="_blank"
               rel="noreferrer"
-              className="rounded-full px-3.5 py-2.5 font-sans text-[14px] text-tenue transition-colors duration-200 hover:text-creme"
+              className="rounded-full px-3.5 py-2.5 font-sans text-sm text-tenue transition-colors duration-200 hover:text-creme"
             >
               Ver o cardápio ↗
             </a>
           ) : null}
           <Link
             href="/"
-            className="rounded-full px-3.5 py-2.5 font-sans text-[14px] text-tenue transition-colors duration-200 hover:text-creme"
+            className="rounded-full px-3.5 py-2.5 font-sans text-sm text-tenue transition-colors duration-200 hover:text-creme"
           >
             Página inicial
           </Link>
           {administrador ? (
             <Link
               href="/admin"
-              className="rounded-full px-3.5 py-2.5 font-sans text-[14px] text-ouro transition-colors duration-200 hover:text-ouro-claro"
+              className="rounded-full px-3.5 py-2.5 font-sans text-sm text-ouro transition-colors duration-200 hover:text-ouro-claro"
             >
               Administração
             </Link>
@@ -194,7 +194,7 @@ export function NavegacaoPainel({
           <button
             type="button"
             onClick={sair}
-            className="rounded-full px-3.5 py-2.5 text-left font-sans text-[14px] text-tenue transition-colors duration-200 hover:text-creme"
+            className="rounded-full px-3.5 py-2.5 text-left font-sans text-sm text-tenue transition-colors duration-200 hover:text-creme"
           >
             Sair da conta
           </button>
@@ -240,9 +240,9 @@ export function CabecalhoPagina({
   return (
     <div className="flex flex-wrap items-start justify-between gap-4 border-b border-linha pb-7">
       <div>
-        <h1 className="font-display text-[30px] leading-tight text-creme md:text-[36px]">{titulo}</h1>
+        <h1 className="font-display text-3xl leading-tight text-creme md:text-4xl">{titulo}</h1>
         {descricao ? (
-          <p className="mt-2 max-w-[52ch] font-sans text-[15px] leading-[1.6] text-tenue">
+          <p className="mt-2 max-w-[52ch] font-sans text-sm leading-normal text-tenue">
             {descricao}
           </p>
         ) : null}

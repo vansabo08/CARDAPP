@@ -189,14 +189,14 @@ export function GestorCardapio({
   return (
     <div>
       {demonstracao ? (
-        <p className="mt-8 rounded-cartao border border-ouro/30 bg-ouro/[0.06] px-4 py-3 font-sans text-[13.5px] leading-[1.55] text-ouro">
+        <p className="mt-8 rounded-cartao border border-ouro/30 bg-ouro/[0.06] px-4 py-3 font-sans text-xs leading-normal text-ouro">
           Modo de demonstração: pode mexer à vontade, mas as alterações não são gravadas enquanto o
           Supabase não estiver ligado.
         </p>
       ) : null}
 
       {atingiuLimite ? (
-        <p className="vidro-leve mt-6 rounded-cartao px-4 py-3 font-sans text-[13.5px] leading-[1.55] text-tenue">
+        <p className="vidro-leve mt-6 rounded-cartao px-4 py-3 font-sans text-xs leading-normal text-tenue">
           O plano Balcão vai até {limites.pratos} pratos e já lá chegou. Mude para o plano Mesa para
           continuar a acrescentar.
         </p>
@@ -220,7 +220,7 @@ export function GestorCardapio({
               <span
                 aria-hidden
                 title="Arraste para reordenar"
-                className="flex h-9 w-7 cursor-grab items-center justify-center text-[15px] leading-none text-tenue transition-colors hover:text-creme active:cursor-grabbing"
+                className="flex h-9 w-7 cursor-grab items-center justify-center text-sm leading-none text-tenue transition-colors hover:text-creme active:cursor-grabbing"
               >
                 ⠿
               </span>
@@ -231,7 +231,7 @@ export function GestorCardapio({
                 value={categoria.nome}
                 onChange={(e) => mudarNome(categoria.id, e.target.value)}
                 aria-label="Nome da categoria"
-                className="min-w-0 flex-1 rounded-campo border border-transparent bg-transparent px-2 py-1 font-display text-[21px] text-creme outline-none transition-colors duration-200 hover:border-linha focus:border-ouro/50 focus:bg-white/[0.04]"
+                className="min-w-0 flex-1 rounded-campo border border-transparent bg-transparent px-2 py-1 font-display text-xl text-creme outline-none transition-colors duration-200 hover:border-linha focus:border-ouro/50 focus:bg-white/[0.04]"
               />
 
               <span className="etiqueta shrink-0 rounded-full border border-linha px-2.5 py-1 tabular-nums text-tenue">
@@ -267,7 +267,7 @@ export function GestorCardapio({
                 coisa que não se desfaz. */}
             {aApagar === categoria.id ? (
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-linha bg-[#e0655a]/10 px-4 py-3">
-                <p className="font-sans text-[13.5px] leading-snug text-creme">
+                <p className="font-sans text-xs leading-snug text-creme">
                   Apagar <span className="font-semibold">{categoria.nome || 'esta categoria'}</span>
                   {categoria.itens.length > 0 ? (
                     <>
@@ -289,7 +289,7 @@ export function GestorCardapio({
                   <button
                     type="button"
                     onClick={() => removerCategoria(categoria.id)}
-                    className="rounded-full bg-[#e0655a] px-4 py-2 font-sans text-[13px] font-semibold text-grafite transition-opacity duration-200 hover:opacity-90"
+                    className="rounded-full bg-[#e0655a] px-4 py-2 font-sans text-xs font-semibold text-grafite transition-opacity duration-200 hover:opacity-90"
                   >
                     Apagar
                   </button>
@@ -331,25 +331,25 @@ export function GestorCardapio({
                       <span className="flex items-center gap-2">
                         <span
                           className={cn(
-                            'truncate font-display text-[17px] leading-snug text-creme',
+                            'truncate font-display text-base leading-snug text-creme',
                             !prato.disponivel && 'text-tenue line-through decoration-1',
                           )}
                         >
                           {prato.nome}
                         </span>
                         {!prato.disponivel ? (
-                          <span className="etiqueta shrink-0 rounded-full bg-white/[0.07] px-2 py-0.5 text-[9.5px] text-tenue">
+                          <span className="etiqueta shrink-0 rounded-full bg-white/[0.07] px-2 py-0.5 text-xs text-tenue">
                             Esgotado
                           </span>
                         ) : null}
                       </span>
 
                       {prato.descricao ? (
-                        <span className="mt-0.5 block truncate font-sans text-[12.5px] text-tenue">
+                        <span className="mt-0.5 block truncate font-sans text-xs text-tenue">
                           {prato.descricao}
                         </span>
                       ) : (
-                        <span className="mt-0.5 block font-sans text-xs text-tenue/70">
+                        <span className="mt-0.5 block font-sans text-xs text-creme/40">
                           sem descrição
                         </span>
                       )}
@@ -357,7 +357,7 @@ export function GestorCardapio({
 
                     <span
                       className={cn(
-                        'shrink-0 text-right font-sans text-[15px] font-extrabold tabular-nums tracking-[-0.02em]',
+                        'shrink-0 text-right font-sans text-sm font-extrabold tabular-nums tracking-[-0.02em]',
                         prato.disponivel ? 'text-creme' : 'text-tenue',
                       )}
                     >
@@ -366,7 +366,7 @@ export function GestorCardapio({
                   </button>
 
                   <label className="flex shrink-0 cursor-pointer items-center gap-2 pl-3">
-                    <span className="hidden font-sans text-[11.5px] text-tenue sm:block">
+                    <span className="hidden font-sans text-xs text-tenue sm:block">
                       {prato.disponivel ? 'Hoje há' : 'Esgotou'}
                     </span>
                     <Interruptor
@@ -380,7 +380,7 @@ export function GestorCardapio({
             </ul>
 
             {!categoria.itens.length ? (
-              <p className="px-4 py-6 text-center font-sans text-[13.5px] text-tenue">
+              <p className="px-4 py-6 text-center font-sans text-xs text-tenue">
                 Ainda sem pratos nesta categoria.
               </p>
             ) : null}
@@ -390,9 +390,9 @@ export function GestorCardapio({
                 type="button"
                 disabled={atingiuLimite}
                 onClick={() => setRascunho(RASCUNHO_VAZIO(categoria.id))}
-                className="flex w-full items-center gap-2.5 rounded-campo px-2 py-2 font-sans text-[13.5px] font-semibold text-tenue transition-colors duration-200 hover:bg-white/[0.05] hover:text-creme disabled:pointer-events-none disabled:opacity-40"
+                className="flex w-full items-center gap-2.5 rounded-campo px-2 py-2 font-sans text-xs font-semibold text-tenue transition-colors duration-200 hover:bg-white/[0.05] hover:text-creme disabled:pointer-events-none disabled:opacity-40"
               >
-                <span className="flex h-6 w-6 items-center justify-center rounded-full border border-linha text-[15px] leading-none">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full border border-linha text-sm leading-none">
                   +
                 </span>
                 Novo prato em {categoria.nome || 'esta categoria'}
@@ -457,7 +457,7 @@ function BotaoIcone({
       title={rotulo}
       onClick={onClick}
       disabled={desactivado}
-      className="flex h-8 w-8 items-center justify-center rounded-campo text-[15px] text-tenue transition-colors duration-200 hover:bg-white/[0.06] hover:text-creme disabled:pointer-events-none disabled:opacity-25"
+      className="flex h-8 w-8 items-center justify-center rounded-campo text-sm text-tenue transition-colors duration-200 hover:bg-white/[0.06] hover:text-creme disabled:pointer-events-none disabled:opacity-25"
     >
       {children}
     </button>
@@ -516,7 +516,7 @@ function FolhaPrato({
       claro={false}
     >
       <div className="flex min-h-0 flex-col overflow-y-auto px-5 pb-7 pt-2">
-        <h2 className="font-display text-[24px] text-creme">
+        <h2 className="font-display text-2xl text-creme">
           {dados.id ? 'Editar prato' : 'Novo prato'}
         </h2>
 
@@ -531,16 +531,16 @@ function FolhaPrato({
               type="file"
               accept="image/jpeg,image/png,image/webp,image/avif"
               onChange={escolherFoto}
-              className="block w-full font-sans text-[13px] text-tenue file:mr-3 file:rounded-campo file:border file:border-linha file:bg-transparent file:px-3 file:py-2 file:font-sans file:text-[13px] file:text-creme"
+              className="block w-full font-sans text-xs text-tenue file:mr-3 file:rounded-campo file:border file:border-linha file:bg-transparent file:px-3 file:py-2 file:font-sans file:text-xs file:text-creme"
             />
-            <p className="mt-2 font-sans text-[12.5px] text-tenue">
+            <p className="mt-2 font-sans text-xs text-tenue">
               {aEnviar ? 'A enviar…' : 'Sem foto, o cardápio mostra uma ilustração do prato.'}
             </p>
             {dados.foto_url ? (
               <button
                 type="button"
                 onClick={() => setDados((d) => (d ? { ...d, foto_url: null } : d))}
-                className="mt-2 font-sans text-[12.5px] text-tenue underline underline-offset-4 hover:text-creme"
+                className="mt-2 font-sans text-xs text-tenue underline underline-offset-4 hover:text-creme"
               >
                 Remover fotografia
               </button>
@@ -582,7 +582,7 @@ function FolhaPrato({
               placeholder="4500"
             />
             {dados.preco ? (
-              <p className="mt-2 font-sans text-[13px] text-tenue">
+              <p className="mt-2 font-sans text-xs text-tenue">
                 Aparece como{' '}
                 <span className="text-creme">
                   {formatarKz(Number(String(dados.preco).replace(',', '.')) || 0)}
@@ -593,10 +593,10 @@ function FolhaPrato({
 
           <label className="flex items-center justify-between rounded-cartao border border-linha px-4 py-3.5">
             <span>
-              <span className="block font-sans text-[14.5px] font-semibold text-creme">
+              <span className="block font-sans text-sm font-semibold text-creme">
                 Disponível hoje
               </span>
-              <span className="block font-sans text-[12.5px] text-tenue">
+              <span className="block font-sans text-xs text-tenue">
                 Se desligar, aparece esbatido e não pode ser pedido.
               </span>
             </span>

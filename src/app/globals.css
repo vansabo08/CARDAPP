@@ -17,6 +17,18 @@
     --creme: #faf7f2;
     --creme-folha: #fdfcfa;
 
+    /*
+     * Os mesmos canais, soltos, para o Tailwind poder aplicar opacidade.
+     *
+     * Uma cor declarada como `var(--creme)` já traz a cor inteira, e o
+     * modificador `/70` não tem onde entrar: a regra sai inválida e o
+     * browser deita-a fora em silêncio. O texto ficava a 100% sem
+     * ninguém dar por isso — foi o que aconteceu ao subtítulo do login,
+     * que media exactamente o mesmo contraste do título, e aos rótulos
+     * do percurso do pedido, que apareciam todos acesos.
+     */
+    --creme-canais: 250 247 242;
+
     --ouro: #d9b36b;
     --ouro-claro: #efd6a4;
     --ouro-fundo: #a8813e;

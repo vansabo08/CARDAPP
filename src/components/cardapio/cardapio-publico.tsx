@@ -267,7 +267,7 @@ export function CardapioPublico({
               <p className="etiqueta" style={{ color: cor }}>
                 Cardápio
               </p>
-              <h1 className="ouro-display mt-2 font-display text-[34px] leading-[1.04] tracking-[-0.02em] sm:text-[40px]">
+              <h1 className="ouro-display mt-2 font-display text-3xl leading-none tracking-[-0.02em] sm:text-4xl">
                 {restaurante.nome}
               </h1>
             </div>
@@ -316,7 +316,7 @@ export function CardapioPublico({
                   aria-selected={activaAgora}
                   onClick={() => irPara(categoria.id)}
                   className={cn(
-                    'shrink-0 whitespace-nowrap rounded-full px-4 py-2 font-sans text-[13px] font-semibold transition-colors duration-200',
+                    'shrink-0 whitespace-nowrap rounded-full px-4 py-2 font-sans text-xs font-semibold transition-colors duration-200',
                     activaAgora
                       ? 'bg-grafite-carta text-creme'
                       : 'border border-linha-escura text-tenue-escuro hover:border-grafite/22',
@@ -334,7 +334,7 @@ export function CardapioPublico({
         {destaques.length >= 3 ? (
           <section className="pt-7">
             <div className="mx-auto max-w-[600px] px-5">
-              <h2 className="font-sans text-[19px] font-extrabold tracking-[-0.02em] text-grafite">
+              <h2 className="font-sans text-lg font-extrabold tracking-[-0.02em] text-grafite">
                 Mais pedidos
               </h2>
             </div>
@@ -369,7 +369,7 @@ export function CardapioPublico({
               }}
               className="scroll-mt-28 pt-9"
             >
-              <h2 className="font-sans text-[19px] font-extrabold tracking-[-0.02em] text-grafite">
+              <h2 className="font-sans text-lg font-extrabold tracking-[-0.02em] text-grafite">
                 {categoria.nome}
               </h2>
 
@@ -415,14 +415,14 @@ export function CardapioPublico({
             onClick={() => setResumoAberto(true)}
             className="vidro flex min-w-0 flex-1 items-center gap-3 rounded-full py-2.5 pl-2.5 pr-4 text-left transition-colors duration-200 hover:border-creme/25"
           >
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ouro font-sans text-[14px] font-bold text-grafite">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ouro font-sans text-sm font-bold text-grafite">
               {carrinho.quantidadeTotal}
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block font-sans text-[10.5px] uppercase tracking-[0.14em] text-tenue">
+              <span className="block font-sans text-xs uppercase tracking-[0.14em] text-tenue">
                 Ver pedido
               </span>
-              <span className="block truncate font-sans text-[16px] font-bold text-creme">
+              <span className="block truncate font-sans text-base font-bold text-creme">
                 {formatarKz(carrinho.total)}
               </span>
             </span>
@@ -457,7 +457,7 @@ export function CardapioPublico({
       >
         <div className="flex min-h-0 flex-col overflow-y-auto px-5 pb-6 pt-2">
           <div className="flex items-baseline justify-between">
-            <h2 className="font-display text-[26px]">O seu pedido</h2>
+            <h2 className="font-display text-2xl">O seu pedido</h2>
             {mesa != null ? (
               <span className="etiqueta text-tenue-escuro">Mesa {numeroMesa(mesa)}</span>
             ) : null}
@@ -475,19 +475,19 @@ export function CardapioPublico({
 
           <div className="mt-6 flex items-baseline justify-between border-t border-linha-escura pt-5">
             <span className="etiqueta text-tenue-escuro">Total</span>
-            <span className="font-sans text-[24px] font-extrabold tracking-[-0.02em]">
+            <span className="font-sans text-2xl font-extrabold tracking-[-0.02em]">
               {formatarKz(carrinho.total)}
             </span>
           </div>
 
-          <p className="mt-3 font-sans text-[13px] text-tenue-escuro">
+          <p className="mt-3 font-sans text-xs text-tenue-escuro">
             {peloApp
               ? 'O pedido segue para o restaurante e pode acompanhá-lo aqui. O pagamento é feito na mesa.'
               : 'O pedido segue para o WhatsApp do restaurante. O pagamento é feito na mesa.'}
           </p>
 
           {falhou ? (
-            <p role="alert" className="mt-3 font-sans text-[13px] text-[#b4402f]">
+            <p role="alert" className="mt-3 font-sans text-xs text-[#b4402f]">
               {falhou}
             </p>
           ) : null}
@@ -531,15 +531,15 @@ function CartaoDestaque({ prato, aoAbrir }: { prato: Prato; aoAbrir: () => void 
         <FotoPrato nome={prato.nome} url={prato.foto_url} tamanhos="256px" />
       </span>
       <span className="block px-3.5 pb-3.5 pt-3">
-        <span className="line-clamp-2 min-h-[2.4em] font-display text-[15px] leading-[1.2] text-creme">
+        <span className="line-clamp-2 min-h-[2.4em] font-display text-sm leading-none text-creme">
           {prato.nome}
         </span>
         {prato.descricao ? (
-          <span className="mt-1 line-clamp-1 font-sans text-[11.5px] text-tenue">
+          <span className="mt-1 line-clamp-1 font-sans text-xs text-tenue">
             {prato.descricao}
           </span>
         ) : null}
-        <span className="mt-2 block font-sans text-[16px] font-extrabold tracking-[-0.02em] text-creme">
+        <span className="mt-2 block font-sans text-base font-extrabold tracking-[-0.02em] text-creme">
           {formatarKz(prato.preco)}
         </span>
       </span>
@@ -578,16 +578,16 @@ function LinhaPrato({
       </button>
 
       <button type="button" onClick={aoAbrir} disabled={esgotado} className="min-w-0 flex-1 text-left">
-        <p className="font-display text-[17px] leading-snug text-grafite">{prato.nome}</p>
+        <p className="font-display text-base leading-snug text-grafite">{prato.nome}</p>
         {prato.descricao ? (
-          <p className="mt-1 line-clamp-2 font-sans text-[13px] leading-[1.45] text-tenue-escuro">
+          <p className="mt-1 line-clamp-2 font-sans text-xs leading-snug text-tenue-escuro">
             {prato.descricao}
           </p>
         ) : null}
-        <p className="mt-1.5 font-sans text-[15.5px] font-extrabold tracking-[-0.02em] text-grafite">
+        <p className="mt-1.5 font-sans text-sm font-extrabold tracking-[-0.02em] text-grafite">
           {formatarKz(prato.preco)}
           {esgotado ? (
-            <span className="ml-2 font-sans text-[11px] font-semibold uppercase tracking-[0.12em] text-tenue-escuro">
+            <span className="ml-2 font-sans text-xs font-semibold uppercase tracking-[0.12em] text-tenue-escuro">
               esgotado
             </span>
           ) : null}
@@ -601,11 +601,11 @@ function LinhaPrato({
           aria-label={`Adicionar ${prato.nome}`}
           className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-grafite-carta text-creme transition-transform duration-[180ms] ease-calmo active:scale-90"
         >
-          <span className="text-[20px] leading-none">+</span>
+          <span className="text-xl leading-none">+</span>
           {quantidade > 0 ? (
             <span
               key={quantidade}
-              className="animate-marca absolute -right-1.5 -top-1.5 flex h-[24px] min-w-[24px] items-center justify-center rounded-full bg-ouro px-1.5 font-sans text-[12px] font-extrabold tabular-nums text-grafite ring-2 ring-creme-folha"
+              className="animate-marca absolute -right-1.5 -top-1.5 flex h-[24px] min-w-[24px] items-center justify-center rounded-full bg-ouro px-1.5 font-sans text-xs font-extrabold tabular-nums text-grafite ring-2 ring-creme-folha"
             >
               {quantidade}
             </span>
@@ -626,16 +626,16 @@ function LinhaResumo({
   return (
     <li className="flex items-start gap-3 py-3.5">
       <div className="min-w-0 flex-1">
-        <p className="font-display text-[16px] leading-snug">{linha.nome}</p>
+        <p className="font-display text-base leading-snug">{linha.nome}</p>
         {linha.obs ? (
-          <p className="mt-0.5 font-sans text-[12.5px] text-tenue-escuro">↳ {linha.obs}</p>
+          <p className="mt-0.5 font-sans text-xs text-tenue-escuro">↳ {linha.obs}</p>
         ) : null}
-        <p className="mt-1 font-sans text-[13px] text-tenue-escuro">{formatarKz(linha.preco)} cada</p>
+        <p className="mt-1 font-sans text-xs text-tenue-escuro">{formatarKz(linha.preco)} cada</p>
       </div>
 
       <div className="flex shrink-0 items-center gap-2.5">
         <SeletorQuantidade valor={linha.qtd} aoAlterar={aoAlterar} rotulo={linha.nome} compacto />
-        <span className="w-[86px] text-right font-sans text-[15px] font-extrabold">
+        <span className="w-[86px] text-right font-sans text-sm font-extrabold">
           {formatarKz(linha.preco * linha.qtd)}
         </span>
       </div>
@@ -654,7 +654,7 @@ export function SeletorQuantidade({
   rotulo: string;
   compacto?: boolean;
 }) {
-  const tamanho = compacto ? 'h-7 w-7 text-[15px]' : 'h-11 w-11 text-[19px]';
+  const tamanho = compacto ? 'h-7 w-7 text-sm' : 'h-11 w-11 text-lg';
   return (
     <div className="flex items-center gap-1">
       <button
@@ -671,7 +671,7 @@ export function SeletorQuantidade({
       <span
         className={cn(
           'text-center font-sans font-bold tabular-nums',
-          compacto ? 'w-6 text-[14px]' : 'w-9 text-[17px]',
+          compacto ? 'w-6 text-sm' : 'w-9 text-base',
         )}
       >
         {valor}
@@ -724,13 +724,13 @@ function FolhaPrato({
         </div>
 
         <div className="px-5 pb-6 pt-5">
-          <h2 className="font-display text-[27px] leading-tight">{prato.nome}</h2>
+          <h2 className="font-display text-2xl leading-tight">{prato.nome}</h2>
           {prato.descricao ? (
-            <p className="mt-2 font-sans text-[15px] leading-[1.55] text-tenue-escuro">
+            <p className="mt-2 font-sans text-sm leading-normal text-tenue-escuro">
               {prato.descricao}
             </p>
           ) : null}
-          <p className="mt-4 font-sans text-[21px] font-extrabold tracking-[-0.02em]">
+          <p className="mt-4 font-sans text-xl font-extrabold tracking-[-0.02em]">
             {formatarKz(prato.preco)}
           </p>
 

@@ -13,10 +13,10 @@ export default function NaoEncontrado() {
       <main className="flex flex-1 items-center px-5">
         <div className="mx-auto w-full max-w-[460px] animate-subir">
           <p className="etiqueta text-ouro">404</p>
-          <h1 className="mt-4 font-display text-[34px] leading-tight text-creme">
+          <h1 className="mt-4 font-display text-3xl leading-tight text-creme">
             Este cardápio não existe.
           </h1>
-          <p className="mt-3 font-sans text-[15px] leading-[1.6] text-tenue">
+          <p className="mt-3 font-sans text-sm leading-normal text-tenue">
             O endereço pode ter mudado, ou o restaurante já não está activo. Confirme o QR da mesa
             com quem o serve.
           </p>

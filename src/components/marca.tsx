@@ -29,7 +29,7 @@ export function Marca({
         <span
           className={cn(
             'font-display tracking-[-0.02em]',
-            tamanho === 'sm' ? 'text-[17px]' : 'text-[20px]',
+            tamanho === 'sm' ? 'text-base' : 'text-xl',
           )}
         >
           Cardapp
@@ -58,7 +58,7 @@ export function AssinaturaCardapp({ claro = false }: { claro?: boolean }) {
     >
       feito com
       <MarcaSimbolo className="h-[13px] w-[13px]" />
-      <span className="font-display text-[13px] normal-case tracking-normal">Cardapp</span>
+      <span className="font-display text-xs normal-case tracking-normal">Cardapp</span>
     </a>
   );
 }

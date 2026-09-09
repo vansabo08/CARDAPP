@@ -69,10 +69,10 @@ export function EscolhaDoModo({
               className="mt-1 h-4 w-4 shrink-0 accent-[#C9A227]"
             />
             <span className="min-w-0">
-              <span className="block font-sans text-[15px] font-semibold text-creme">
+              <span className="block font-sans text-sm font-semibold text-creme">
                 {modo.titulo}
               </span>
-              <span className="mt-1 block text-pretty font-sans text-[13.5px] leading-[1.55] text-tenue">
+              <span className="mt-1 block text-pretty font-sans text-xs leading-normal text-tenue">
                 {modo.texto}
               </span>
             </span>
@@ -140,7 +140,7 @@ export function CamposIdentidade({
         <Rotulo>Logótipo</Rotulo>
         <div className="flex items-center gap-4">
           <span
-            className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border border-linha font-display text-[17px]"
+            className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border border-linha font-display text-base"
             style={{ color: valores.cor_marca }}
           >
             {valores.logo_url ? (
@@ -156,7 +156,7 @@ export function CamposIdentidade({
               accept="image/jpeg,image/png,image/webp,image/avif"
               onChange={escolherLogo}
               aria-label="Escolher logótipo"
-              className="block w-full font-sans text-[13px] text-tenue file:mr-3 file:rounded-campo file:border file:border-linha file:bg-transparent file:px-3 file:py-2 file:font-sans file:text-[13px] file:text-creme"
+              className="block w-full font-sans text-xs text-tenue file:mr-3 file:rounded-campo file:border file:border-linha file:bg-transparent file:px-3 file:py-2 file:font-sans file:text-xs file:text-creme"
             />
             <Ajuda>{aEnviar ? 'A enviar…' : 'Opcional. Sem logo usamos as iniciais.'}</Ajuda>
           </div>
@@ -169,14 +169,14 @@ export function CamposIdentidade({
       <div>
         <Rotulo htmlFor="slug">Endereço do cardápio</Rotulo>
         <div className="flex items-center gap-0 rounded-campo border border-linha px-3.5 focus-within:border-ouro">
-          <span className="shrink-0 font-sans text-[14px] text-tenue">
+          <span className="shrink-0 font-sans text-sm text-tenue">
             {SITE_URL.replace(/^https?:\/\//, '')}/
           </span>
           <input
             id="slug"
             value={valores.slug}
             onChange={(e) => aoMudar({ slug: slugify(e.target.value) })}
-            className="h-11 min-w-0 flex-1 border-none bg-transparent font-sans text-[15px] text-creme outline-none"
+            className="h-11 min-w-0 flex-1 border-none bg-transparent font-sans text-sm text-creme outline-none"
             placeholder="tia-bela"
           />
         </div>
@@ -250,13 +250,13 @@ function CampoCapa({
             <img src={valor} alt="" className="h-full w-full object-cover" />
             {/* o mesmo véu do cardápio, para se ver como fica com texto */}
             <div className="veu-foto absolute inset-0" />
-            <span className="absolute bottom-3 left-4 font-display text-[19px] text-creme">
+            <span className="absolute bottom-3 left-4 font-display text-lg text-creme">
               O seu restaurante
             </span>
           </>
         ) : (
           <div className="flex h-full items-center justify-center px-6 text-center">
-            <span className="font-sans text-[13px] leading-[1.5] text-tenue">
+            <span className="font-sans text-xs leading-normal text-tenue">
               Sem capa, o cardápio usa a primeira fotografia de prato.
             </span>
           </div>
@@ -269,13 +269,13 @@ function CampoCapa({
           accept="image/jpeg,image/png,image/webp,image/avif"
           onChange={escolher}
           aria-label="Escolher fotografia de capa"
-          className="block font-sans text-[13px] text-tenue file:mr-3 file:rounded-campo file:border file:border-linha file:bg-transparent file:px-3 file:py-2 file:font-sans file:text-[13px] file:text-creme"
+          className="block font-sans text-xs text-tenue file:mr-3 file:rounded-campo file:border file:border-linha file:bg-transparent file:px-3 file:py-2 file:font-sans file:text-xs file:text-creme"
         />
         {valor ? (
           <button
             type="button"
             onClick={() => aoMudar(null)}
-            className="font-sans text-[12.5px] text-tenue underline underline-offset-4 transition-colors hover:text-creme"
+            className="font-sans text-xs text-tenue underline underline-offset-4 transition-colors hover:text-creme"
           >
             Remover capa
           </button>
@@ -307,7 +307,7 @@ export function CampoWhatsApp({
     <div>
       <Rotulo htmlFor="whatsapp">Número de WhatsApp</Rotulo>
       <div className="flex items-center gap-0 rounded-campo border border-linha px-3.5 focus-within:border-ouro">
-        <span className="shrink-0 font-sans text-[15px] text-tenue">+244</span>
+        <span className="shrink-0 font-sans text-sm text-tenue">+244</span>
         <input
           id="whatsapp"
           inputMode="tel"
@@ -315,9 +315,9 @@ export function CampoWhatsApp({
           value={valor}
           onChange={(e) => aoMudar(e.target.value.replace(/[^\d\s+]/g, ''))}
           placeholder="923 456 789"
-          className="h-11 min-w-0 flex-1 border-none bg-transparent pl-2 font-sans text-[15px] text-creme outline-none"
+          className="h-11 min-w-0 flex-1 border-none bg-transparent pl-2 font-sans text-sm text-creme outline-none"
         />
-        {valido ? <span className="shrink-0 text-[14px] text-verde">✓</span> : null}
+        {valido ? <span className="shrink-0 text-sm text-verde">✓</span> : null}
       </div>
 
       {valido ? (

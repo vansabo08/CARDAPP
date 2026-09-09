@@ -94,7 +94,7 @@ export function Precos() {
             Preços
           </span>
 
-          <h2 className="mt-7 font-sans text-[40px] font-extrabold leading-[1.05] tracking-[-0.035em] text-creme md:text-[56px]">
+          <h2 className="mt-7 font-sans text-4xl font-extrabold leading-none tracking-[-0.035em] text-creme md:text-5xl">
             Escolha o seu plano
           </h2>
 
@@ -104,7 +104,7 @@ export function Precos() {
               type="button"
               onClick={() => setPeriodo('mensal')}
               className={cn(
-                'rounded-full px-6 py-2.5 font-sans text-[14px] font-semibold transition-colors duration-200',
+                'rounded-full px-6 py-2.5 font-sans text-sm font-semibold transition-colors duration-200',
                 periodo === 'mensal' ? 'bg-creme text-grafite' : 'text-tenue hover:text-creme',
               )}
             >
@@ -114,10 +114,10 @@ export function Precos() {
               type="button"
               disabled
               title="Preço anual por definir"
-              className="cursor-not-allowed rounded-full px-6 py-2.5 font-sans text-[14px] font-semibold text-tenue/50"
+              className="cursor-not-allowed rounded-full px-6 py-2.5 font-sans text-sm font-semibold text-creme/30"
             >
               Anual
-              <span className="ml-2 font-sans text-[11px] font-medium">em breve</span>
+              <span className="ml-2 font-sans text-xs font-medium">em breve</span>
             </button>
           </div>
         </div>
@@ -142,26 +142,26 @@ export function Precos() {
                     plano.destaque ? 'bg-ouro' : 'bg-creme/60',
                   )}
                 />
-                <h3 className="font-sans text-[21px] font-bold tracking-[-0.02em] text-creme">
+                <h3 className="font-sans text-xl font-bold tracking-[-0.02em] text-creme">
                   {plano.nome}
                 </h3>
               </div>
 
-              <p className="mt-2 font-sans text-[14px] text-tenue">{plano.descricao}</p>
+              <p className="mt-2 font-sans text-sm text-tenue">{plano.descricao}</p>
 
               <hr className="mt-5 border-linha" />
 
-              <p className="mt-6 font-sans text-[46px] font-extrabold leading-none tracking-[-0.04em] text-creme">
+              <p className="mt-6 font-sans text-4xl font-extrabold leading-none tracking-[-0.04em] text-creme">
                 {plano.preco}
               </p>
-              <p className="mt-2.5 font-sans text-[13.5px] text-tenue">{plano.periodo}</p>
+              <p className="mt-2.5 font-sans text-xs text-tenue">{plano.periodo}</p>
 
               <ul className="mt-7 flex flex-col gap-3.5">
                 {plano.inclui.map((linha) => (
                   <li
                     key={linha}
                     className={cn(
-                      'flex items-start gap-3 font-sans text-[14px]',
+                      'flex items-start gap-3 font-sans text-sm',
                       plano.destaque ? 'text-creme/90' : 'text-creme/75',
                     )}
                   >
@@ -177,7 +177,7 @@ export function Precos() {
                 <Link
                   href="/criar-conta"
                   className={cn(
-                    'flex h-[54px] w-full items-center justify-center rounded-full font-sans text-[15px] font-semibold',
+                    'flex h-[54px] w-full items-center justify-center rounded-full font-sans text-sm font-semibold',
                     'transition-[background-color,transform] duration-200 ease-calmo active:scale-[0.985]',
                     plano.destaque
                       ? 'bg-ouro text-grafite hover:bg-ouro-claro'
@@ -193,7 +193,7 @@ export function Precos() {
       </div>
 
       <Revelar atraso={220}>
-        <p className="mt-10 text-center font-sans text-[13px] text-tenue">
+        <p className="mt-10 text-center font-sans text-xs text-tenue">
           Activação assistida por um consultor Cardapp — Multicaixa Express em breve.
         </p>
       </Revelar>

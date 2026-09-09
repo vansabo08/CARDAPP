@@ -128,10 +128,10 @@ export function Onboarding({ demonstracao }: { demonstracao: boolean }) {
         <div key={passo} className="mt-4 animate-subir">
           {passo === 0 ? (
             <>
-              <h1 className="font-display text-[30px] leading-tight text-creme">
+              <h1 className="font-display text-3xl leading-tight text-creme">
                 Como se chama a casa?
               </h1>
-              <p className="mt-3 font-sans text-[15px] leading-[1.6] text-tenue">
+              <p className="mt-3 font-sans text-sm leading-normal text-tenue">
                 O endereço do cardápio é escrito a partir do nome — pode mudá-lo se quiser.
               </p>
               <div className="mt-8">
@@ -146,10 +146,10 @@ export function Onboarding({ demonstracao }: { demonstracao: boolean }) {
 
           {passo === 1 ? (
             <>
-              <h1 className="font-display text-[30px] leading-tight text-creme">
+              <h1 className="font-display text-3xl leading-tight text-creme">
                 Quantas mesas tem a sala?
               </h1>
-              <p className="mt-3 font-sans text-[15px] leading-[1.6] text-tenue">
+              <p className="mt-3 font-sans text-sm leading-normal text-tenue">
                 Criamos um QR para cada uma, numerado de 1 até ao número que indicar. Depois pode
                 juntar mais.
               </p>
@@ -161,7 +161,7 @@ export function Onboarding({ demonstracao }: { demonstracao: boolean }) {
                   inputMode="numeric"
                   value={mesas}
                   onChange={(e) => setMesas(e.target.value.replace(/\D/g, '').slice(0, 2))}
-                  className="text-center font-sans text-[22px] font-bold"
+                  className="text-center font-sans text-xl font-bold"
                 />
                 <Ajuda>Entre 1 e 80.</Ajuda>
               </div>
@@ -173,7 +173,7 @@ export function Onboarding({ demonstracao }: { demonstracao: boolean }) {
                     type="button"
                     onClick={() => setMesas(String(n))}
                     className={cn(
-                      'rounded-full border px-4 py-1.5 font-sans text-[13px] font-semibold transition-colors duration-200',
+                      'rounded-full border px-4 py-1.5 font-sans text-xs font-semibold transition-colors duration-200',
                       mesas === String(n)
                         ? 'border-ouro bg-ouro/10 text-ouro'
                         : 'border-linha text-tenue hover:text-creme',
@@ -188,10 +188,10 @@ export function Onboarding({ demonstracao }: { demonstracao: boolean }) {
 
           {passo === 2 ? (
             <>
-              <h1 className="font-display text-[30px] leading-tight text-creme">
+              <h1 className="font-display text-3xl leading-tight text-creme">
                 O que serve a cozinha?
               </h1>
-              <p className="mt-3 font-sans text-[15px] leading-[1.6] text-tenue">
+              <p className="mt-3 font-sans text-sm leading-normal text-tenue">
                 Deixámos uma sugestão para não começar em branco. Mude o que quiser — o resto
                 acrescenta-se depois no painel.
               </p>
@@ -203,10 +203,10 @@ export function Onboarding({ demonstracao }: { demonstracao: boolean }) {
 
           {passo === 3 ? (
             <>
-              <h1 className="font-display text-[30px] leading-tight text-creme">
+              <h1 className="font-display text-3xl leading-tight text-creme">
                 Para onde vão os pedidos?
               </h1>
-              <p className="mt-3 font-sans text-[15px] leading-[1.6] text-tenue">
+              <p className="mt-3 font-sans text-sm leading-normal text-tenue">
                 Cada pedido chega como mensagem de WhatsApp a este número, já escrito e somado.
               </p>
               <div className="mt-8">
@@ -217,7 +217,7 @@ export function Onboarding({ demonstracao }: { demonstracao: boolean }) {
               </div>
 
               {demonstracao ? (
-                <p className="mt-7 rounded-cartao border border-ouro/30 bg-ouro/[0.06] px-4 py-3 font-sans text-[13.5px] leading-[1.55] text-ouro">
+                <p className="mt-7 rounded-cartao border border-ouro/30 bg-ouro/[0.06] px-4 py-3 font-sans text-xs leading-normal text-ouro">
                   Sem Supabase ligado nada fica gravado — mas pode percorrer o painel todo à mesma.
                 </p>
               ) : null}
@@ -313,7 +313,7 @@ function EditorCardapioInicial({
                   cardapio.map((c, i) => (i === ci ? { ...c, nome: e.target.value } : c)),
                 )
               }
-              className="w-full border-none bg-transparent font-display text-[18px] text-creme outline-none focus:text-ouro"
+              className="w-full border-none bg-transparent font-display text-lg text-creme outline-none focus:text-ouro"
             />
           </div>
 
@@ -325,7 +325,7 @@ function EditorCardapioInicial({
                   aria-label="Nome do prato"
                   placeholder="Nome do prato"
                   onChange={(e) => alterarItem(ci, ii, { nome: e.target.value })}
-                  className="min-w-0 flex-1 border-none bg-transparent font-sans text-[14.5px] text-creme outline-none placeholder:text-tenue"
+                  className="min-w-0 flex-1 border-none bg-transparent font-sans text-sm text-creme outline-none placeholder:text-tenue"
                 />
                 <input
                   value={item.preco || ''}
@@ -335,14 +335,14 @@ function EditorCardapioInicial({
                   onChange={(e) =>
                     alterarItem(ci, ii, { preco: Number(e.target.value.replace(/\D/g, '')) || 0 })
                   }
-                  className="w-[86px] shrink-0 border-none bg-transparent text-right font-sans text-[14.5px] font-bold text-creme outline-none placeholder:text-tenue"
+                  className="w-[86px] shrink-0 border-none bg-transparent text-right font-sans text-sm font-bold text-creme outline-none placeholder:text-tenue"
                 />
-                <span className="shrink-0 font-sans text-[12px] text-tenue">Kz</span>
+                <span className="shrink-0 font-sans text-xs text-tenue">Kz</span>
                 <button
                   type="button"
                   onClick={() => removerItem(ci, ii)}
                   aria-label={`Remover ${item.nome || 'prato'}`}
-                  className="shrink-0 px-1 text-[15px] text-tenue transition-colors hover:text-creme"
+                  className="shrink-0 px-1 text-sm text-tenue transition-colors hover:text-creme"
                 >
                   ×
                 </button>
@@ -354,11 +354,11 @@ function EditorCardapioInicial({
             <button
               type="button"
               onClick={() => juntarItem(ci)}
-              className="font-sans text-[13px] font-semibold text-tenue transition-colors hover:text-creme"
+              className="font-sans text-xs font-semibold text-tenue transition-colors hover:text-creme"
             >
               + prato
             </button>
-            <span className="font-sans text-[12.5px] text-tenue">
+            <span className="font-sans text-xs text-tenue">
               {categoria.itens.length}{' '}
               {categoria.itens.length === 1 ? 'prato' : 'pratos'} ·{' '}
               {formatarKz(categoria.itens.reduce((s, i) => s + i.preco, 0))}
@@ -370,7 +370,7 @@ function EditorCardapioInicial({
       <button
         type="button"
         onClick={() => aoMudar([...cardapio, { nome: 'Nova categoria', itens: [] }])}
-        className="self-start rounded-cartao border border-linha px-4 py-2.5 font-sans text-[13.5px] font-semibold text-tenue transition-colors duration-200 hover:border-creme/30 hover:text-creme"
+        className="self-start rounded-cartao border border-linha px-4 py-2.5 font-sans text-xs font-semibold text-tenue transition-colors duration-200 hover:border-creme/30 hover:text-creme"
       >
         + Nova categoria
       </button>

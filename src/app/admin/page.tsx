@@ -8,13 +8,13 @@ export default async function PaginaAdmin() {
   if (semServico) {
     return (
       <div className="vidro rounded-cartao px-7 py-14 text-center">
-        <p className="font-display text-[24px] text-creme">Falta a chave de serviço.</p>
-        <p className="mx-auto mt-3 max-w-[52ch] font-sans text-[15px] leading-[1.6] text-tenue">
+        <p className="font-display text-2xl text-creme">Falta a chave de serviço.</p>
+        <p className="mx-auto mt-3 max-w-[52ch] font-sans text-sm leading-normal text-tenue">
           Este painel lê contas de todos os donos, coisa que a RLS não deixa ninguém fazer — e ainda
           bem. Precisa de <code className="font-mono text-creme">SUPABASE_SERVICE_ROLE_KEY</code> no
           ambiente, a mesma que está em Supabase → Project Settings → API.
         </p>
-        <p className="mx-auto mt-4 max-w-[52ch] font-sans text-[13.5px] text-tenue">
+        <p className="mx-auto mt-4 max-w-[52ch] font-sans text-xs text-tenue">
           Nunca com prefixo <code className="font-mono">NEXT_PUBLIC_</code>: essa chave passa por
           cima de toda a segurança e não pode chegar ao browser.
         </p>
@@ -29,10 +29,10 @@ export default async function PaginaAdmin() {
   return (
     <div>
       <div className="border-b border-linha pb-7">
-        <h1 className="font-display text-[32px] leading-tight text-creme md:text-[38px]">
+        <h1 className="font-display text-3xl leading-tight text-creme md:text-4xl">
           Contas
         </h1>
-        <p className="mt-2 max-w-[58ch] font-sans text-[15px] leading-[1.6] text-tenue">
+        <p className="mt-2 max-w-[58ch] font-sans text-sm leading-normal text-tenue">
           Todos os restaurantes do Cardapp. Desligar tira o cardápio do ar sem apagar nada — é
           reversível, ao contrário de apagar, que aqui não existe de propósito.
         </p>
@@ -75,8 +75,8 @@ function Cartao({
       <p
         className={
           pequeno
-            ? 'mt-2.5 font-sans text-[14px] leading-snug text-creme'
-            : 'mt-2.5 font-sans text-[24px] font-bold tracking-[-0.02em] text-creme'
+            ? 'mt-2.5 font-sans text-sm leading-snug text-creme'
+            : 'mt-2.5 font-sans text-2xl font-bold tracking-[-0.02em] text-creme'
         }
       >
         {valor}

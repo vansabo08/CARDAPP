@@ -183,8 +183,8 @@ export default function PaginaInicial() {
             ['Kz', 'preços sempre em Kwanzas'],
           ].map(([grande, pequeno], i) => (
             <Revelar key={grande} atraso={i * 60} className="px-0 py-10 sm:px-9">
-              <p className="font-display text-[32px] leading-none text-creme">{grande}</p>
-              <p className="mt-2.5 font-sans text-[14px] text-tenue">{pequeno}</p>
+              <p className="font-display text-3xl leading-none text-creme">{grande}</p>
+              <p className="mt-2.5 font-sans text-sm text-tenue">{pequeno}</p>
             </Revelar>
           ))}
         </div>
@@ -198,7 +198,7 @@ export default function PaginaInicial() {
       <section id="como-funciona" className="mx-auto max-w-conteudo px-5 py-24 md:px-8 md:py-32">
         <Revelar>
           <span className="etiqueta text-ouro-fundo">Como funciona</span>
-          <h2 className="mt-5 max-w-[16ch] text-balance font-display text-[36px] leading-[1.06] text-creme md:text-[50px]">
+          <h2 className="mt-5 max-w-[16ch] text-balance font-display text-4xl leading-none text-creme md:text-5xl">
             Três passos. Nenhum deles é instalar uma aplicação.
           </h2>
         </Revelar>
@@ -249,7 +249,7 @@ export default function PaginaInicial() {
         <div className="mx-auto max-w-conteudo px-5 py-28 md:px-8 md:py-36">
           <FraseRevelada
             texto="O cliente lê, escolhe e envia. A cozinha começa a trabalhar antes de alguém se levantar da mesa."
-            className="mx-auto max-w-[680px] font-display text-[36px] leading-[1.14] tracking-[-0.015em] md:text-[52px]"
+            className="mx-auto max-w-[680px] font-display text-4xl leading-none tracking-[-0.015em] md:text-5xl"
           />
         </div>
       </section>
@@ -261,10 +261,10 @@ export default function PaginaInicial() {
         <div className="mx-auto grid max-w-conteudo items-center gap-14 px-5 py-24 md:grid-cols-2 md:px-8 md:py-28">
           <Revelar>
             <span className="etiqueta text-ouro-fundo">A mensagem</span>
-            <h2 className="mt-5 max-w-[18ch] text-balance font-display text-[34px] leading-[1.08] text-creme md:text-[44px]">
+            <h2 className="mt-5 max-w-[18ch] text-balance font-display text-3xl leading-none text-creme md:text-4xl">
               Escrita para ser lida na cozinha, não por um computador.
             </h2>
-            <p className="mt-6 max-w-[44ch] font-sans text-[16px] leading-[1.68] text-tenue">
+            <p className="mt-6 max-w-[44ch] font-sans text-base leading-relaxed text-tenue">
               Mesa, quantidades, observações e total alinhado. Chega ao mesmo WhatsApp que o
               restaurante já usa todos os dias — nada de painel novo para aprender.
             </p>
@@ -272,7 +272,7 @@ export default function PaginaInicial() {
 
           <Revelar atraso={80}>
             <div className="vidro-leve overflow-x-auto rounded-cartao p-6">
-              <pre className="whitespace-pre font-mono text-[12px] leading-[1.7] text-creme/90 sm:text-[13px]">
+              <pre className="whitespace-pre font-mono text-xs leading-relaxed text-creme/90 sm:text-xs">
 {`🍽 NOVO PEDIDO — Mesa 07
 Tia Bela · 19:42
 
@@ -312,7 +312,7 @@ Pagamento: na mesa
         <div className="absolute inset-0 bg-grafite/88" />
         <div className="relative mx-auto max-w-conteudo px-5 py-28 text-center md:px-8 md:py-36">
           <Revelar>
-            <h2 className="mx-auto max-w-[18ch] text-balance font-display text-[38px] leading-[1.04] text-creme md:text-[56px]">
+            <h2 className="mx-auto max-w-[18ch] text-balance font-display text-4xl leading-none text-creme md:text-5xl">
               O seu cardápio pode estar pronto ao almoço.
             </h2>
             <div className="mt-10">
@@ -330,16 +330,16 @@ Pagamento: na mesa
         <div className="mx-auto flex max-w-conteudo flex-col gap-6 px-5 py-10 sm:flex-row sm:items-center sm:justify-between md:px-8">
           <Marca tamanho="sm" />
           <div className="flex flex-wrap items-center gap-x-7 gap-y-2">
-            <Link href="/entrar" className="font-sans text-[13px] text-tenue transition-colors hover:text-creme">
+            <Link href="/entrar" className="font-sans text-xs text-tenue transition-colors hover:text-creme">
               Entrar
             </Link>
-            <Link href="/criar-conta" className="font-sans text-[13px] text-tenue transition-colors hover:text-creme">
+            <Link href="/criar-conta" className="font-sans text-xs text-tenue transition-colors hover:text-creme">
               Criar conta
             </Link>
-            <Link href="/tia-bela" className="font-sans text-[13px] text-tenue transition-colors hover:text-creme">
+            <Link href="/tia-bela" className="font-sans text-xs text-tenue transition-colors hover:text-creme">
               Cardápio de exemplo
             </Link>
-            <a href="#perguntas" className="font-sans text-[13px] text-tenue transition-colors hover:text-creme">
+            <a href="#perguntas" className="font-sans text-xs text-tenue transition-colors hover:text-creme">
               Perguntas
             </a>
           </div>
@@ -351,7 +351,7 @@ Pagamento: na mesa
             pior do que contacto nenhum: quem tenta e falha desconfia da
             casa toda. Fica só o que é verdade até haver os reais.
           */}
-          <div className="flex flex-col gap-1.5 font-sans text-[13px] text-tenue sm:items-end">
+          <div className="flex flex-col gap-1.5 font-sans text-xs text-tenue sm:items-end">
             <span>Luanda, Angola</span>
           </div>
         </div>
@@ -363,9 +363,9 @@ Pagamento: na mesa
 function PassoCabecalho({ numero, titulo, texto }: { numero: string; titulo: string; texto: string }) {
   return (
     <div>
-      <span className="font-display text-[15px] text-ouro">{numero}</span>
-      <h3 className="mt-3 text-balance font-display text-[24px] leading-[1.18] text-creme">{titulo}</h3>
-      <p className="mt-3 font-sans text-[15px] leading-[1.62] text-tenue">{texto}</p>
+      <span className="font-display text-sm text-ouro">{numero}</span>
+      <h3 className="mt-3 text-balance font-display text-2xl leading-none text-creme">{titulo}</h3>
+      <p className="mt-3 font-sans text-sm leading-normal text-tenue">{texto}</p>
     </div>
   );
 }

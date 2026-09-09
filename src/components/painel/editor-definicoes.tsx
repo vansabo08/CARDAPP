@@ -71,15 +71,15 @@ export function EditorDefinicoes({
   return (
     <div className="mt-9 flex flex-col gap-12">
       <section>
-        <h2 className="font-display text-[21px] text-creme">O restaurante</h2>
+        <h2 className="font-display text-xl text-creme">O restaurante</h2>
         <div className="mt-5 max-w-[460px]">
           <CamposIdentidade valores={valores} aoMudar={mudar} slugAutomatico={false} />
         </div>
       </section>
 
       <section>
-        <h2 className="font-display text-[21px] text-creme">Para onde vão os pedidos</h2>
-        <p className="mt-2 max-w-[54ch] font-sans text-[14.5px] leading-[1.6] text-tenue">
+        <h2 className="font-display text-xl text-creme">Para onde vão os pedidos</h2>
+        <p className="mt-2 max-w-[54ch] font-sans text-sm leading-normal text-tenue">
           Escolha como quer receber. Pode mudar de ideias a qualquer hora, e a mudança vale para o
           pedido seguinte.
         </p>
@@ -101,7 +101,7 @@ export function EditorDefinicoes({
           {estado === 'a-guardar' ? 'A guardar…' : 'Guardar alterações'}
         </Botao>
         {estado === 'guardado' ? (
-          <span className="font-sans text-[13.5px] text-verde">
+          <span className="font-sans text-xs text-verde">
             {demonstracao ? 'Guardado (modo demonstração).' : 'Guardado.'}
           </span>
         ) : null}
@@ -109,8 +109,8 @@ export function EditorDefinicoes({
       </div>
 
       <section id="plano" className="scroll-mt-24 border-t border-linha pt-12">
-        <h2 className="font-display text-[21px] text-creme">Plano</h2>
-        <p className="mt-2 max-w-[54ch] font-sans text-[14.5px] leading-[1.6] text-tenue">
+        <h2 className="font-display text-xl text-creme">Plano</h2>
+        <p className="mt-2 max-w-[54ch] font-sans text-sm leading-normal text-tenue">
           A mudança de plano é combinada connosco enquanto o pagamento por Multicaixa Express e
           AppyPay não estiver ligado.
         </p>
@@ -126,13 +126,13 @@ export function EditorDefinicoes({
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <h3 className="font-display text-[19px] text-creme">{NOME_PLANO[plano.id]}</h3>
+                  <h3 className="font-display text-lg text-creme">{NOME_PLANO[plano.id]}</h3>
                   {actual ? <Distintivo tom="ouro">Actual</Distintivo> : null}
                 </div>
-                <p className="mt-3 font-sans text-[15px] font-bold text-creme">{plano.preco}</p>
+                <p className="mt-3 font-sans text-sm font-bold text-creme">{plano.preco}</p>
                 <ul className="mt-4 flex flex-col gap-2">
                   {plano.linhas.map((linha) => (
-                    <li key={linha} className="flex items-start gap-2.5 font-sans text-[13.5px] text-tenue">
+                    <li key={linha} className="flex items-start gap-2.5 font-sans text-xs text-tenue">
                       <span className="mt-[7px] block h-[4px] w-[4px] shrink-0 rounded-full bg-ouro" />
                       {linha}
                     </li>

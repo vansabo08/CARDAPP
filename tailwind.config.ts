@@ -18,7 +18,8 @@ const config: Config = {
           carta: 'var(--grafite-carta)',
         },
         creme: {
-          DEFAULT: 'var(--creme)',
+          // Com `<alpha-value>` os modificadores (`text-creme/70`) funcionam.
+          DEFAULT: 'rgb(var(--creme-canais) / <alpha-value>)',
           folha: 'var(--creme-folha)',
         },
         ouro: {
