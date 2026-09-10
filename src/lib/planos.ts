@@ -42,6 +42,45 @@ export const INCLUI: Record<Plano, string[]> = {
   ],
 };
 
+/**
+ * Onde se paga cada plano.
+ *
+ * Os endereços vivem no ambiente e não no código: são criados na
+ * Kursinha, podem mudar, e uma mudança de endereço de pagamento não
+ * merece um deploy. Sem eles configurados, o botão leva à conversa de
+ * WhatsApp — que é o que já funcionava antes de haver plataforma.
+ *
+ * `NEXT_PUBLIC_` porque isto é lido no browser e não tem nada de
+ * secreto: é o mesmo endereço que qualquer cliente vê na barra.
+ */
+export const PAGAMENTO_POR_OMISSAO: Record<Plano, string> = {
+  mesa: 'https://pay.kursinha.com/c/6a0c3beddb1169d43a28e16c',
+  sala: 'https://pay.kursinha.com/c/69fc6b443420b95cb08c1ebe',
+};
+
+/**
+ * O troço final do endereço é o identificador do produto na Kursinha, e
+ * é por ele que o webhook sabe qual plano foi comprado. Fica aqui ao
+ * lado do link para os dois não se separarem: mudar um sem o outro
+ * daria um pagamento que abre a conta no plano errado.
+ */
+export const PRODUTO_KURSINHA: Record<Plano, string> = {
+  mesa: '6a0c3beddb1169d43a28e16c',
+  sala: '69fc6b443420b95cb08c1ebe',
+};
+
+export function linkDePagamento(plano: Plano): string | null {
+  const links: Record<Plano, string | undefined> = {
+    mesa: process.env.NEXT_PUBLIC_KURSINHA_MESA,
+    sala: process.env.NEXT_PUBLIC_KURSINHA_SALA,
+  };
+
+  const doAmbiente = links[plano]?.trim();
+  const link = doAmbiente && /^https?:\/\//.test(doAmbiente) ? doAmbiente : PAGAMENTO_POR_OMISSAO[plano];
+
+  return /^https?:\/\//.test(link) ? link : null;
+}
+
 export type EstadoAssinatura = 'teste' | 'activo' | 'expirado';
 
 type Assinatura = {

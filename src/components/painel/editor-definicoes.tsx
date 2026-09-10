@@ -11,7 +11,7 @@ import {
   type ValoresRestaurante,
 } from '@/components/painel/formulario-restaurante';
 import { formatarKz } from '@/lib/format';
-import { INCLUI, PRECO_PLANO } from '@/lib/planos';
+import { INCLUI, PRECO_PLANO, linkDePagamento } from '@/lib/planos';
 import { NOME_PLANO, type ModoPedido, type Plano, type Restaurante } from '@/lib/tipos';
 import { guardarModoPedido, guardarRestaurante } from '@/app/painel/definicoes/accoes';
 import { desbloquearSom, lembrarSom } from '@/lib/som';
@@ -166,8 +166,8 @@ export function EditorDefinicoes({
       <section id="plano" className="scroll-mt-24 border-t border-linha pt-12">
         <h2 className="font-display text-xl text-creme">Plano</h2>
         <p className="mt-2 max-w-[54ch] font-sans text-sm leading-normal text-tenue">
-          A mudança de plano é combinada connosco enquanto o pagamento por Multicaixa Express e
-          AppyPay não estiver ligado.
+          O pagamento é feito na Kursinha. Assim que entrar, o painel abre sozinho — não é preciso
+          avisar ninguém nem voltar a entrar.
         </p>
 
         <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -198,6 +198,22 @@ export function EditorDefinicoes({
                     </li>
                   ))}
                 </ul>
+
+                {/*
+                  O pagamento acontece fora daqui, na Kursinha, e volta
+                  por webhook. Sem link configurado o botão não aparece —
+                  mais vale não haver botão do que haver um que não leva
+                  a lado nenhum.
+                */}
+                {linkDePagamento(plano) ? (
+                  <div className="mt-5">
+                    <Botao asChild variante={actual ? 'ouro' : 'contorno'} tamanho="sm" largo>
+                      <a href={linkDePagamento(plano)!} target="_blank" rel="noreferrer">
+                        {actual ? 'Pagar este plano' : `Mudar para ${NOME_PLANO[plano]}`}
+                      </a>
+                    </Botao>
+                  </div>
+                ) : null}
               </div>
             );
           })}

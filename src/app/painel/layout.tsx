@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation';
 import { DocaPainel, NavegacaoPainel } from '@/components/painel/navegacao';
 import { AvisoDemonstracao } from '@/components/aviso-demonstracao';
 import { AvisoDoPlano } from '@/components/painel/aviso-do-plano';
+import { PortaFechada } from '@/components/painel/porta-fechada';
+import { estadoAssinatura } from '@/lib/planos';
 import { FundoVivo } from '@/components/marketing/fundo-vivo';
 import { ConviteInstalar } from '@/components/convite-instalar';
 import { SinoDePedidos } from '@/components/painel/sino-de-pedidos';
@@ -22,6 +24,8 @@ export default async function LayoutPainel({ children }: { children: React.React
     eAdministrador(),
   ]);
 
+  const fechado = Boolean(restaurante) && estadoAssinatura(restaurante!) === 'expirado';
+
   return (
     <div className="relative min-h-dvh">
       <FundoVivo />
@@ -37,7 +41,15 @@ export default async function LayoutPainel({ children }: { children: React.React
           administrador={administrador}
         />
         <main className="min-w-0 flex-1 px-5 pb-32 pt-8 md:px-10 md:py-12 md:pb-12">
-          <div className="mx-auto max-w-[880px]">{children}</div>
+          <div className="mx-auto max-w-[880px]">
+            {/*
+              Prazo passado: a porta fecha-se aqui, no layout, e não em
+              cada página. Uma tranca posta ecrã a ecrã esquece-se de um
+              deles mais tarde ou mais cedo, e o esquecido é sempre o que
+              importa.
+            */}
+            {fechado ? <PortaFechada restaurante={restaurante!} /> : children}
+          </div>
         </main>
       </div>
 
