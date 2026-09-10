@@ -1,5 +1,5 @@
-import { createHmac, timingSafeEqual } from 'node:crypto';
-import { NextResponse } from 'next/server';
+import { createHash, createHmac, timingSafeEqual } from 'node:crypto';
+import { after, NextResponse } from 'next/server';
 import { clienteAdministrador } from '@/lib/supabase/administrador';
 import { lerEvento, novoPagoAte, planoDoProduto, planoDoValor } from '@/lib/pagamentos';
 import { PRECO_PLANO, PRODUTO_KURSINHA } from '@/lib/planos';
@@ -9,19 +9,33 @@ import { PRECO_PLANO, PRODUTO_KURSINHA } from '@/lib/planos';
  *
  * Uma chamada a este endereço dá um mês de acesso pago a uma casa. É o
  * ponto mais sensível da aplicação: qualquer pessoa no mundo lhe pode
- * bater à porta. Por isso, três barreiras, por esta ordem:
+ * bater à porta.
  *
- * 1. A assinatura. A Kursinha manda `X-Webhook-Signature: sha256=<hmac>`,
- *    calculado sobre o corpo cru com o segredo combinado. Vale mais do
- *    que um segredo à solta no endereço: prova também que o corpo não
- *    foi mexido pelo caminho. Comparada em tempo constante, para o
- *    número de tentativas não revelar o quanto se acertou.
- * 2. O evento é reclamado antes de ser aplicado. Um webhook que não
- *    recebe 200 é reenviado, e as plataformas reenviam com gosto — sem
- *    isto, o mesmo pagamento dava dois meses.
- * 3. O que não se percebe fica registado e não abre nada. Abrir por
- *    engano dá um mês de graça; fechar por engano tira o painel a uma
- *    casa a meio do serviço.
+ * DUAS PORTAS, POR ESTA ORDEM.
+ *
+ * Vindo `X-Webhook-Signature`, vale o HMAC-SHA256 do corpo cru. É a
+ * porta melhor: prova o segredo e prova que o corpo não foi mexido pelo
+ * caminho.
+ *
+ * Não vindo, vale o `?chave=` no endereço. O painel da Kursinha não tem
+ * onde pôr um segredo, por isso ela não assina nada — e uma porta que
+ * ninguém pode abrir não é segurança, é um endereço morto. O segredo no
+ * endereço é mais fraco (quem vir o URL vê o segredo), mas é o que esta
+ * plataforma permite, e continua a manter de fora quem não o conhece.
+ *
+ * As duas comparações são em tempo constante, e a do `?chave=` passa
+ * pelos dois valores por SHA-256 antes de comparar, para o tempo de
+ * resposta não revelar sequer o comprimento do segredo.
+ *
+ * E DEPOIS DE ENTRAR:
+ *
+ * O evento é reclamado antes de ser aplicado. Um webhook que não recebe
+ * 200 é reenviado, e as plataformas reenviam com gosto — sem isto, o
+ * mesmo pagamento dava dois meses.
+ *
+ * O que não se percebe fica registado e não abre nada. Abrir por engano
+ * dá um mês de graça; fechar por engano tira o painel a uma casa a meio
+ * do serviço.
  *
  * Nada aqui confia no corpo do pedido para decidir *quem* é a casa: o
  * email é procurado na base, e se não houver conta com aquele email não
@@ -31,15 +45,24 @@ import { PRECO_PLANO, PRODUTO_KURSINHA } from '@/lib/planos';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-/** Compara sem deixar o tempo de resposta dizer quantos caracteres acertaram. */
+/**
+ * Compara dois segredos sem revelar nada — nem o conteúdo, nem o
+ * comprimento.
+ *
+ * O `timingSafeEqual` exige buffers do mesmo tamanho, e a saída fácil —
+ * `if (a.length !== b.length) return false` — devolve resposta num
+ * instante quando o tamanho não bate e demora o dobro quando bate.
+ * Quem medir o tempo descobre o comprimento do segredo, e um segredo
+ * cujo comprimento se conhece é um segredo mais pequeno.
+ *
+ * Passa-se os dois por SHA-256 antes de comparar: saem sempre 32 bytes,
+ * seja qual for a entrada, e a comparação é sempre do mesmo tamanho.
+ */
 function segredoConfere(recebido: string | null, esperado: string) {
   if (!recebido) return false;
 
-  const a = Buffer.from(recebido);
-  const b = Buffer.from(esperado);
-  // `timingSafeEqual` exige o mesmo comprimento; compará-los antes
-  // revelaria o tamanho, que não é segredo nenhum.
-  if (a.length !== b.length) return false;
+  const a = createHash('sha256').update(recebido, 'utf8').digest();
+  const b = createHash('sha256').update(esperado, 'utf8').digest();
 
   return timingSafeEqual(a, b);
 }
@@ -112,12 +135,39 @@ export async function POST(pedido: Request) {
     return NextResponse.json({ erro: 'Corpo inválido.' }, { status: 400 });
   }
 
-  const supabase = clienteAdministrador();
-  if (!supabase) {
+  if (!clienteAdministrador()) {
     // 503 e não 200: sem chave de serviço não se gravou nada, e o
     // fornecedor deve voltar a tentar.
     return NextResponse.json({ erro: 'SUPABASE_SERVICE_ROLE_KEY em falta.' }, { status: 503 });
   }
+
+  /*
+   * A resposta sai já; o trabalho fica para depois dela.
+   *
+   * A Kursinha só precisa de saber que o aviso chegou, e um webhook que
+   * demora a responder é um webhook que a plataforma dá por falhado e
+   * reenvia. O `after` do Next mantém a função viva depois da resposta.
+   *
+   * Mover o trabalho para depois não estraga a idempotência: quem a
+   * garante é o índice único sobre (fornecedor, evento_id), não a ordem
+   * das operações. Dois avisos simultâneos do mesmo evento continuam a
+   * dar uma reclamação só — o segundo bate no índice e pára.
+   */
+  after(() => processar(bruto));
+
+  return NextResponse.json({ ok: true, recebido: true });
+}
+
+/**
+ * O que se faz com o aviso, já depois de a resposta ter saído.
+ *
+ * Nada aqui pode deitar abaixo o pedido — ele já acabou. Por isso o que
+ * corre mal fica escrito na tabela, que é onde se vai procurar quando um
+ * pagamento não abrir a conta.
+ */
+async function processar(bruto: unknown) {
+  const supabase = clienteAdministrador();
+  if (!supabase) return;
 
   const evento = lerEvento(bruto);
 
@@ -187,18 +237,12 @@ export async function POST(pedido: Request) {
     .select('id')
     .single();
 
-  if (erroRegisto) {
-    // 23505 = unique_violation: este aviso já cá tinha entrado. Responde
-    // 200 para o fornecedor parar de reenviar, e não volta a aplicar.
-    if (erroRegisto.code === '23505') {
-      return NextResponse.json({ ok: true, repetido: true });
-    }
-    return NextResponse.json({ erro: 'Não foi possível registar.' }, { status: 500 });
-  }
+  // 23505 = unique_violation: este aviso já cá tinha entrado, e não se
+  // volta a aplicar. Qualquer outro erro fica por aqui — sem reclamação
+  // não há nada a aplicar com segurança.
+  if (erroRegisto || !registo) return;
 
-  if (tipo === 'ignorado' || !restauranteId) {
-    return NextResponse.json({ ok: true, aplicado: false, motivo: nota });
-  }
+  if (tipo === 'ignorado' || !restauranteId) return;
 
   /* ---------------------------------------------------------------- */
   /* Abrir ou fechar                                                   */
@@ -220,14 +264,22 @@ export async function POST(pedido: Request) {
     .eq('id', restauranteId);
 
   if (erroMudanca) {
-    // A reclamação fica desfeita para o reenvio do fornecedor poder
-    // tentar outra vez. Sem isto, o evento ficava marcado como tratado
-    // e o pagamento perdia-se em silêncio.
-    await supabase.from('pagamentos').delete().eq('id', registo.id);
-    return NextResponse.json({ erro: 'Não foi possível aplicar.' }, { status: 500 });
+    /*
+     * A resposta já saiu com 200, por isso a Kursinha não vai reenviar.
+     * O registo fica — é a prova de que o dinheiro entrou — mas larga o
+     * `evento_id`, o que liberta a chave única e deixa um reenvio à mão
+     * voltar a tentar. Apagar a linha perdia o rasto do pagamento; deixá-la
+     * intacta trancava a chave para sempre.
+     */
+    await supabase
+      .from('pagamentos')
+      .update({
+        evento_id: null,
+        tipo: 'ignorado',
+        nota: `Pagamento recebido mas não aplicado: ${erroMudanca.message}`,
+      })
+      .eq('id', registo.id);
   }
-
-  return NextResponse.json({ ok: true, aplicado: true, tipo });
 }
 
 /**
