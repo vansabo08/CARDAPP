@@ -119,23 +119,21 @@ export async function desbloquearSom() {
 /**
  * Uma nota, com envelope próprio para não estalar no início nem no fim.
  *
- * A onda é quadrada e não sinusoidal. Uma sinusóide é uma frequência
- * pura e some no ruído de uma cozinha — tachos, extractor, gente a
- * falar. A quadrada traz os harmónicos ímpares todos, e são eles que
- * atravessam. É mais feia de ouvir e é essa a intenção: isto não é
- * música, é um alarme.
+ * Sinusoidal: é a onda limpa, sem os harmónicos ásperos da quadrada.
+ * Chega-se longe subindo o ganho em vez de sujar o timbre — mais alto e
+ * na mesma agradável, que é o que se quer de um som que toca dezenas de
+ * vezes por dia ao lado de quem trabalha.
  */
 function nota(ctx: Contexto, frequencia: number, comeco: number, duracao: number, volume: number) {
   const oscilador = ctx.createOscillator();
   const ganho = ctx.createGain();
 
-  oscilador.type = 'square';
+  oscilador.type = 'sine';
   oscilador.frequency.setValueAtTime(frequencia, comeco);
 
   // Rampas em vez de saltos: um salto de ganho ouve-se como um "click".
   ganho.gain.setValueAtTime(0.0001, comeco);
-  ganho.gain.exponentialRampToValueAtTime(volume, comeco + 0.008);
-  ganho.gain.setValueAtTime(volume, comeco + duracao * 0.7);
+  ganho.gain.exponentialRampToValueAtTime(volume, comeco + 0.015);
   ganho.gain.exponentialRampToValueAtTime(0.0001, comeco + duracao);
 
   oscilador.connect(ganho);
@@ -172,58 +170,22 @@ export async function tocarSino() {
   if (ctx.state !== 'running') return false;
 
   /*
-   * Uma sirene, não uma campainha.
+   * As duas notas do princípio — lá e mi, uma quinta —, só que altas.
    *
-   * Passou por duas notas suaves (inaudíveis numa cozinha) e depois por
-   * quatro apitos secos (melhor, mas ainda se confundia com um telemóvel
-   * qualquer). Isto é um varrimento de frequência: sobe de 1.1 kHz a
-   * 2.4 kHz e volta, três vezes seguidas.
+   * Isto passou por uma sirene de onda quadrada, tecnicamente muito mais
+   * audível e insuportável de ouvir. Um alarme que a casa desliga ao fim
+   * do primeiro serviço não avisa ninguém: o som que fica ligado é
+   * melhor do que o som que corta a sala ao meio.
    *
-   * O varrimento é o que faz a diferença. O ouvido habitua-se depressa a
-   * um tom fixo e deixa de o notar — é por isso que os alarmes a sério,
-   * dos bombeiros às ambulâncias, variam sempre. Um som que muda não se
-   * deixa ignorar.
-   *
-   * Um oscilador de cada vez, com espaço entre eles: assim pode ir a
-   * 0.55 de ganho sem saturar. Somar vozes ao mesmo tempo obrigava a
-   * baixar cada uma, e um som distorcido ouve-se pior do que um som
-   * limpo alto.
+   * O que se manteve foi o ganho. Estava em 0.16 e 0.12, que era um
+   * murmúrio; está em 0.45 e 0.34. A onda é sinusoidal e as duas notas
+   * quase não se sobrepõem, por isso sobe até aqui sem saturar.
    */
   const agora = ctx.currentTime;
-  const CICLO = 0.36;
-
-  for (let i = 0; i < 3; i++) {
-    sirene(ctx, agora + i * CICLO, CICLO * 0.82, 0.55);
-  }
+  nota(ctx, 880, agora, 0.34, 0.45); // lá
+  nota(ctx, 1318.5, agora + 0.13, 0.42, 0.34); // mi, uma quinta acima
 
   return true;
-}
-
-/**
- * Meio ciclo de sirene: sobe e volta a descer.
- *
- * A frequência é desenhada com rampas em vez de saltos — um salto de
- * frequência ouve-se como um estalo, e o que se quer é o deslize.
- */
-function sirene(ctx: Contexto, comeco: number, duracao: number, volume: number) {
-  const oscilador = ctx.createOscillator();
-  const ganho = ctx.createGain();
-
-  oscilador.type = 'square';
-  oscilador.frequency.setValueAtTime(1100, comeco);
-  oscilador.frequency.linearRampToValueAtTime(2400, comeco + duracao * 0.5);
-  oscilador.frequency.linearRampToValueAtTime(1100, comeco + duracao);
-
-  ganho.gain.setValueAtTime(0.0001, comeco);
-  ganho.gain.exponentialRampToValueAtTime(volume, comeco + 0.01);
-  ganho.gain.setValueAtTime(volume, comeco + duracao - 0.03);
-  ganho.gain.exponentialRampToValueAtTime(0.0001, comeco + duracao);
-
-  oscilador.connect(ganho);
-  ganho.connect(ctx.destination);
-
-  oscilador.start(comeco);
-  oscilador.stop(comeco + duracao + 0.02);
 }
 
 /* ------------------------------------------------------------------ */

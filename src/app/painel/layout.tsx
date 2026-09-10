@@ -7,6 +7,7 @@ import { estadoDaConta, painelAberto } from '@/lib/planos';
 import { FundoVivo } from '@/components/marketing/fundo-vivo';
 import { ConviteInstalar } from '@/components/convite-instalar';
 import { SinoDePedidos } from '@/components/painel/sino-de-pedidos';
+import { BatidaDePresenca } from '@/components/painel/batida-de-presenca';
 import { emModoDemonstracao, obterRestauranteDoDono } from '@/lib/dados';
 import { eAdministrador } from '@/lib/admin';
 import { utilizadorActual } from '@/lib/supabase/servidor';
@@ -57,6 +58,7 @@ export default async function LayoutPainel({ children }: { children: React.React
       <DocaPainel />
       <ConviteInstalar />
       {restaurante ? <SinoDePedidos restauranteId={restaurante.id} /> : null}
+      {restaurante ? <BatidaDePresenca /> : null}
     </div>
   );
 }

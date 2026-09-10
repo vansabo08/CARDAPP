@@ -61,6 +61,8 @@ export type ContaAdmin = {
   pagoAte: string | null;
   acessoExpiraEm: string | null;
   whatsapp: string;
+  /** Última batida do painel. É por aqui que se sabe quem sumiu. */
+  vistoEm: string | null;
 };
 
 export type ResumoAdmin = {
@@ -85,7 +87,7 @@ export async function resumoAdministrativo(): Promise<ResumoAdmin> {
     supabase
       .from('restaurants')
       .select(
-        'id, nome, slug, plano, activo, owner_id, created_at, whatsapp, teste_termina_em, pago_ate, acesso_expira_em',
+        'id, nome, slug, plano, activo, owner_id, created_at, whatsapp, teste_termina_em, pago_ate, acesso_expira_em, visto_em',
       )
       .order('created_at', { ascending: false }),
     supabase.auth.admin.listUsers({ page: 1, perPage: 1000 }),
@@ -103,6 +105,7 @@ export async function resumoAdministrativo(): Promise<ResumoAdmin> {
     teste_termina_em: string | null;
     pago_ate: string | null;
     acesso_expira_em: string | null;
+    visto_em: string | null;
   }[];
 
   const porDono = new Map(
@@ -165,6 +168,7 @@ export async function resumoAdministrativo(): Promise<ResumoAdmin> {
       pagoAte: linha.pago_ate ?? null,
       acessoExpiraEm: linha.acesso_expira_em ?? null,
       whatsapp: linha.whatsapp,
+      vistoEm: linha.visto_em ?? null,
     };
   });
 
@@ -179,4 +183,76 @@ function contar(chaves: string[]) {
   const mapa = new Map<string, number>();
   for (const chave of chaves) mapa.set(chave, (mapa.get(chave) ?? 0) + 1);
   return mapa;
+}
+
+/* ------------------------------------------------------------------ */
+/* Os números do painel                                                */
+/* ------------------------------------------------------------------ */
+
+export type DiaDePedidos = { dia: string; total: number; valor: number };
+
+export type LinhaDeAuditoria = {
+  id: string;
+  quem: string;
+  accao: string;
+  restauranteNome: string | null;
+  antes: Record<string, unknown> | null;
+  depois: Record<string, unknown> | null;
+  quando: string;
+};
+
+export type MetricasAdmin = {
+  serie: DiaDePedidos[];
+  auditoria: LinhaDeAuditoria[];
+};
+
+/**
+ * A série e o livro, numa ida só.
+ *
+ * A série vem contada pela base. Trazer os pedidos todos para memória
+ * só para os agrupar por dia funcionava com doze pedidos e deixava de
+ * funcionar muito antes de valer a pena arranjar.
+ */
+export async function metricasAdmin(dias = 30): Promise<MetricasAdmin> {
+  const supabase = clienteAdministrador();
+  if (!supabase) return { serie: [], auditoria: [] };
+
+  const comRpc = supabase as unknown as {
+    rpc: (nome: string, argumentos?: Record<string, unknown>) => Promise<{ data: unknown }>;
+  };
+
+  const [serieBruta, livro] = await Promise.all([
+    comRpc.rpc('pedidos_por_dia', { dias }),
+    supabase.from('auditoria').select('*').order('quando', { ascending: false }).limit(40),
+  ]);
+
+  const serie = ((serieBruta.data ?? []) as {
+    dia: string;
+    total: number | string;
+    valor: number | string;
+  }[]).map((d) => ({
+    dia: d.dia,
+    total: Number(d.total) || 0,
+    valor: Number(d.valor) || 0,
+  }));
+
+  const auditoria = ((livro.data ?? []) as {
+    id: string;
+    quem: string;
+    accao: string;
+    restaurante_nome: string | null;
+    antes: Record<string, unknown> | null;
+    depois: Record<string, unknown> | null;
+    quando: string;
+  }[]).map((l) => ({
+    id: l.id,
+    quem: l.quem,
+    accao: l.accao,
+    restauranteNome: l.restaurante_nome,
+    antes: l.antes,
+    depois: l.depois,
+    quando: l.quando,
+  }));
+
+  return { serie, auditoria };
 }
