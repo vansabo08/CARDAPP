@@ -55,7 +55,7 @@ export function eDemonstracao(restaurantId: string) {
  * funcionalidade, não a aplicação.
  */
 const COLUNAS_RESTAURANTE =
-  'id, nome, slug, logo_url, capa_url, whatsapp, cor_marca, plano, activo, modo_pedido';
+  'id, nome, slug, logo_url, capa_url, whatsapp, cor_marca, plano, activo, modo_pedido, teste_termina_em, pago_ate';
 
 /** As que existem desde o primeiro dia, e por isso nunca faltam. */
 const COLUNAS_RESTAURANTE_BASE = 'id, nome, slug, logo_url, whatsapp, cor_marca, plano, activo';
@@ -75,7 +75,16 @@ function faltaUmaColunaNova(erro: { code?: string; message?: string } | null) {
  */
 function comColunasNovas(linha: unknown): Restaurante {
   const r = linha as Restaurante;
-  return { ...r, capa_url: r.capa_url ?? null, modo_pedido: r.modo_pedido ?? 'whatsapp' };
+  return {
+    ...r,
+    capa_url: r.capa_url ?? null,
+    modo_pedido: r.modo_pedido ?? 'whatsapp',
+    // Sem data, conta como em teste — nunca como expirado. Trancar uma
+    // casa por causa de uma coluna que ainda não existe seria o pior
+    // resultado possível de um deploy à frente da migração.
+    teste_termina_em: r.teste_termina_em ?? null,
+    pago_ate: r.pago_ate ?? null,
+  };
 }
 
 export async function obterRestaurantePorSlug(slug: string): Promise<Restaurante | null> {

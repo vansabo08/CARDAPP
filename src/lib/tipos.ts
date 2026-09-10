@@ -1,4 +1,10 @@
-export type Plano = 'balcao' | 'mesa' | 'sala';
+/**
+ * Dois planos, ambos pagos, ambos com sete dias livres no início.
+ *
+ * Havia um terceiro, o Balcão, gratuito para sempre e limitado a uma
+ * mesa e quinze pratos. Saiu.
+ */
+export type Plano = 'mesa' | 'sala';
 
 /**
  * Por onde o pedido sai do cardápio.
@@ -26,6 +32,10 @@ export type Restaurante = {
   plano: Plano;
   activo: boolean;
   modo_pedido: ModoPedido;
+  /** Fim dos sete dias livres. */
+  teste_termina_em: string | null;
+  /** Até quando está pago. Manda sobre o teste enquanto for futuro. */
+  pago_ate: string | null;
 };
 
 export type Mesa = {
@@ -117,14 +127,20 @@ export type PedidoParaMensagem = {
   pagamento?: string;
 };
 
+/**
+ * O que cada plano deixa fazer.
+ *
+ * Nenhum dos dois limita mesas ou pratos — o que os separa é a marca e
+ * o que a casa vê sobre o seu próprio serviço. Os campos ficam na mesma
+ * porque o código que os lê não tem de saber disso, e porque um limite
+ * pode voltar sem se mexer em dez ficheiros.
+ */
 export const LIMITES_PLANO: Record<Plano, { mesas: number; pratos: number; marca: boolean; estatisticas: boolean }> = {
-  balcao: { mesas: 1, pratos: 15, marca: true, estatisticas: false },
-  mesa: { mesas: Infinity, pratos: Infinity, marca: false, estatisticas: false },
+  mesa: { mesas: Infinity, pratos: Infinity, marca: true, estatisticas: false },
   sala: { mesas: Infinity, pratos: Infinity, marca: false, estatisticas: true },
 };
 
 export const NOME_PLANO: Record<Plano, string> = {
-  balcao: 'Balcão',
   mesa: 'Mesa',
   sala: 'Sala',
 };

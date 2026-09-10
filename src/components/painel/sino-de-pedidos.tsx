@@ -15,17 +15,58 @@ import type { Pedido } from '@/lib/tipos';
  * do tempo — não ouvia nada. Um aviso que só toca quando já se está a
  * olhar para o sítio não é um aviso.
  *
- * Não desenha nada. Só escuta, toca e, se o separador estiver atrás de
- * outro, deixa um aviso do sistema.
+ * E não toca uma vez: insiste enquanto houver pedidos por confirmar.
+ * Um toque único perde-se — se ninguém estava perto naquele segundo, o
+ * pedido fica esquecido e o cliente fica à espera sem saber de quê. O
+ * barulho só pára quando alguém pega no pedido e o põe a preparar, que
+ * é a prova de que foi visto por uma pessoa.
+ *
+ * Não desenha nada.
  */
+
+/** De quanto em quanto tempo volta a tocar enquanto houver por confirmar. */
+const INSISTENCIA = 4000;
+
 export function SinoDePedidos({ restauranteId }: { restauranteId: string }) {
+  /**
+   * Os pedidos que ainda ninguém confirmou.
+   *
+   * Guardados por id, e não contados: o Realtime pode repetir o mesmo
+   * evento, e um contador subiria duas vezes pelo mesmo pedido e ficava
+   * a tocar para sempre.
+   */
+  const porConfirmar = React.useRef<Set<string>>(new Set());
+  const [aToar, setAToar] = React.useState(false);
+
+  function actualizar() {
+    setAToar(porConfirmar.current.size > 0);
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* Quem está por confirmar, agora                                    */
+  /* ---------------------------------------------------------------- */
   React.useEffect(() => {
     const supabase = clienteNavegador();
     if (!supabase) return;
 
-    // Nome próprio: a lista de pedidos tem o seu canal, e dois canais com
-    // o mesmo nome no mesmo cliente entram em conflito.
+    let vivo = true;
+
+    // Quem entra no painel a meio do serviço tem de ouvir os pedidos que
+    // já lá estavam à espera, não só os que caírem daqui para a frente.
+    void supabase
+      .from('orders')
+      .select('id')
+      .eq('restaurant_id', restauranteId)
+      .eq('estado', 'novo')
+      .then(({ data }) => {
+        if (!vivo || !data) return;
+        for (const linha of data as { id: string }[]) porConfirmar.current.add(linha.id);
+        actualizar();
+      });
+
     const canal = supabase
+      // Nome próprio: a lista de pedidos tem o seu canal, e dois canais
+      // com o mesmo nome no mesmo cliente entram em conflito.
       .channel(`sino-${restauranteId}`)
       .on(
         'postgres_changes',
@@ -37,19 +78,51 @@ export function SinoDePedidos({ restauranteId }: { restauranteId: string }) {
         },
         (evento) => {
           const pedido = evento.new as Pedido;
-          void tocarSino();
+          porConfirmar.current.add(pedido.id);
+          actualizar();
 
+          void tocarSino();
           if (document.hidden) {
             avisarDoPedido(null, formatarKz(Number(pedido.total) || 0));
           }
         },
       )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'orders',
+          filter: `restaurant_id=eq.${restauranteId}`,
+        },
+        (evento) => {
+          const pedido = evento.new as Pedido;
+          // Sair de "novo" é a prova de que uma pessoa o viu.
+          if (pedido.estado === 'novo') porConfirmar.current.add(pedido.id);
+          else porConfirmar.current.delete(pedido.id);
+          actualizar();
+        },
+      )
       .subscribe();
 
     return () => {
+      vivo = false;
       supabase.removeChannel(canal);
     };
   }, [restauranteId]);
+
+  /* ---------------------------------------------------------------- */
+  /* A insistência                                                     */
+  /* ---------------------------------------------------------------- */
+  React.useEffect(() => {
+    if (!aToar) return;
+
+    const relogio = setInterval(() => {
+      void tocarSino();
+    }, INSISTENCIA);
+
+    return () => clearInterval(relogio);
+  }, [aToar]);
 
   // O primeiro toque em qualquer sítio do painel serve de gesto e
   // desbloqueia o áudio para o resto da sessão.

@@ -19,6 +19,9 @@ export const RESTAURANTE_DEMO: Restaurante = {
   activo: true,
   // O exemplo acompanha dentro da aplicacao, que e a novidade a mostrar.
   modo_pedido: 'app',
+  // O exemplo nunca expira: nao ha conta nenhuma por tras dele.
+  teste_termina_em: null,
+  pago_ate: null,
 };
 
 export const CARDAPIO_DEMO: CategoriaComPratos[] = [

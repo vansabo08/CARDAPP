@@ -14,7 +14,7 @@ export const dynamic = 'force-dynamic';
  *
  * Não passa pelos limites do plano, ao contrário das estatísticas:
  * receber um pedido é o que a aplicação faz, não é um extra. Uma casa no
- * plano grátis que não visse os pedidos a cair não teria produto nenhum.
+ * casa em periodo de experiencia que nao visse os pedidos a cair nao teria produto nenhum.
  */
 export default async function PaginaPedidos() {
   const restaurante = await obterRestauranteDoDono();

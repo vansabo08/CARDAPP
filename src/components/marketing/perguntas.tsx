@@ -1,5 +1,6 @@
 import { Revelar } from '@/components/ui/revelar';
 import { formatarKz } from '@/lib/format';
+import { DIAS_DE_TESTE, PRECO_PLANO } from '@/lib/planos';
 
 /**
  * As dúvidas que travam a decisão, respondidas antes de alguém ter de
@@ -37,12 +38,12 @@ const PERGUNTAS: { pergunta: string; resposta: string }[] = [
   },
   {
     pergunta: 'Quanto custa?',
-    resposta: `O plano Balcão é grátis para sempre: uma mesa e até quinze pratos. O plano Mesa custa ${formatarKz(9900)} por mês e o plano Sala ${formatarKz(19900)} por mês.`,
+    resposta: `Há dois planos, e ambos abrem com ${DIAS_DE_TESTE} dias livres, com tudo aberto e sem cartão. Depois disso, o plano Mesa custa ${formatarKz(PRECO_PLANO.mesa)} por mês e o plano Sala ${formatarKz(PRECO_PLANO.sala)} por mês.`,
   },
   {
     pergunta: 'Preciso de cartão de crédito para experimentar?',
     resposta:
-      'Não. O plano grátis abre sem cartão e sem prazo. Só passa a pagar se e quando quiser mais mesas ou mais pratos.',
+      'Não. Os sete dias abrem sem cartão nenhum. Só se fala em pagamento no fim deles, e se decidir ficar.',
   },
   {
     pergunta: 'O cardápio funciona fora do restaurante?',

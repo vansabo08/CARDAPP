@@ -146,7 +146,7 @@ export default function PaginaInicial() {
               <Revelar atraso={180}>
                 <div className="mt-10 flex flex-wrap items-center gap-3">
                   <Botao asChild variante="ouro" tamanho="lg">
-                    <Link href="/criar-conta">Criar cardápio grátis</Link>
+                    <Link href="/criar-conta">Experimentar 7 dias</Link>
                   </Botao>
                   <Botao asChild variante="contorno" tamanho="lg">
                     <Link href="/tia-bela?mesa=7">Ver um cardápio a sério</Link>
@@ -156,7 +156,7 @@ export default function PaginaInicial() {
 
               <Revelar atraso={240}>
                 <p className="mt-7 font-sans text-sm text-tenue">
-                  Grátis para uma mesa e quinze pratos. Sem cartão de crédito.
+                  Sete dias com tudo aberto. Sem cartão de crédito.
                 </p>
               </Revelar>
             </div>
@@ -317,7 +317,7 @@ Pagamento: na mesa
             </h2>
             <div className="mt-10">
               <Botao asChild variante="ouro" tamanho="lg">
-                <Link href="/criar-conta">Criar cardápio grátis</Link>
+                <Link href="/criar-conta">Experimentar 7 dias</Link>
               </Botao>
             </div>
           </Revelar>

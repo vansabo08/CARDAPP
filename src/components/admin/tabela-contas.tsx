@@ -9,7 +9,7 @@ import { NOME_PLANO, type Plano } from '@/lib/tipos';
 import type { ContaAdmin } from '@/lib/admin';
 import { alternarActivo, mudarPlano } from '@/app/admin/accoes';
 
-const PLANOS: Plano[] = ['balcao', 'mesa', 'sala'];
+const PLANOS: Plano[] = ['mesa', 'sala'];
 
 function dataCurta(iso: string | null) {
   if (!iso) return '—';

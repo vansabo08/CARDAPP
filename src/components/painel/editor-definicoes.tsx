@@ -11,23 +11,12 @@ import {
   type ValoresRestaurante,
 } from '@/components/painel/formulario-restaurante';
 import { formatarKz } from '@/lib/format';
+import { INCLUI, PRECO_PLANO } from '@/lib/planos';
 import { NOME_PLANO, type ModoPedido, type Plano, type Restaurante } from '@/lib/tipos';
 import { guardarModoPedido, guardarRestaurante } from '@/app/painel/definicoes/accoes';
 import { desbloquearSom, lembrarSom } from '@/lib/som';
 
-const PLANOS: { id: Plano; preco: string; linhas: string[] }[] = [
-  { id: 'balcao', preco: 'Grátis', linhas: ['1 mesa', '15 pratos', 'Marca Cardapp visível'] },
-  {
-    id: 'mesa',
-    preco: `${formatarKz(9900)}/mês`,
-    linhas: ['Mesas ilimitadas', 'Pratos ilimitados', 'Logo próprio'],
-  },
-  {
-    id: 'sala',
-    preco: `${formatarKz(19900)}/mês`,
-    linhas: ['Tudo do plano Mesa', 'Estatísticas', 'Sem marca Cardapp'],
-  },
-];
+const PLANOS: Plano[] = ['mesa', 'sala'];
 
 export function EditorDefinicoes({
   restaurante,
@@ -181,23 +170,28 @@ export function EditorDefinicoes({
           AppyPay não estiver ligado.
         </p>
 
-        <div className="mt-6 grid gap-4 md:grid-cols-3">
+        <div className="mt-6 grid gap-4 md:grid-cols-2">
           {PLANOS.map((plano) => {
-            const actual = plano.id === restaurante.plano;
+            const actual = plano === restaurante.plano;
             return (
               <div
-                key={plano.id}
-                className={`rounded-cartao border p-5 ${
-                  actual ? 'border-ouro/45 bg-ouro/[0.04]' : 'border-linha bg-grafite-alto'
+                key={plano}
+                className={`rounded-cartao border p-5 transition-[border-color,box-shadow] duration-normal ease-assinatura ${
+                  actual
+                    ? 'border-ouro/45 bg-ouro/[0.04] shadow-elevacao-1-escura'
+                    : 'border-linha bg-grafite-alto'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <h3 className="font-display text-lg text-creme">{NOME_PLANO[plano.id]}</h3>
+                  <h3 className="font-display text-lg text-creme">{NOME_PLANO[plano]}</h3>
                   {actual ? <Distintivo tom="ouro">Actual</Distintivo> : null}
                 </div>
-                <p className="mt-3 font-sans text-sm font-bold text-creme">{plano.preco}</p>
+                <p className="mt-3 font-sans text-sm font-bold text-creme">
+                  {formatarKz(PRECO_PLANO[plano])}
+                  <span className="font-normal text-tenue">/mês</span>
+                </p>
                 <ul className="mt-4 flex flex-col gap-2">
-                  {plano.linhas.map((linha) => (
+                  {INCLUI[plano].map((linha) => (
                     <li key={linha} className="flex items-start gap-2.5 font-sans text-xs text-tenue">
                       <span className="mt-[7px] block h-[4px] w-[4px] shrink-0 rounded-full bg-ouro" />
                       {linha}

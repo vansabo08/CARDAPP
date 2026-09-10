@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { DocaPainel, NavegacaoPainel } from '@/components/painel/navegacao';
 import { AvisoDemonstracao } from '@/components/aviso-demonstracao';
+import { AvisoDoPlano } from '@/components/painel/aviso-do-plano';
 import { FundoVivo } from '@/components/marketing/fundo-vivo';
 import { ConviteInstalar } from '@/components/convite-instalar';
 import { SinoDePedidos } from '@/components/painel/sino-de-pedidos';
@@ -25,12 +26,13 @@ export default async function LayoutPainel({ children }: { children: React.React
     <div className="relative min-h-dvh">
       <FundoVivo />
       <AvisoDemonstracao />
+      {restaurante ? <AvisoDoPlano restaurante={restaurante} /> : null}
 
       <div className="md:flex">
         <NavegacaoPainel
           nomeRestaurante={restaurante?.nome ?? null}
           slug={restaurante?.slug ?? null}
-          plano={restaurante?.plano ?? 'balcao'}
+          plano={restaurante?.plano ?? 'mesa'}
           demonstracao={demonstracao}
           administrador={administrador}
         />

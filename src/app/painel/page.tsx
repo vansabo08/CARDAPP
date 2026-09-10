@@ -5,7 +5,7 @@ import { CabecalhoPagina } from '@/components/painel/navegacao';
 import { obterPedidosDeHoje, obterRestauranteDoDono } from '@/lib/dados';
 import { formatarKz, numeroMesa } from '@/lib/format';
 import { resumoDoDia } from '@/lib/resumo';
-import { LIMITES_PLANO, NOME_PLANO, type Pedido } from '@/lib/tipos';
+import { LIMITES_PLANO, NOME_PLANO, type Pedido, type Plano } from '@/lib/tipos';
 
 export const metadata: Metadata = { title: 'Resumo' };
 
@@ -138,7 +138,7 @@ function Numero({ rotulo, valor }: { rotulo: string; valor: string }) {
   );
 }
 
-function Bloqueio({ plano }: { plano: 'balcao' | 'mesa' | 'sala' }) {
+function Bloqueio({ plano }: { plano: Plano }) {
   return (
     <div className="vidro mt-10 overflow-hidden rounded-cartao">
       <div className="relative px-7 py-14 text-center">

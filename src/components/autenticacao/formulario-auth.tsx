@@ -22,7 +22,7 @@ const TEXTOS: Record<
       <>
         Ainda não tem conta?{' '}
         <Link href="/criar-conta" className="font-semibold text-ouro hover:text-ouro-claro">
-          Criar cardápio grátis
+          Experimentar 7 dias
         </Link>
       </>
     ),
@@ -220,7 +220,7 @@ export function FormularioAuth({ modo }: { modo: Modo }) {
 
             {modo === 'criar' ? (
               <p className="mt-4 text-center font-sans text-sm text-creme/70">
-                Grátis para uma mesa e quinze pratos. Sem cartão de crédito.
+                Sete dias com tudo aberto. Sem cartão de crédito.
               </p>
             ) : null}
 

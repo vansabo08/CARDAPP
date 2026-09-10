@@ -4,6 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { Revelar } from '@/components/ui/revelar';
 import { formatarKz } from '@/lib/format';
+import { DIAS_DE_TESTE, INCLUI, PRECO_PLANO } from '@/lib/planos';
 import { cn } from '@/lib/utils';
 
 /**
@@ -24,43 +25,32 @@ type Plano = {
   cta: string;
 };
 
+/**
+ * Dois planos, ambos pagos, ambos com sete dias livres.
+ *
+ * O Balcão — gratuito para sempre, uma mesa, quinze pratos — saiu. Uma
+ * casa que cabia nele nunca chegava a precisar de pagar, e uma que não
+ * cabia via o produto pela versão mais pequena que ele tem. Sete dias
+ * com tudo aberto mostram melhor o que isto faz.
+ */
 const PLANOS: Plano[] = [
   {
-    nome: 'Balcão',
-    preco: 'Grátis',
-    periodo: 'para sempre',
-    descricao: 'Para experimentar antes de decidir.',
-    inclui: ['1 mesa', 'Até 15 pratos', 'Pedidos por WhatsApp', 'Marca Cardapp visível'],
-    destaque: false,
-    cta: 'Começar grátis',
-  },
-  {
     nome: 'Mesa',
-    preco: formatarKz(9900),
-    periodo: 'Cobrança mensal',
-    descricao: 'Para quem já tem a sala cheia.',
-    inclui: [
-      'Mesas ilimitadas',
-      'Pratos ilimitados',
-      'Logótipo próprio no cardápio',
-      'Cartões de mesa em PDF',
-    ],
+    preco: formatarKz(PRECO_PLANO.mesa),
+    periodo: 'por mês, depois dos 7 dias',
+    descricao: 'Tudo o que uma casa precisa para pôr as mesas a pedir.',
+    inclui: INCLUI.mesa,
     destaque: true,
-    cta: 'Escolher Mesa',
+    cta: 'Experimentar 7 dias',
   },
   {
     nome: 'Sala',
-    preco: formatarKz(19900),
-    periodo: 'Cobrança mensal',
-    descricao: 'Para grupos com mais do que uma casa.',
-    inclui: [
-      'Tudo do plano Mesa',
-      'Estatísticas de vendas',
-      'Resumo diário por email',
-      'Várias unidades',
-    ],
+    preco: formatarKz(PRECO_PLANO.sala),
+    periodo: 'por mês, depois dos 7 dias',
+    descricao: 'Para quem quer o cardápio só com a cara da casa.',
+    inclui: INCLUI.sala,
     destaque: false,
-    cta: 'Escolher Sala',
+    cta: 'Experimentar 7 dias',
   },
 ];
 
@@ -123,7 +113,7 @@ export function Precos() {
         </div>
       </Revelar>
 
-      <div className="mt-14 grid items-stretch gap-5 md:grid-cols-3 md:gap-4">
+      <div className="mt-14 grid items-stretch gap-5 md:grid-cols-2 md:gap-5">
         {PLANOS.map((plano, i) => (
           <Revelar key={plano.nome} atraso={i * 70} className="flex">
             <article

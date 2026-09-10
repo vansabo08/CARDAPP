@@ -45,7 +45,7 @@ export default async function PaginaAdmin() {
         <Cartao
           rotulo="Por plano"
           valor={
-            (['balcao', 'mesa', 'sala'] as Plano[])
+            (['mesa', 'sala'] as Plano[])
               .map((p) => `${porPlano.get(p) ?? 0} ${NOME_PLANO[p]}`)
               .join(' · ') || '—'
           }

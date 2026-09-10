@@ -116,17 +116,26 @@ export async function desbloquearSom() {
   }
 }
 
-/** Uma nota, com envelope próprio para não estalar no início nem no fim. */
+/**
+ * Uma nota, com envelope próprio para não estalar no início nem no fim.
+ *
+ * A onda é quadrada e não sinusoidal. Uma sinusóide é uma frequência
+ * pura e some no ruído de uma cozinha — tachos, extractor, gente a
+ * falar. A quadrada traz os harmónicos ímpares todos, e são eles que
+ * atravessam. É mais feia de ouvir e é essa a intenção: isto não é
+ * música, é um alarme.
+ */
 function nota(ctx: Contexto, frequencia: number, comeco: number, duracao: number, volume: number) {
   const oscilador = ctx.createOscillator();
   const ganho = ctx.createGain();
 
-  oscilador.type = 'sine';
+  oscilador.type = 'square';
   oscilador.frequency.setValueAtTime(frequencia, comeco);
 
   // Rampas em vez de saltos: um salto de ganho ouve-se como um "click".
   ganho.gain.setValueAtTime(0.0001, comeco);
-  ganho.gain.exponentialRampToValueAtTime(volume, comeco + 0.015);
+  ganho.gain.exponentialRampToValueAtTime(volume, comeco + 0.008);
+  ganho.gain.setValueAtTime(volume, comeco + duracao * 0.7);
   ganho.gain.exponentialRampToValueAtTime(0.0001, comeco + duracao);
 
   oscilador.connect(ganho);
@@ -162,9 +171,26 @@ export async function tocarSino() {
 
   if (ctx.state !== 'running') return false;
 
+  /*
+   * Quatro impulsos secos, alternados entre duas notas altas.
+   *
+   * A versão anterior eram duas notas suaves em quinta — bonito de
+   * ouvir e inútil: numa sala com gente e um extractor a trabalhar,
+   * ninguém dava por ela. Isto é o padrão de um alarme, não de uma
+   * campainha de hotel: repetido, rápido, e nas frequências onde o
+   * ouvido é mais sensível (2 a 4 kHz).
+   *
+   * O volume está a 0.4 em vez de 0.16. Não sobe mais porque somar
+   * quatro osciladores acima disto entra em saturação, e um som
+   * distorcido ouve-se pior do que um som limpo alto.
+   */
   const agora = ctx.currentTime;
-  nota(ctx, 880, agora, 0.34, 0.16); // lá
-  nota(ctx, 1318.5, agora + 0.13, 0.42, 0.12); // mi, uma quinta acima
+  const PASSO = 0.16;
+
+  for (let i = 0; i < 4; i++) {
+    const alto = i % 2 === 0;
+    nota(ctx, alto ? 2093 : 1568, agora + i * PASSO, 0.11, alto ? 0.4 : 0.34);
+  }
 
   return true;
 }

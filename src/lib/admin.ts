@@ -57,6 +57,8 @@ export type ContaAdmin = {
   mesas: number;
   pratos: number;
   pedidos30Dias: number;
+  testeTerminaEm: string | null;
+  pagoAte: string | null;
 };
 
 export type ResumoAdmin = {
@@ -80,7 +82,7 @@ export async function resumoAdministrativo(): Promise<ResumoAdmin> {
   const [restaurantes, utilizadores] = await Promise.all([
     supabase
       .from('restaurants')
-      .select('id, nome, slug, plano, activo, owner_id, created_at')
+      .select('id, nome, slug, plano, activo, owner_id, created_at, teste_termina_em, pago_ate')
       .order('created_at', { ascending: false }),
     supabase.auth.admin.listUsers({ page: 1, perPage: 1000 }),
   ]);
@@ -93,6 +95,8 @@ export async function resumoAdministrativo(): Promise<ResumoAdmin> {
     activo: boolean;
     owner_id: string;
     created_at: string;
+    teste_termina_em: string | null;
+    pago_ate: string | null;
   }[];
 
   const porDono = new Map(
@@ -151,6 +155,8 @@ export async function resumoAdministrativo(): Promise<ResumoAdmin> {
       mesas: mesasPorRestaurante.get(linha.id) ?? 0,
       pratos: suasCategorias.reduce((s, id) => s + (pratosPorCategoria.get(id) ?? 0), 0),
       pedidos30Dias: pedidosPorRestaurante.get(linha.id) ?? 0,
+      testeTerminaEm: linha.teste_termina_em ?? null,
+      pagoAte: linha.pago_ate ?? null,
     };
   });
 
