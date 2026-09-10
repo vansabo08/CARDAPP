@@ -107,6 +107,85 @@ describe('ler o aviso de pagamento', () => {
   });
 });
 
+describe('o corpo documentado da Kursinha', () => {
+  // https://github.com/kursinha1/kursinha-docs/blob/main/WEBHOOKS_GUIDE.md
+  const aviso = (
+    status: string,
+    produtoId: string,
+    saleId = '65a1b2c3d4e5f67890123456',
+  ) => ({
+    event: `sale.${status}`,
+    timestamp: '2026-08-07T10:15:30.000Z',
+    data: {
+      saleId,
+      orderId: '65a1b2c3d4e5f67890129999',
+      status,
+      product: { id: produtoId, name: 'Cardapp — Plano Sala', price: 19900, currency: 'AOA' },
+      buyer: { id: 'b1', name: 'Cliente', email: 'DONO@Casa.ao', phone: '923000000' },
+      payment: { method: 'reference', transactionId: 'TXN_1234567890' },
+      producer: { id: 'p1', name: 'Produtor', email: 'produtor@example.com' },
+      netAmount: 17500,
+      serviceFee: 1000,
+    },
+  });
+
+  const SALA = '69fc6b443420b95cb08c1ebe';
+
+  it('le a compra aprovada', () => {
+    const e = lerEvento(aviso('approved', SALA));
+    expect(e.tipo).toBe('pago');
+    expect(e.email).toBe('dono@casa.ao');
+    expect(e.produto).toBe(SALA);
+    expect(e.valor).toBe(19900); // o preco, nao o netAmount
+  });
+
+  it('tira o produto de dentro do objecto, e nao devolve nulo', () => {
+    // `data.product` e um objecto. Lido como texto dava nulo, e o plano
+    // comprado ficava por saber.
+    expect(planoDoProduto(lerEvento(aviso('approved', SALA)).produto, {
+      mesa: '6a0c3beddb1169d43a28e16c',
+      sala: SALA,
+    })).toBe('sala');
+  });
+
+  it('abre a conta ao comprador e nao ao produtor', () => {
+    expect(lerEvento(aviso('approved', SALA)).email).not.toBe('produtor@example.com');
+  });
+
+  it('duas vendas do mesmo plano sao dois eventos', () => {
+    // O unico `id` a vista no corpo e o do produto, igual em todas as
+    // compras do mesmo plano. Se fosse ele o id do evento, a segunda
+    // venda entrava como repetida e nao abria conta nenhuma.
+    const a = lerEvento(aviso('approved', SALA, 'venda-1'));
+    const b = lerEvento(aviso('approved', SALA, 'venda-2'));
+    expect(a.eventoId).toBe('sale.approved:venda-1');
+    expect(a.eventoId).not.toBe(b.eventoId);
+  });
+
+  it('o cancelamento nao passa por repeticao da compra', () => {
+    const compra = lerEvento(aviso('approved', SALA, 'venda-1'));
+    const fecho = lerEvento(aviso('cancelled', SALA, 'venda-1'));
+    expect(fecho.tipo).toBe('anulado');
+    expect(fecho.eventoId).not.toBe(compra.eventoId);
+  });
+
+  it('uma venda pendente nao abre nada', () => {
+    expect(lerEvento(aviso('pending', SALA)).tipo).toBe('ignorado');
+  });
+
+  it('o estado manda sobre o nome do evento', () => {
+    const contraditorio = aviso('approved', SALA);
+    contraditorio.data.status = 'pending';
+    expect(lerEvento(contraditorio).tipo).toBe('ignorado');
+  });
+
+  it('uma aprovacao sem email do comprador nao abre nada', () => {
+    const semEmail = aviso('approved', SALA);
+    semEmail.data.buyer.email = '';
+    expect(lerEvento(semEmail).tipo).toBe('ignorado');
+  });
+});
+
 describe('do produto para o plano', () => {
   const mapa = { mesa: 'prod_abc', sala: 'prod_xyz' };
 

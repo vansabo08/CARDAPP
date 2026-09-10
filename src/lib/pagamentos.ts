@@ -46,8 +46,14 @@ function eObjecto(v: unknown): v is Record<string, unknown> {
  * níveis abaixo dentro de `seller`. A ordem das chaves também conta — a
  * primeira que aparecer na lista ganha.
  */
+/** `saleId`, `sale_id` e `SALE-ID` são a mesma chave para efeitos de procura. */
+function normalizar(chave: string): string {
+  return chave.toLowerCase().replace(/[_\-\s]/g, '');
+}
+
 function procurar(raiz: unknown, chaves: string[]): unknown {
   for (const chave of chaves) {
+    const alvo = normalizar(chave);
     const fila: unknown[] = [raiz];
 
     while (fila.length) {
@@ -55,7 +61,7 @@ function procurar(raiz: unknown, chaves: string[]): unknown {
       if (!eObjecto(actual)) continue;
 
       for (const [k, v] of Object.entries(actual)) {
-        if (k.toLowerCase() === chave && v !== null && v !== '') return v;
+        if (normalizar(k) === alvo && v !== null && v !== '') return v;
       }
       for (const v of Object.values(actual)) {
         if (eObjecto(v)) fila.push(v);
@@ -158,6 +164,89 @@ function classificar(sinal: string | null): { tipo: EventoPagamento['tipo']; mot
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
+/**
+ * O identificador de uma coisa que tanto pode vir como texto — `product:
+ * "abc"` — como embrulhada num objecto — `product: { id, name }`. Dentro
+ * do objecto o id vale mais do que o nome: o nome muda quando alguém
+ * reescreve a página de vendas, o id não.
+ */
+function identificador(v: unknown): string | null {
+  const directo = texto(v);
+  if (directo) return directo;
+
+  if (eObjecto(v)) {
+    for (const chave of ['id', 'product_id', 'productId', 'code', 'slug', 'name', 'nome']) {
+      const dentro = texto(v[chave]);
+      if (dentro) return dentro;
+    }
+  }
+
+  return null;
+}
+
+/* ------------------------------------------------------------------ */
+/* A forma documentada da Kursinha                                     */
+/* ------------------------------------------------------------------ */
+
+/**
+ * A Kursinha publica o formato do webhook, e quando o corpo tem essa
+ * forma lê-se por ela e não à apalpadela.
+ *
+ * A procura genérica abaixo continua a existir para o que chegar de
+ * outra maneira, mas errava aqui em dois sítios. O `data.product` é um
+ * objecto, e dela saía `null` em vez do plano. E o único `id` à vista
+ * era o do produto — igual em todas as compras do mesmo plano: a segunda
+ * venda do Plano Sala entrava como repetição da primeira, respondia
+ * "repetido" e não abria conta nenhuma.
+ *
+ * O id do evento é `event:saleId`, como a documentação manda. O nome do
+ * evento entra de propósito: a compra e o reembolso da mesma venda são
+ * dois avisos, e com o `saleId` sozinho o reembolso passava por
+ * repetição da compra e nunca fechava a conta.
+ */
+function lerKursinha(bruto: Record<string, unknown>): EventoPagamento | null {
+  const nomeEvento = texto(bruto.event);
+  const dados = bruto.data;
+  if (!nomeEvento || !eObjecto(dados)) return null;
+
+  const venda = texto(dados.saleId) ?? texto(dados.orderId);
+  if (!venda) return null;
+
+  const eventoId = `${nomeEvento}:${venda}`;
+
+  // O estado manda sobre o nome do evento: `sale.approved` com
+  // `status: "pending"` ainda não é dinheiro em casa.
+  const { tipo, motivo } = classificar(texto(dados.status) ?? nomeEvento);
+
+  const comprador = eObjecto(dados.buyer) ? dados.buyer : {};
+  const emailBruto = texto(comprador.email);
+  const email = emailBruto && EMAIL.test(emailBruto) ? emailBruto.toLowerCase() : null;
+
+  const produtoObj = eObjecto(dados.product) ? dados.product : {};
+  const produto = identificador(produtoObj);
+
+  // O preço do produto e não o `netAmount`: o líquido já vem com a
+  // comissão e a taxa descontadas, e não bate com a tabela de preços.
+  const valor = numero(produtoObj.price) ?? numero(dados.netAmount);
+
+  if (tipo === 'pago' && !email) {
+    return {
+      eventoId,
+      tipo: 'ignorado',
+      email: null,
+      produto,
+      valor,
+      meses: 1,
+      motivo: 'Pagamento sem email do comprador — não há a quem abrir a conta.',
+    };
+  }
+
+  // Um pagamento vale um mês. A Kursinha não manda período no aviso, e
+  // inventar mais do que um mês a partir do preço seria dar acesso com
+  // base num palpite.
+  return { eventoId, tipo, email, produto, valor, meses: 1, motivo };
+}
+
 export function lerEvento(bruto: unknown): EventoPagamento {
   if (!eObjecto(bruto)) {
     return {
@@ -170,6 +259,9 @@ export function lerEvento(bruto: unknown): EventoPagamento {
       motivo: 'O corpo não é um objecto.',
     };
   }
+
+  const kursinha = lerKursinha(bruto);
+  if (kursinha) return kursinha;
 
   const sinal =
     texto(procurar(bruto, ['status', 'estado', 'event', 'evento', 'type', 'tipo', 'action'])) ??
@@ -184,6 +276,7 @@ export function lerEvento(bruto: unknown): EventoPagamento {
 
   const eventoId = texto(
     procurar(bruto, [
+      'sale_id',
       'event_id',
       'evento_id',
       'transaction_id',
@@ -198,7 +291,7 @@ export function lerEvento(bruto: unknown): EventoPagamento {
     ]),
   );
 
-  const produto = texto(
+  const produto = identificador(
     procurar(bruto, [
       'product_id',
       'produto_id',

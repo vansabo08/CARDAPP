@@ -1,4 +1,4 @@
-import { timingSafeEqual } from 'node:crypto';
+import { createHmac, timingSafeEqual } from 'node:crypto';
 import { NextResponse } from 'next/server';
 import { clienteAdministrador } from '@/lib/supabase/administrador';
 import { lerEvento, novoPagoAte, planoDoProduto, planoDoValor } from '@/lib/pagamentos';
@@ -11,9 +11,11 @@ import { PRECO_PLANO, PRODUTO_KURSINHA } from '@/lib/planos';
  * ponto mais sensível da aplicação: qualquer pessoa no mundo lhe pode
  * bater à porta. Por isso, três barreiras, por esta ordem:
  *
- * 1. O segredo. Sem ele, nada é sequer lido. Comparado em tempo
- *    constante, para o número de tentativas não revelar o quanto se
- *    acertou.
+ * 1. A assinatura. A Kursinha manda `X-Webhook-Signature: sha256=<hmac>`,
+ *    calculado sobre o corpo cru com o segredo combinado. Vale mais do
+ *    que um segredo à solta no endereço: prova também que o corpo não
+ *    foi mexido pelo caminho. Comparada em tempo constante, para o
+ *    número de tentativas não revelar o quanto se acertou.
  * 2. O evento é reclamado antes de ser aplicado. Um webhook que não
  *    recebe 200 é reenviado, e as plataformas reenviam com gosto — sem
  *    isto, o mesmo pagamento dava dois meses.
@@ -42,6 +44,29 @@ function segredoConfere(recebido: string | null, esperado: string) {
   return timingSafeEqual(a, b);
 }
 
+/**
+ * A assinatura da Kursinha: HMAC-SHA256 do corpo cru, em hexadecimal,
+ * com o prefixo `sha256=`.
+ *
+ * Tem de ser calculada sobre o texto exactamente como chegou. Voltar a
+ * serializar o objecto depois de o ler daria outro texto — outra ordem
+ * de chaves, outros espaços — e outra assinatura.
+ */
+function assinaturaConfere(cabecalho: string | null, corpo: string, segredo: string) {
+  if (!cabecalho) return false;
+
+  const recebido = cabecalho.trim().replace(/^sha256=/i, '').toLowerCase();
+  if (!/^[0-9a-f]+$/.test(recebido) || recebido.length % 2 !== 0) return false;
+
+  const esperado = createHmac('sha256', segredo).update(corpo, 'utf8').digest('hex');
+
+  const a = Buffer.from(recebido, 'hex');
+  const b = Buffer.from(esperado, 'hex');
+  if (a.length !== b.length) return false;
+
+  return timingSafeEqual(a, b);
+}
+
 export async function POST(pedido: Request) {
   const esperado = process.env.KURSINHA_WEBHOOK_SECRET ?? '';
 
@@ -52,20 +77,37 @@ export async function POST(pedido: Request) {
     return NextResponse.json({ erro: 'Webhook não configurado.' }, { status: 503 });
   }
 
-  const url = new URL(pedido.url);
-  const recebido =
-    pedido.headers.get('x-cardapp-assinatura') ??
-    pedido.headers.get('x-webhook-secret') ??
-    pedido.headers.get('authorization')?.replace(/^Bearer\s+/i, '') ??
-    url.searchParams.get('chave');
+  // O corpo é lido como texto porque a assinatura é calculada sobre ele
+  // tal e qual chegou. Só depois se converte em objecto.
+  const corpo = await pedido.text();
 
-  if (!segredoConfere(recebido, esperado)) {
+  const assinatura = pedido.headers.get('x-webhook-signature');
+
+  let autorizado: boolean;
+  if (assinatura) {
+    autorizado = assinaturaConfere(assinatura, corpo, esperado);
+  } else {
+    // Sem segredo configurado do lado da Kursinha não vem assinatura
+    // nenhuma. Aceita-se então o mesmo segredo à antiga — em cabeçalho
+    // ou em `?chave=` — para o endereço poder ser testado antes de estar
+    // tudo montado. Havendo assinatura, é ela que manda.
+    const url = new URL(pedido.url);
+    autorizado = segredoConfere(
+      pedido.headers.get('x-cardapp-assinatura') ??
+        pedido.headers.get('x-webhook-secret') ??
+        pedido.headers.get('authorization')?.replace(/^Bearer\s+/i, '') ??
+        url.searchParams.get('chave'),
+      esperado,
+    );
+  }
+
+  if (!autorizado) {
     return NextResponse.json({ erro: 'Não autorizado.' }, { status: 401 });
   }
 
   let bruto: unknown;
   try {
-    bruto = await pedido.json();
+    bruto = JSON.parse(corpo);
   } catch {
     return NextResponse.json({ erro: 'Corpo inválido.' }, { status: 400 });
   }
