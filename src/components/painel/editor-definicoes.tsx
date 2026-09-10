@@ -11,8 +11,9 @@ import {
   type ValoresRestaurante,
 } from '@/components/painel/formulario-restaurante';
 import { formatarKz } from '@/lib/format';
-import { NOME_PLANO, type Plano, type Restaurante } from '@/lib/tipos';
-import { guardarRestaurante } from '@/app/painel/definicoes/accoes';
+import { NOME_PLANO, type ModoPedido, type Plano, type Restaurante } from '@/lib/tipos';
+import { guardarModoPedido, guardarRestaurante } from '@/app/painel/definicoes/accoes';
+import { desbloquearSom, lembrarSom } from '@/lib/som';
 
 const PLANOS: { id: Plano; preco: string; linhas: string[] }[] = [
   { id: 'balcao', preco: 'Grátis', linhas: ['1 mesa', '15 pratos', 'Marca Cardapp visível'] },
@@ -47,10 +48,63 @@ export function EditorDefinicoes({
   const [estado, setEstado] = React.useState<'parado' | 'a-guardar' | 'guardado'>('parado');
   const [sinal, sinalizar] = useSinalDeBotao();
   const [erro, setErro] = React.useState<string | null>(null);
+  const [modoAGravar, setModoAGravar] = React.useState(false);
+  const [erroDoModo, setErroDoModo] = React.useState<string | null>(null);
+  const [modoGuardado, setModoGuardado] = React.useState(false);
+
+  // A confirmacao da via e passageira, como o visto do botao.
+  React.useEffect(() => {
+    if (!modoGuardado) return;
+    const relogio = setTimeout(() => setModoGuardado(false), 1800);
+    return () => clearTimeout(relogio);
+  }, [modoGuardado]);
 
   function mudar(parcial: Partial<ValoresRestaurante>) {
     setValores((v) => ({ ...v, ...parcial }));
     setEstado('parado');
+  }
+
+  /**
+   * A via grava-se ao clicar, sem passar pelo botão de baixo.
+   *
+   * Mostra-se já no ecrã e desfaz-se se a gravação falhar: o contrário —
+   * esperar pela resposta antes de marcar — deixava o rádio a parecer
+   * avariado durante meio segundo em ligações fracas, que é onde isto
+   * vai ser usado.
+   */
+  async function escolherModo(modo: ModoPedido) {
+    const anterior = valores.modo_pedido;
+    if (modo === anterior) return;
+
+    setValores((v) => ({ ...v, modo_pedido: modo }));
+
+    /*
+     * Este clique é um gesto do utilizador, e um gesto é exactamente o
+     * que os browsers exigem para deixar tocar som. Aproveita-se: quem
+     * escolhe receber pedidos dentro da aplicação sai daqui com o som
+     * já desbloqueado, sem ter de encontrar outro botão.
+     */
+    if (modo === 'app') {
+      lembrarSom(true);
+      void desbloquearSom();
+    } else {
+      lembrarSom(false);
+    }
+
+    setModoAGravar(true);
+    setErroDoModo(null);
+    setModoGuardado(false);
+
+    const resultado = await guardarModoPedido(modo);
+    setModoAGravar(false);
+
+    if (!resultado.ok) {
+      setValores((v) => ({ ...v, modo_pedido: anterior }));
+      setErroDoModo(resultado.erro ?? 'Não foi possível guardar a via.');
+      return;
+    }
+
+    setModoGuardado(true);
   }
 
   async function guardar() {
@@ -90,7 +144,10 @@ export function EditorDefinicoes({
         <div className="mt-5 max-w-[560px]">
           <EscolhaDoModo
             valor={valores.modo_pedido}
-            aoMudar={(modo_pedido) => mudar({ modo_pedido })}
+            aoMudar={escolherModo}
+            aGravar={modoAGravar}
+            guardado={modoGuardado}
+            erro={erroDoModo}
           />
         </div>
 

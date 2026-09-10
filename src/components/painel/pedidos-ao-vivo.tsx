@@ -11,7 +11,14 @@ import {
   eEstadoFinal,
   hAQuantoTempo,
 } from '@/lib/pedidos';
-import { desbloquearSom, somSuportado, tocarSino } from '@/lib/som';
+import {
+  desbloquearSom,
+  lembrarSom,
+  ligarSomAoPrimeiroGesto,
+  somLembrado,
+  somSuportado,
+  tocarSino,
+} from '@/lib/som';
 import { cn } from '@/lib/utils';
 import { mudarEstado } from '@/app/painel/pedidos/accoes';
 import type { EstadoPedido, Pedido } from '@/lib/tipos';
@@ -102,10 +109,26 @@ export function PedidosAoVivo({
   /* ---------------------------------------------------------------- */
   /* Som                                                               */
   /* ---------------------------------------------------------------- */
+
+  /**
+   * O som liga-se sozinho, sem ninguém ter de o pedir duas vezes.
+   *
+   * Quem escolheu receber pedidos dentro da aplicação já disse que quer
+   * ser avisado; obrigá-lo a carregar noutro botão aqui era pedir a
+   * mesma coisa outra vez. O que os browsers exigem é um gesto — não uma
+   * decisão — por isso serve qualquer toque nesta página, e o primeiro
+   * chega em segundos. O botão continua lá para quem chegar antes disso.
+   */
+  React.useEffect(() => {
+    if (!somLembrado()) return;
+    return ligarSomAoPrimeiroGesto(setSomLigado);
+  }, []);
+
   async function ligarSom() {
     // Tem de correr dentro do clique: é a regra dos browsers.
     const pronto = await desbloquearSom();
     setSomLigado(pronto);
+    lembrarSom(pronto);
     if (pronto) tocarSino();
   }
 

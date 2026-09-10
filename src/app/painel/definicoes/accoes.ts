@@ -186,6 +186,44 @@ export async function guardarRestaurante(dados: DadosRestaurante): Promise<Resul
   return { ok: true, slug };
 }
 
+/**
+ * Grava só a via por onde os pedidos entram.
+ *
+ * Tem acção própria, e não vai a reboque do `guardarRestaurante`, por
+ * duas razões que deram problema:
+ *
+ * O selector estava numa secção acima do botão "Guardar alterações", e
+ * quem o mudava e saía do ecrã perdia a escolha — voltava a WhatsApp na
+ * visita seguinte. Um controlo com duas opções que se lê como um
+ * interruptor tem de se comportar como um interruptor.
+ *
+ * E `guardarRestaurante` valida o formulário inteiro: bastava o número
+ * de WhatsApp estar a meio de ser escrito para a gravação sair logo com
+ * erro e a via nunca chegar à base. Aqui não há mais nada para validar
+ * do que a própria via.
+ */
+export async function guardarModoPedido(modo: ModoPedido): Promise<Resultado> {
+  const supabase = await clienteServidor();
+  const actual = await obterRestauranteDoDono();
+  if (!supabase || !actual) return { ok: true, demonstracao: true };
+
+  const { data, error } = await supabase
+    .from('restaurants')
+    .update({ modo_pedido: modoSeguro(modo) })
+    .eq('id', actual.id)
+    .select('id')
+    .maybeSingle();
+
+  if (error) return { ok: false, erro: error.message };
+  if (!data) return { ok: false, erro: 'Não foi possível guardar. Entre outra vez.' };
+
+  revalidatePath('/painel/definicoes');
+  revalidatePath('/painel/pedidos');
+  revalidatePath(`/${actual.slug}`);
+
+  return { ok: true };
+}
+
 /** Acrescenta um sufixo se o endereço já estiver ocupado por outra casa. */
 async function slugLivre(
   supabase: NonNullable<Awaited<ReturnType<typeof clienteServidor>>>,

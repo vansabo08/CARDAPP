@@ -43,12 +43,20 @@ export const MODOS: { id: ModoPedido; titulo: string; texto: string }[] = [
 export function EscolhaDoModo({
   valor,
   aoMudar,
+  aGravar = false,
+  guardado = false,
+  erro = null,
 }: {
   valor: ModoPedido;
   aoMudar: (v: ModoPedido) => void;
+  /** Grava-se ao clicar; isto diz quando está a caminho. */
+  aGravar?: boolean;
+  /** Passageiro: some sozinho passado um instante. */
+  guardado?: boolean;
+  erro?: string | null;
 }) {
   return (
-    <fieldset className="flex flex-col gap-2.5">
+    <fieldset className="flex flex-col gap-2.5" aria-busy={aGravar || undefined}>
       <legend className="sr-only">Como recebe os pedidos</legend>
 
       {MODOS.map((modo) => {
@@ -56,8 +64,10 @@ export function EscolhaDoModo({
         return (
           <label
             key={modo.id}
-            className={`flex cursor-pointer gap-3.5 rounded-cartao border p-4 transition-colors duration-200 ease-calmo ${
-              escolhido ? 'border-ouro/55 bg-ouro/[0.06]' : 'border-linha hover:border-creme/25'
+            className={`flex cursor-pointer gap-3.5 rounded-cartao border p-4 transition-[border-color,background-color,box-shadow,transform] duration-normal ease-assinatura ${
+              escolhido
+                ? 'border-ouro/55 bg-ouro/[0.06] shadow-elevacao-1-escura'
+                : 'border-linha hover:-translate-y-px hover:border-creme/25 hover:shadow-elevacao-1-escura'
             }`}
           >
             <input
@@ -79,6 +89,26 @@ export function EscolhaDoModo({
           </label>
         );
       })}
+
+      {/*
+        Confirmação à vista. Sem ela, um selector que grava sozinho não
+        se distingue de um que não grava nada — que era exactamente o
+        problema.
+      */}
+      <p
+        className={`font-sans text-xs transition-opacity duration-normal ease-assinatura ${
+          erro
+            ? 'text-[#e0655a] opacity-100'
+            : aGravar
+              ? 'text-tenue opacity-100'
+              : guardado
+                ? 'text-verde opacity-100'
+                : 'opacity-0'
+        }`}
+        role={erro ? 'alert' : undefined}
+      >
+        {erro ?? (aGravar ? 'A guardar…' : 'Guardado.')}
+      </p>
     </fieldset>
   );
 }

@@ -31,6 +31,73 @@ export function somSuportado() {
 }
 
 /**
+ * A casa já disse que quer o som.
+ *
+ * Guarda-se no aparelho, e não na conta, porque a decisão é do aparelho:
+ * o telemóvel do balcão toca, o portátil do escritório não tem de tocar.
+ */
+const CHAVE = 'cardapp:som';
+
+export function lembrarSom(ligado: boolean) {
+  try {
+    if (ligado) localStorage.setItem(CHAVE, '1');
+    else localStorage.removeItem(CHAVE);
+  } catch {
+    /* janela privada, ou armazenamento bloqueado: não é motivo para falhar */
+  }
+}
+
+export function somLembrado() {
+  try {
+    return localStorage.getItem(CHAVE) === '1';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Liga o som ao primeiro toque em qualquer sítio da página.
+ *
+ * Os browsers exigem um gesto antes de deixar tocar seja o que for, e
+ * não há forma de contornar isso — nem devia haver. O que se pode fazer
+ * é não obrigar a casa a procurar um botão: o primeiro clique que der
+ * no painel, seja onde for, serve de gesto. Depois disso o aparelho
+ * toca sozinho a cada pedido.
+ *
+ * Devolve a função que desfaz a escuta.
+ */
+export function ligarSomAoPrimeiroGesto(aoLigar: (ligado: boolean) => void) {
+  if (typeof window === 'undefined') return () => {};
+
+  let feito = false;
+
+  async function tentar() {
+    if (feito) return;
+    const pronto = await desbloquearSom();
+    if (!pronto) return;
+    feito = true;
+    aoLigar(true);
+    remover();
+  }
+
+  function remover() {
+    window.removeEventListener('pointerdown', tentar);
+    window.removeEventListener('keydown', tentar);
+    window.removeEventListener('touchstart', tentar);
+  }
+
+  // Uma tentativa imediata: se o contexto já estiver desbloqueado nesta
+  // aba, nem é preciso esperar por gesto nenhum.
+  void tentar();
+
+  window.addEventListener('pointerdown', tentar);
+  window.addEventListener('keydown', tentar);
+  window.addEventListener('touchstart', tentar);
+
+  return remover;
+}
+
+/**
  * Os browsers só deixam tocar som depois de a pessoa tocar no ecrã.
  *
  * Isto tem de correr dentro do gesto — o clique no botão que liga o som.

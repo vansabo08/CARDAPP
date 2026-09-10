@@ -104,6 +104,12 @@ const config: Config = {
           to: { opacity: '1', transform: 'translateY(0)' },
         },
 
+        /* Entrada pelo topo, para o que desce em vez de subir. */
+        descer: {
+          from: { opacity: '0', transform: 'translateY(-12px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+
         /* Erro: duas oscilações que vão morrendo. Não leva overshoot —
            a curva com ressalto é da família do sucesso, e um erro não
            deve parecer festivo. */
@@ -141,6 +147,7 @@ const config: Config = {
         aparecer: 'aparecer 250ms cubic-bezier(0.2,0,0,1) both',
         folha: 'folha 400ms cubic-bezier(0.2,0,0,1) both',
         marca: 'marca 250ms cubic-bezier(0.175,0.885,0.32,1.275) both',
+        descer: 'descer 400ms cubic-bezier(0.2,0,0,1) both',
         abanar: 'abanar 350ms cubic-bezier(0.3,0,1,1) both',
         saltinho: 'saltinho 350ms cubic-bezier(0.175,0.885,0.32,1.275) both',
         'desenhar-visto': 'desenhar-visto 350ms cubic-bezier(0.2,0,0,1) both',
