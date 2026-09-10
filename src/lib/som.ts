@@ -136,13 +136,79 @@ function nota(ctx: Contexto, frequencia: number, comeco: number, duracao: number
   oscilador.stop(comeco + duracao + 0.05);
 }
 
-export function tocarSino() {
+/**
+ * Toca o sino, acordando o contexto se for preciso.
+ *
+ * A primeira versão desistia em silêncio quando o contexto não estava a
+ * correr — e é precisamente o que acontece na vida real: o browser
+ * suspende o AudioContext quando o separador passa para segundo plano, e
+ * um painel de cozinha vive em segundo plano. O pedido caía, o contexto
+ * estava suspenso, e o sino não tocava.
+ *
+ * Uma vez desbloqueado por um gesto, o contexto pode voltar a correr sem
+ * novo gesto. Por isso pede-se `resume()` antes de tocar, sempre.
+ */
+export async function tocarSino() {
   const ctx = obterContexto();
-  if (!ctx || ctx.state !== 'running') return false;
+  if (!ctx) return false;
+
+  if (ctx.state !== 'running') {
+    try {
+      await ctx.resume();
+    } catch {
+      return false;
+    }
+  }
+
+  if (ctx.state !== 'running') return false;
 
   const agora = ctx.currentTime;
   nota(ctx, 880, agora, 0.34, 0.16); // lá
   nota(ctx, 1318.5, agora + 0.13, 0.42, 0.12); // mi, uma quinta acima
 
   return true;
+}
+
+/* ------------------------------------------------------------------ */
+/* Aviso do sistema                                                    */
+/* ------------------------------------------------------------------ */
+
+/**
+ * O som resolve o separador em segundo plano. Não resolve o painel
+ * fechado, nem o telemóvel bloqueado — aí o browser congela a página e
+ * não há áudio nenhum a sair dela.
+ *
+ * Um aviso do sistema aparece mesmo com o separador atrás de outro, e é
+ * o que se pode fazer sem servidor de notificações. Pede-se a permissão
+ * ao mesmo tempo que o som, no mesmo gesto, para não haver duas
+ * perguntas.
+ */
+export async function pedirAvisos() {
+  if (typeof Notification === 'undefined') return false;
+  if (Notification.permission === 'granted') return true;
+  if (Notification.permission === 'denied') return false;
+
+  try {
+    return (await Notification.requestPermission()) === 'granted';
+  } catch {
+    return false;
+  }
+}
+
+export function avisarDoPedido(mesa: number | null, total: string) {
+  if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return false;
+
+  try {
+    new Notification('Pedido novo no Cardapp', {
+      body: mesa != null ? `Mesa ${mesa} — ${total}` : `Sem mesa — ${total}`,
+      icon: '/icone-192.png',
+      badge: '/icone-192.png',
+      // Um pedido substitui o aviso do anterior em vez de empilhar dez.
+      tag: 'cardapp-pedido',
+      renotify: true,
+    } as NotificationOptions);
+    return true;
+  } catch {
+    return false;
+  }
 }

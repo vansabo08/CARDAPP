@@ -65,9 +65,8 @@ export default async function PaginaPedidos() {
             Esta casa está a receber pedidos pelo WhatsApp.
           </p>
           <p className="mt-2.5 max-w-[62ch] font-sans text-sm leading-normal text-tenue">
-            Os pedidos ficam aqui registados na mesma, mas o cliente não vê o estado a mudar e este
-            ecrã não toca. Para lhe dar acompanhamento em tempo real, mude a forma de receber nas
-            definições.
+            Os pedidos ficam aqui registados e o aparelho toca na mesma — o que falta é o cliente
+            poder acompanhar o estado. Para lhe dar isso, mude a forma de receber nas definições.
           </p>
         </div>
       ) : null}

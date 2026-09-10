@@ -15,7 +15,7 @@ import {
   desbloquearSom,
   lembrarSom,
   ligarSomAoPrimeiroGesto,
-  somLembrado,
+  pedirAvisos,
   somSuportado,
   tocarSino,
 } from '@/lib/som';
@@ -77,13 +77,22 @@ export function PedidosAoVivo({
         },
         (evento) => {
           const novo = comMesa(evento.new as Pedido);
+          let repetido = false;
+
           setPedidos((antes) => {
             // O Realtime pode repetir um evento; o pedido não pode
             // aparecer duas vezes na lista da cozinha.
-            if (antes.some((p) => p.id === novo.id)) return antes;
+            if (antes.some((p) => p.id === novo.id)) {
+              repetido = true;
+              return antes;
+            }
             return [novo, ...antes];
           });
-          tocarSino();
+
+          // Quem toca é o SinoDePedidos, no layout do painel: toca em
+          // qualquer página e não só nesta. Se tocasse aqui também, a
+          // casa ouvia duas vezes por pedido.
+          void repetido;
         },
       )
       .on(
@@ -120,16 +129,35 @@ export function PedidosAoVivo({
    * chega em segundos. O botão continua lá para quem chegar antes disso.
    */
   React.useEffect(() => {
-    if (!somLembrado()) return;
-    return ligarSomAoPrimeiroGesto(setSomLigado);
+    // Arma sempre, e não só quando já ficou lembrado de outra visita: a
+    // versão anterior exigia que a casa tivesse carregado no botão em
+    // algum momento, e quem nunca o fez ficava em silêncio para sempre.
+    return ligarSomAoPrimeiroGesto((ligado) => {
+      setSomLigado(ligado);
+      if (ligado) lembrarSom(true);
+    });
   }, []);
 
   async function ligarSom() {
-    // Tem de correr dentro do clique: é a regra dos browsers.
+    // Tem de correr dentro do clique: é a regra dos browsers. A permissão
+    // dos avisos vai no mesmo gesto, para não haver duas perguntas.
     const pronto = await desbloquearSom();
     setSomLigado(pronto);
     lembrarSom(pronto);
-    if (pronto) tocarSino();
+    if (pronto) {
+      void tocarSino();
+      void pedirAvisos();
+    }
+  }
+
+  /** Prova de vida: a casa carrega e ouve, em vez de esperar por um pedido. */
+  async function testarSom() {
+    const ouviu = await tocarSino();
+    if (!ouviu) {
+      const pronto = await desbloquearSom();
+      setSomLigado(pronto);
+      if (pronto) void tocarSino();
+    }
   }
 
   const porEstado = React.useMemo(() => {
@@ -161,7 +189,7 @@ export function PedidosAoVivo({
 
         {somSuportado() ? (
           somLigado ? (
-            <span className="inline-flex items-center gap-2 rounded-full border border-linha px-3.5 py-1.5 font-sans text-xs text-tenue">
+            <span className="inline-flex items-center gap-2 rounded-full border border-verde/40 px-3.5 py-1.5 font-sans text-xs text-verde">
               <Bell className="h-3.5 w-3.5" />
               O som está ligado
             </span>
@@ -181,6 +209,13 @@ export function PedidosAoVivo({
             Este aparelho não toca som
           </span>
         )}
+        <button
+          type="button"
+          onClick={testarSom}
+          className="inline-flex items-center gap-2 rounded-full border border-linha px-3.5 py-1.5 font-sans text-xs text-tenue transition-colors duration-rapida ease-assinatura hover:text-creme"
+        >
+          Tocar para testar
+        </button>
       </div>
 
       {!somLigado && somSuportado() ? (
