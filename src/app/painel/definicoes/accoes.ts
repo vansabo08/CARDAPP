@@ -73,6 +73,21 @@ export async function criarRestaurante(
 
   const slug = await slugLivre(supabase, slugify(dados.slug || dados.nome));
 
+  /*
+   * O plano vai escrito, e não deixado à omissão da coluna.
+   *
+   * Foi assim que se partiu a criação de contas: os planos passaram a
+   * ser dois, o CHECK passou a aceitar só 'mesa' e 'sala', e a coluna
+   * ficou com 'balcao' por omissão. Como isto nunca escrevia o plano,
+   * cada inscrição nova ia buscar o valor velho e batia no CHECK.
+   *
+   * Ninguém deu por ela durante dias porque a única casa que existia
+   * tinha sido criada antes da mudança — e uma conta que não se cria não
+   * se queixa a ninguém.
+   *
+   * A omissão da base foi corrigida. Escrever aqui é o que garante que
+   * uma mudança de esquema não volta a fechar a porta da entrada.
+   */
   const base = {
     owner_id: user.id,
     nome: dados.nome.trim().slice(0, 80),
@@ -80,6 +95,7 @@ export async function criarRestaurante(
     whatsapp: normalizarWhatsApp(dados.whatsapp),
     logo_url: dados.logo_url,
     cor_marca: dados.cor_marca || '#D9B36B',
+    plano: 'mesa' as const,
   };
 
   const novas = { capa_url: dados.capa_url, modo_pedido: modoSeguro(dados.modo_pedido) };

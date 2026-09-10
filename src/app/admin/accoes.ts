@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { exigirAdministrador } from '@/lib/admin';
+import { eAdministrador, exigirAdministrador } from '@/lib/admin';
 import { utilizadorActual } from '@/lib/supabase/servidor';
 import { clienteAdministrador } from '@/lib/supabase/administrador';
 import type { Plano } from '@/lib/tipos';
@@ -271,4 +271,130 @@ export async function aplicarPagamento(
   );
 
   return actualizou(casa.slug);
+}
+
+/* ------------------------------------------------------------------ */
+/* Comprovativos de transferência                                      */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Aprovar ou recusar um comprovativo.
+ *
+ * A casa já tem acesso provisório desde que o subiu — isto decide se o
+ * provisório vira mês ou se a porta se fecha outra vez.
+ *
+ * Aprovar soma os dias do plano à data que a conta tinha ANTES da
+ * cortesia. Somar por cima dos três dias provisórios dava trinta e três
+ * por um pagamento de trinta, todos os meses, e ninguém daria por ela.
+ */
+export async function decidirComprovativo(
+  comprovativoId: string,
+  aprovado: boolean,
+  nota?: string,
+): Promise<Resultado> {
+  await exigirAdministrador();
+
+  const supabase = clienteAdministrador();
+  if (!supabase) return { ok: false, erro: 'SUPABASE_SERVICE_ROLE_KEY em falta.' };
+
+  const { data: bruto } = await supabase
+    .from('comprovativos')
+    .select('id, restaurant_id, plano, estado, expirava_em')
+    .eq('id', comprovativoId)
+    .maybeSingle();
+
+  const comprovativo = bruto as
+    | {
+        id: string;
+        restaurant_id: string;
+        plano: Plano;
+        estado: string;
+        expirava_em: string | null;
+      }
+    | null;
+
+  if (!comprovativo) return { ok: false, erro: 'Comprovativo não encontrado.' };
+
+  // Decidir duas vezes o mesmo comprovativo dava dois meses por um
+  // pagamento — e a segunda vez ninguém a via.
+  if (comprovativo.estado !== 'a_espera') {
+    return { ok: false, erro: 'Este comprovativo já foi decidido.' };
+  }
+
+  const { data: casaBruta } = await supabase
+    .from('restaurants')
+    .select('acesso_expira_em, slug')
+    .eq('id', comprovativo.restaurant_id)
+    .maybeSingle();
+
+  const casa = casaBruta as { acesso_expira_em: string | null; slug?: string } | null;
+  const antes = casa?.acesso_expira_em ?? null;
+
+  /*
+   * A recusa fecha a porta a partir de agora, e não devolve a data
+   * antiga: essa já tinha expirado, que foi o que trouxe a casa aqui.
+   */
+  const ate = aprovado
+    ? proximaExpiracao(comprovativo.expirava_em, comprovativo.plano).toISOString()
+    : new Date().toISOString();
+
+  const { error } = await supabase
+    .from('restaurants')
+    .update({ acesso_expira_em: ate })
+    .eq('id', comprovativo.restaurant_id);
+
+  if (error) return { ok: false, erro: error.message };
+
+  // A conta já mudou. Se o carimbo falhar fica um comprovativo por
+  // decidir na fila — visível, e corrigível — em vez de uma casa com o
+  // acesso mexido sem se saber porquê.
+  await supabase
+    .from('comprovativos')
+    .update({
+      estado: aprovado ? 'aprovado' : 'recusado',
+      decidido_em: new Date().toISOString(),
+      decidido_por: (await utilizadorActual())?.email ?? 'desconhecido',
+      nota: nota?.trim() || null,
+    })
+    .eq('id', comprovativoId);
+
+  await registar(
+    aprovado ? 'comprovativo aprovado' : 'comprovativo recusado',
+    comprovativo.restaurant_id,
+    { acesso_expira_em: antes },
+    { acesso_expira_em: ate },
+  );
+
+  return actualizou(casa?.slug);
+}
+
+/**
+ * Quantos comprovativos esperam decisão, e qual foi o último a entrar.
+ *
+ * Serve o sino do administrador, e por isso é uma pergunta e não uma
+ * subscrição. O Realtime do Supabase respeita a RLS, e a RLS dos
+ * comprovativos só deixa passar o dono da casa — quem administra não é
+ * dono de casa nenhuma, e a lista de administradores vive no ambiente,
+ * onde uma política de base de dados não lhe chega.
+ *
+ * Perguntar de minuto a minuto resolve o mesmo com uma consulta leve.
+ * Um comprovativo não é um pedido de mesa: ninguém está à espera de pé.
+ */
+export async function comprovativosPendentes(): Promise<{
+  quantos: number;
+  ultimo: string | null;
+}> {
+  if (!(await eAdministrador())) return { quantos: 0, ultimo: null };
+
+  const supabase = clienteAdministrador();
+  if (!supabase) return { quantos: 0, ultimo: null };
+
+  const { data } = await supabase
+    .from('comprovativos')
+    .select('id')
+    .eq('estado', 'a_espera')
+    .order('enviado_em', { ascending: false });
+
+  const linhas = (data ?? []) as { id: string }[];
+  return { quantos: linhas.length, ultimo: linhas[0]?.id ?? null };
 }

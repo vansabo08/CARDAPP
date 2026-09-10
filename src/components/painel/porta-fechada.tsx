@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { Botao } from '@/components/ui/botao';
+import { PagarEProvar } from '@/components/painel/pagar-e-provar';
 import { formatarKz } from '@/lib/format';
-import { PRECO_PLANO, linkDePagamento } from '@/lib/planos';
+import { PRECO_PLANO } from '@/lib/planos';
 import { NOME_PLANO, type Restaurante } from '@/lib/tipos';
 
 /**
@@ -17,22 +18,19 @@ import { NOME_PLANO, type Restaurante } from '@/lib/tipos';
  * ninguém. Fechar o painel dói ao dono, que é quem decide pagar; fechar
  * o cardápio dói a quem está a jantar.
  *
- * O ecrã diz o número de referência da casa. Sem isso, quem paga fica
- * sem forma de provar que pagou.
+ * O pagamento acontece aqui dentro: mostram-se as credenciais, a casa
+ * transfere, e sobe o comprovativo no mesmo ecrã. Mandá-la para fora —
+ * para uma plataforma, para o WhatsApp — era perder metade das pessoas
+ * pelo caminho, no único ecrã onde isso custa dinheiro.
  */
-export function PortaFechada({ restaurante }: { restaurante: Restaurante }) {
+export function PortaFechada({
+  restaurante,
+  aEsperarConfirmacao = false,
+}: {
+  restaurante: Restaurante;
+  aEsperarConfirmacao?: boolean;
+}) {
   const preco = formatarKz(PRECO_PLANO[restaurante.plano]);
-
-  /*
-   * Sem link de pagamento configurado, o botão leva à conversa — que é
-   * como isto funcionava antes de haver plataforma. Um botão que não vai
-   * a lado nenhum, no único ecrã que pede dinheiro, seria o pior sítio
-   * possível para uma variável de ambiente em falta.
-   */
-  const recado = `Olá. Quero pagar o plano ${NOME_PLANO[restaurante.plano]} do Cardapp. A minha casa é ${restaurante.nome} (${restaurante.slug}).`;
-  const link =
-    linkDePagamento(restaurante.plano) ??
-    `https://wa.me/244953716363?text=${encodeURIComponent(recado)}`;
 
   return (
     <div className="mx-auto max-w-[560px] py-10 md:py-16">
@@ -58,25 +56,46 @@ export function PortaFechada({ restaurante }: { restaurante: Restaurante }) {
           </p>
         </div>
 
-        <div className="mt-7 flex flex-wrap gap-3">
-          <Botao asChild variante="ouro" tamanho="lg">
-            <a href={link} target="_blank" rel="noreferrer">
-              Pagar o plano {NOME_PLANO[restaurante.plano]}
-            </a>
-          </Botao>
+        <div className="mt-7 border-t border-linha pt-7">
+          {aEsperarConfirmacao ? (
+            /*
+             * O beco: comprovativo entregue, os dias provisórios gastos, e
+             * ninguém decidiu. Sem isto a casa via o ecrã de pagar, voltava
+             * a enviar, e era recusada por já haver um à espera — fechada,
+             * tendo pago, sem nada que pudesse fazer.
+             */
+            <div>
+              <p className="font-sans text-sm font-semibold text-creme">
+                O seu comprovativo está connosco.
+              </p>
+              <p className="mt-2 text-pretty font-sans text-sm leading-relaxed text-tenue">
+                Recebemos a prova da transferência e ainda não a confirmámos no banco. Isto demorou
+                mais do que devia — mande-nos uma mensagem e resolvemos já.
+              </p>
+              <Botao asChild variante="ouro" tamanho="lg" className="mt-5">
+                <a
+                  href={`https://wa.me/244930207076?text=${encodeURIComponent(
+                    `Olá. Enviei o comprovativo do plano do Cardapp e a minha casa continua fechada. A casa é ${restaurante.nome} (${restaurante.slug}).`,
+                  )}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Falar connosco no WhatsApp
+                </a>
+              </Botao>
+            </div>
+          ) : (
+            <PagarEProvar restaurante={restaurante} />
+          )}
+        </div>
 
+        <div className="mt-7 border-t border-linha pt-5">
           <Botao asChild variante="contorno" tamanho="lg">
             <a href={`/${restaurante.slug}`} target="_blank" rel="noreferrer">
               Ver o meu cardápio ↗
             </a>
           </Botao>
         </div>
-
-        <p className="mt-7 border-t border-linha pt-5 font-sans text-xs leading-normal text-tenue">
-          Assim que o pagamento entrar, o painel abre sozinho — não é preciso avisar ninguém nem
-          voltar a entrar. Referência da casa:{' '}
-          <span className="text-creme">{restaurante.slug}</span>.
-        </p>
 
         <p className="mt-4 font-sans text-xs text-tenue">
           <Link href="/" className="underline underline-offset-4 hover:text-creme">

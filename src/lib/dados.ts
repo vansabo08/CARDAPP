@@ -281,3 +281,27 @@ export function inicioDoDiaEmLuanda(agora: Date = new Date()) {
   );
   return new Date(meiaNoiteLuanda - 60 * 60 * 1000);
 }
+
+/**
+ * A casa já enviou comprovativo e espera confirmação?
+ *
+ * Serve para o painel não dizer "está a acabar" a quem acabou de pagar.
+ * Lê-se com a chave de serviço porque a resposta é sobre a casa de quem
+ * pergunta e não precisa de mais nada — e sem chave devolve falso, que é
+ * o lado seguro: no pior caso mostra-se o aviso a mais, nunca acesso a
+ * mais.
+ */
+export async function comprovativoAEspera(restauranteId: string): Promise<boolean> {
+  const { clienteAdministrador } = await import('./supabase/administrador');
+  const supabase = clienteAdministrador();
+  if (!supabase) return false;
+
+  const { data } = await supabase
+    .from('comprovativos')
+    .select('id')
+    .eq('restaurant_id', restauranteId)
+    .eq('estado', 'a_espera')
+    .limit(1);
+
+  return Boolean((data ?? []).length);
+}

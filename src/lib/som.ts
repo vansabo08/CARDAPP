@@ -231,3 +231,31 @@ export function avisarDoPedido(mesa: number | null, total: string) {
     return false;
   }
 }
+
+/**
+ * O aviso de que entrou dinheiro à espera de confirmação.
+ *
+ * Leva a sua própria etiqueta, e não a dos pedidos: um comprovativo não
+ * substitui um pedido de mesa nem é substituído por ele. Partilhar a
+ * etiqueta fazia o segundo aviso apagar o primeiro, e quem estivesse a
+ * meio de um serviço perdia um dos dois.
+ */
+export function avisarDoComprovativo(quantos: number) {
+  if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return false;
+
+  try {
+    new Notification('Comprovativo novo no Cardapp', {
+      body:
+        quantos === 1
+          ? 'Uma casa transferiu e espera confirmação.'
+          : `${quantos} casas transferiram e esperam confirmação.`,
+      icon: '/icone-192.png',
+      badge: '/icone-192.png',
+      tag: 'cardapp-comprovativo',
+      renotify: true,
+    } as NotificationOptions);
+    return true;
+  } catch {
+    return false;
+  }
+}

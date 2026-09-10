@@ -1,12 +1,7 @@
+import Link from 'next/link';
 import { Botao } from '@/components/ui/botao';
 import { formatarKz } from '@/lib/format';
-import {
-  PLANOS,
-  avisoDoPrazo,
-  diasAteExpirar,
-  estadoDaConta,
-  linkDePagamento,
-} from '@/lib/planos';
+import { PLANOS, avisoDoPrazo, diasAteExpirar, estadoDaConta } from '@/lib/planos';
 import type { Restaurante } from '@/lib/tipos';
 
 /**
@@ -21,8 +16,41 @@ import type { Restaurante } from '@/lib/tipos';
  * quanto custa nem por onde se paga obriga a ir procurar, e quem tem um
  * restaurante para gerir não vai procurar.
  */
-export function AvisoDoPlano({ restaurante }: { restaurante: Restaurante }) {
+export function AvisoDoPlano({
+  restaurante,
+  aEsperarConfirmacao = false,
+}: {
+  restaurante: Restaurante;
+  aEsperarConfirmacao?: boolean;
+}) {
   const estado = estadoDaConta(restaurante.acesso_expira_em);
+
+  /*
+   * Quem já subiu o comprovativo não leva "está a acabar".
+   *
+   * Durante os dias provisórios a conta está tecnicamente a expirar, e
+   * sem isto o painel dizia a quem acabou de pagar que tinha de pagar —
+   * a pior mensagem possível para quem já pagou, e a que gera o recado
+   * a perguntar se o dinheiro chegou.
+   */
+  if (aEsperarConfirmacao) {
+    return (
+      <div className="border-b border-linha bg-transparent">
+        <div className="mx-auto flex max-w-[880px] flex-wrap items-center justify-between gap-3 px-5 py-3 md:px-10">
+          <div className="min-w-0">
+            <p className="font-sans text-sm font-semibold text-creme">
+              Comprovativo recebido. Estamos a confirmar no banco.
+            </p>
+            <p className="mt-0.5 text-pretty font-sans text-xs leading-normal text-tenue">
+              O painel fica aberto enquanto isso. Assim que a transferência for confirmada, passa ao
+              mês completo — não é preciso fazer mais nada.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (estado === 'activa') return null;
 
   const dias = diasAteExpirar(restaurante.acesso_expira_em);
@@ -56,9 +84,7 @@ export function AvisoDoPlano({ restaurante }: { restaurante: Restaurante }) {
         </div>
 
         <Botao asChild variante={urgente ? 'ouro' : 'contorno'} tamanho="sm">
-          <a href={linkDePagamento(restaurante.plano)} target="_blank" rel="noreferrer">
-            Renovar por {formatarKz(plano.preco)}
-          </a>
+          <Link href="/painel/pagar">Renovar por {formatarKz(plano.preco)}</Link>
         </Botao>
       </div>
     </div>

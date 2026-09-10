@@ -8,7 +8,8 @@ import { FundoVivo } from '@/components/marketing/fundo-vivo';
 import { ConviteInstalar } from '@/components/convite-instalar';
 import { SinoDePedidos } from '@/components/painel/sino-de-pedidos';
 import { BatidaDePresenca } from '@/components/painel/batida-de-presenca';
-import { emModoDemonstracao, obterRestauranteDoDono } from '@/lib/dados';
+import { SinoDeComprovativos } from '@/components/painel/sino-de-comprovativos';
+import { comprovativoAEspera, emModoDemonstracao, obterRestauranteDoDono } from '@/lib/dados';
 import { eAdministrador } from '@/lib/admin';
 import { utilizadorActual } from '@/lib/supabase/servidor';
 
@@ -28,11 +29,24 @@ export default async function LayoutPainel({ children }: { children: React.React
   const fechado =
     Boolean(restaurante) && !painelAberto(estadoDaConta(restaurante!.acesso_expira_em));
 
+  /*
+   * Só se pergunta quando o aviso ia aparecer. Numa conta com um mês
+   * pela frente a resposta não muda nada, e era uma consulta em cada
+   * página do painel para não mudar nada.
+   */
+  const aEsperarConfirmacao =
+    restaurante && estadoDaConta(restaurante.acesso_expira_em) !== 'activa'
+      ? await comprovativoAEspera(restaurante.id)
+      : false;
+
   return (
     <div className="relative min-h-dvh">
       <FundoVivo />
       <AvisoDemonstracao />
-      {restaurante ? <AvisoDoPlano restaurante={restaurante} /> : null}
+      {restaurante ? (
+        <AvisoDoPlano restaurante={restaurante} aEsperarConfirmacao={aEsperarConfirmacao} />
+      ) : null}
+      {administrador ? <SinoDeComprovativos /> : null}
 
       <div className="md:flex">
         <NavegacaoPainel
@@ -50,7 +64,14 @@ export default async function LayoutPainel({ children }: { children: React.React
               deles mais tarde ou mais cedo, e o esquecido é sempre o que
               importa.
             */}
-            {fechado ? <PortaFechada restaurante={restaurante!} /> : children}
+            {fechado ? (
+              <PortaFechada
+                restaurante={restaurante!}
+                aEsperarConfirmacao={aEsperarConfirmacao}
+              />
+            ) : (
+              children
+            )}
           </div>
         </main>
       </div>

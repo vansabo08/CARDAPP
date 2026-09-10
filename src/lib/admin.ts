@@ -335,3 +335,106 @@ export async function pagamentosRecentes(limite = 40): Promise<LinhaDePagamento[
     orfao: !l.restaurant_id && l.tipo !== 'reembolsado',
   }));
 }
+
+/* ------------------------------------------------------------------ */
+/* A fila dos comprovativos                                            */
+/* ------------------------------------------------------------------ */
+
+export type LinhaDeComprovativo = {
+  id: string;
+  restauranteId: string;
+  restauranteNome: string | null;
+  plano: Plano;
+  valor: number;
+  estado: string;
+  /** Link assinado, de vida curta. Nunca um URL público. */
+  ficheiro: string | null;
+  pdf: boolean;
+  enviadoEm: string;
+  decididoEm: string | null;
+  decididoPor: string | null;
+  nota: string | null;
+};
+
+/** O link do comprovativo dura uma hora. Depois disso pede-se outro. */
+const VIDA_DO_LINK = 60 * 60;
+
+/**
+ * Os comprovativos, os que esperam primeiro.
+ *
+ * O ficheiro nunca sai daqui como URL público. Um comprovativo de
+ * transferência tem o IBAN de quem paga e o de quem recebe, e um URL
+ * público é isso à solta na internet, para sempre, para quem der com o
+ * endereço. Sai como link assinado, que morre ao fim de uma hora.
+ */
+export async function comprovativosAEspera(limite = 30): Promise<LinhaDeComprovativo[]> {
+  const supabase = clienteAdministrador();
+  if (!supabase) return [];
+
+  const { data } = await supabase
+    .from('comprovativos')
+    .select(
+      'id, restaurant_id, plano, valor, estado, caminho, enviado_em, decidido_em, decidido_por, nota',
+    )
+    .order('enviado_em', { ascending: false })
+    .limit(limite);
+
+  const linhas = (data ?? []) as {
+    id: string;
+    restaurant_id: string;
+    plano: Plano;
+    valor: number | string;
+    estado: string;
+    caminho: string;
+    enviado_em: string;
+    decidido_em: string | null;
+    decidido_por: string | null;
+    nota: string | null;
+  }[];
+
+  if (!linhas.length) return [];
+
+  const ids = [...new Set(linhas.map((l) => l.restaurant_id))];
+  const { data: casas } = await supabase.from('restaurants').select('id, nome').in('id', ids);
+  const nomes = new Map(
+    ((casas ?? []) as { id: string; nome: string }[]).map((c) => [c.id, c.nome]),
+  );
+
+  // Os links todos numa ida só, em vez de uma chamada por linha.
+  const { data: assinados } = await supabase.storage
+    .from('comprovativos')
+    .createSignedUrls(
+      linhas.map((l) => l.caminho),
+      VIDA_DO_LINK,
+    );
+
+  const porCaminho = new Map(
+    ((assinados ?? []) as { path: string | null; signedUrl: string }[]).map((a) => [
+      a.path,
+      a.signedUrl,
+    ]),
+  );
+
+  const fila = linhas.map((l) => ({
+    id: l.id,
+    restauranteId: l.restaurant_id,
+    restauranteNome: nomes.get(l.restaurant_id) ?? null,
+    plano: l.plano,
+    valor: Number(l.valor) || 0,
+    estado: l.estado,
+    ficheiro: porCaminho.get(l.caminho) ?? null,
+    pdf: l.caminho.endsWith('.pdf'),
+    enviadoEm: l.enviado_em,
+    decididoEm: l.decidido_em,
+    decididoPor: l.decidido_por,
+    nota: l.nota,
+  }));
+
+  // Quem espera vem primeiro, seja qual for a data. Uma casa parada à
+  // espera de decisão pesa mais do que o histórico de quem já foi
+  // resolvido.
+  return fila.sort((a, b) => {
+    const espera = (l: LinhaDeComprovativo) => (l.estado === 'a_espera' ? 0 : 1);
+    return espera(a) - espera(b) || b.enviadoEm.localeCompare(a.enviadoEm);
+  });
+}

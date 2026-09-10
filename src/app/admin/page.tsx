@@ -3,7 +3,9 @@ import { Barras, Cartao, LinhaDoTempo, Numero } from '@/components/admin/grafico
 import { COR_ESTADO } from '@/lib/cores';
 import { LivroDeAuditoria } from '@/components/admin/livro-de-auditoria';
 import { LivroDePagamentos } from '@/components/admin/livro-de-pagamentos';
+import { FilaDeComprovativos } from '@/components/admin/fila-de-comprovativos';
 import {
+  comprovativosAEspera,
   metricasAdmin,
   pagamentosRecentes,
   resumoAdministrativo,
@@ -39,8 +41,17 @@ const TOM_ESTADO: Record<EstadoConta, string> = {
 };
 
 export default async function PaginaAdmin() {
-  const [{ contas, totalPedidos30Dias, semServico }, { serie, auditoria }, pagamentos] =
-    await Promise.all([resumoAdministrativo(), metricasAdmin(30), pagamentosRecentes()]);
+  const [
+    { contas, totalPedidos30Dias, semServico },
+    { serie, auditoria },
+    pagamentos,
+    comprovativos,
+  ] = await Promise.all([
+    resumoAdministrativo(),
+    metricasAdmin(30),
+    pagamentosRecentes(),
+    comprovativosAEspera(),
+  ]);
 
   if (semServico) {
     return (
@@ -212,6 +223,10 @@ export default async function PaginaAdmin() {
       {/* ------------------------------------------------------------ */}
       {/* O livro                                                       */}
       {/* ------------------------------------------------------------ */}
+      <div className="mt-4">
+        <FilaDeComprovativos linhas={comprovativos} />
+      </div>
+
       <div className="mt-4">
         <LivroDePagamentos pagamentos={pagamentos} contas={contas} />
       </div>
