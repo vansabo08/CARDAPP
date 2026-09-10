@@ -103,12 +103,48 @@ const config: Config = {
           from: { opacity: '0', transform: 'translateY(12px)' },
           to: { opacity: '1', transform: 'translateY(0)' },
         },
+
+        /* Erro: duas oscilações que vão morrendo. Não leva overshoot —
+           a curva com ressalto é da família do sucesso, e um erro não
+           deve parecer festivo. */
+        abanar: {
+          '0%, 100%': { transform: 'translateX(0)' },
+          '15%': { transform: 'translateX(-10px)' },
+          '35%': { transform: 'translateX(10px)' },
+          '55%': { transform: 'translateX(-7px)' },
+          '78%': { transform: 'translateX(5px)' },
+        },
+
+        /* Sucesso: o botão dá um salto curto, com ressalto. */
+        saltinho: {
+          '0%, 100%': { transform: 'scale(1)' },
+          '45%': { transform: 'scale(1.055)' },
+        },
+
+        /* O visto desenha-se. O stroke-dashoffset não provoca refluxo —
+           é pintura, não geometria — por isso não quebra a regra de só
+           animar transform e opacity. */
+        'desenhar-visto': {
+          from: { strokeDashoffset: '24' },
+          to: { strokeDashoffset: '0' },
+        },
+
+        /* O brilho do esqueleto. É o único sítio onde `linear` entra:
+           uma passagem de luz constante não tem de acelerar nem travar. */
+        brilho: {
+          from: { backgroundPosition: '-160% 0' },
+          to: { backgroundPosition: '260% 0' },
+        },
       },
       animation: {
         subir: 'subir 250ms cubic-bezier(0.2,0,0,1) both',
         aparecer: 'aparecer 250ms cubic-bezier(0.2,0,0,1) both',
         folha: 'folha 400ms cubic-bezier(0.2,0,0,1) both',
         marca: 'marca 250ms cubic-bezier(0.175,0.885,0.32,1.275) both',
+        abanar: 'abanar 350ms cubic-bezier(0.3,0,1,1) both',
+        saltinho: 'saltinho 350ms cubic-bezier(0.175,0.885,0.32,1.275) both',
+        'desenhar-visto': 'desenhar-visto 350ms cubic-bezier(0.2,0,0,1) both',
+        brilho: 'brilho 1.5s linear infinite',
       },
 
       /* ------------------------------------------------------------

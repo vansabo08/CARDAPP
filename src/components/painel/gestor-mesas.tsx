@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Botao } from '@/components/ui/botao';
+import { Botao, useSinalDeBotao } from '@/components/ui/botao';
 import { Campo, Erro } from '@/components/ui/campo';
 import { qrDataUrl, urlDaMesa } from '@/lib/qr';
 import { numeroMesa } from '@/lib/format';
@@ -23,6 +23,7 @@ export function GestorMesas({
   const [quantas, setQuantas] = React.useState('4');
   const [aGerar, setAGerar] = React.useState(false);
   const [erro, setErro] = React.useState<string | null>(null);
+  const [sinal, sinalizar] = useSinalDeBotao();
 
   const limite = LIMITES_PLANO[restaurante.plano].mesas;
   const cheio = mesas.length >= limite;
@@ -82,8 +83,10 @@ export function GestorMesas({
       ligacao.click();
       ligacao.remove();
       URL.revokeObjectURL(url);
+      sinalizar('sucesso');
     } catch {
       setErro('Não foi possível gerar o PDF.');
+      sinalizar('erro');
     } finally {
       setAGerar(false);
     }
@@ -92,8 +95,15 @@ export function GestorMesas({
   return (
     <div>
       <div className="mt-8 flex flex-wrap items-center gap-3">
-        <Botao variante="ouro" tamanho="md" onClick={descarregar} disabled={aGerar || !mesas.length}>
-          {aGerar ? 'A preparar…' : 'Descarregar cartões (PDF)'}
+        <Botao
+          variante="ouro"
+          tamanho="md"
+          onClick={descarregar}
+          aCarregar={aGerar}
+          estado={sinal}
+          disabled={!mesas.length}
+        >
+          Descarregar cartões (PDF)
         </Botao>
 
         <div className="flex items-center gap-2">

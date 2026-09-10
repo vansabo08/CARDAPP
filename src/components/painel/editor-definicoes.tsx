@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Botao } from '@/components/ui/botao';
+import { Botao, useSinalDeBotao } from '@/components/ui/botao';
 import { Distintivo } from '@/components/ui/distintivo';
 import { Erro } from '@/components/ui/campo';
 import {
@@ -45,6 +45,7 @@ export function EditorDefinicoes({
     modo_pedido: restaurante.modo_pedido ?? 'whatsapp',
   });
   const [estado, setEstado] = React.useState<'parado' | 'a-guardar' | 'guardado'>('parado');
+  const [sinal, sinalizar] = useSinalDeBotao();
   const [erro, setErro] = React.useState<string | null>(null);
 
   function mudar(parcial: Partial<ValoresRestaurante>) {
@@ -61,11 +62,13 @@ export function EditorDefinicoes({
     if (!resultado.ok) {
       setErro(resultado.erro ?? 'Não foi possível guardar.');
       setEstado('parado');
+      sinalizar('erro');
       return;
     }
 
     if (resultado.slug) setValores((v) => ({ ...v, slug: resultado.slug! }));
     setEstado('guardado');
+    sinalizar('sucesso');
   }
 
   return (
@@ -97,8 +100,14 @@ export function EditorDefinicoes({
       </section>
 
       <div className="flex flex-wrap items-center gap-3 border-t border-linha pt-7">
-        <Botao variante="ouro" tamanho="md" onClick={guardar} disabled={estado === 'a-guardar'}>
-          {estado === 'a-guardar' ? 'A guardar…' : 'Guardar alterações'}
+        <Botao
+          variante="ouro"
+          tamanho="md"
+          onClick={guardar}
+          aCarregar={estado === 'a-guardar'}
+          estado={sinal}
+        >
+          Guardar alterações
         </Botao>
         {estado === 'guardado' ? (
           <span className="font-sans text-xs text-verde">

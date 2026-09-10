@@ -4,6 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Marca } from '@/components/marca';
+import { Botao, useSinalDeBotao } from '@/components/ui/botao';
 import { clienteNavegador } from '@/lib/supabase/cliente';
 import { cn } from '@/lib/utils';
 
@@ -66,6 +67,7 @@ export function FormularioAuth({ modo }: { modo: Modo }) {
   const [erro, setErro] = React.useState<string | null>(null);
   const [aviso, setAviso] = React.useState<string | null>(null);
   const [ocupado, setOcupado] = React.useState(false);
+  const [sinal, sinalizar] = useSinalDeBotao();
 
   async function submeter(evento: React.FormEvent) {
     evento.preventDefault();
@@ -104,6 +106,7 @@ export function FormularioAuth({ modo }: { modo: Modo }) {
       router.refresh();
     } catch (e) {
       setErro(traduzirErro(e));
+      sinalizar('erro');
     } finally {
       setOcupado(false);
     }
@@ -198,19 +201,22 @@ export function FormularioAuth({ modo }: { modo: Modo }) {
             ) : null}
             {aviso ? <p className="mt-4 font-sans text-sm text-ouro">{aviso}</p> : null}
 
-            <button
+            {/*
+              Passa a usar o Botao da casa em vez de um <button> à parte:
+              é o único sítio que tinha estados próprios, e ficava de fora
+              do sistema — sem rodopio, sem visto, sem abanão.
+            */}
+            <Botao
               type="submit"
-              disabled={ocupado}
-              className={cn(
-                'mt-6 h-[60px] w-full rounded-full bg-ouro font-sans text-base font-semibold text-grafite',
-                'transition-[background-color,transform] duration-200 ease-calmo',
-                'hover:bg-ouro-claro active:scale-[0.98]',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-creme/70',
-                'disabled:pointer-events-none disabled:opacity-40',
-              )}
+              variante="ouro"
+              tamanho="lg"
+              largo
+              aCarregar={ocupado}
+              estado={sinal}
+              className="mt-6 h-[60px] text-base"
             >
-              {ocupado ? 'Um momento…' : texto.accao}
-            </button>
+              {texto.accao}
+            </Botao>
 
             {modo === 'criar' ? (
               <p className="mt-4 text-center font-sans text-sm text-creme/70">

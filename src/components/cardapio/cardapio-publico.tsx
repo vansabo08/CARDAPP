@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Botao } from '@/components/ui/botao';
+import { Botao, useSinalDeBotao } from '@/components/ui/botao';
 import { FolhaInferior } from '@/components/ui/folha-inferior';
 import { AreaTexto } from '@/components/ui/campo';
 import { AssinaturaCardapp } from '@/components/marca';
@@ -33,6 +33,7 @@ export function CardapioPublico({
   const [pratoAberto, setPratoAberto] = React.useState<Prato | null>(null);
   const [resumoAberto, setResumoAberto] = React.useState(false);
   const [falhou, setFalhou] = React.useState<string | null>(null);
+  const [sinal, sinalizar] = useSinalDeBotao();
 
   // Quem manda é a casa, nas definições. O cliente não escolhe a via:
   // vê um botão só, e é o da casa. Uma base antiga, sem a coluna, cai em
@@ -223,6 +224,7 @@ export function CardapioPublico({
             ? 'Este é o cardápio de exemplo — o pedido não chega a nenhuma cozinha.'
             : 'Não conseguimos enviar o pedido. Verifique a ligação e tente outra vez.',
         );
+        sinalizar('erro');
         setAEnviar(false);
         return;
       }
@@ -231,6 +233,7 @@ export function CardapioPublico({
       router.push(`/pedido/${dados.id}`);
     } catch {
       setFalhou('Não conseguimos enviar o pedido. Verifique a ligação e tente outra vez.');
+      sinalizar('erro');
       setAEnviar(false);
     }
   }
@@ -433,10 +436,11 @@ export function CardapioPublico({
             variante="verde"
             tamanho="lg"
             onClick={peloApp ? enviarPelaAplicacao : enviarPeloWhatsApp}
-            disabled={aEnviar}
+            aCarregar={aEnviar}
+            estado={sinal}
             className="shrink-0"
           >
-            {aEnviar ? (peloApp ? 'A enviar…' : 'A abrir…') : 'Enviar pedido'}
+            Enviar pedido
           </Botao>
         </div>
       </div>
@@ -498,15 +502,10 @@ export function CardapioPublico({
               tamanho="lg"
               largo
               onClick={peloApp ? enviarPelaAplicacao : enviarPeloWhatsApp}
-              disabled={aEnviar}
+              aCarregar={aEnviar}
+              estado={sinal}
             >
-              {peloApp
-                ? aEnviar
-                  ? 'A enviar…'
-                  : 'Enviar pedido'
-                : aEnviar
-                  ? 'A abrir o WhatsApp…'
-                  : 'Enviar pedido pelo WhatsApp'}
+              {peloApp ? 'Enviar pedido' : 'Enviar pedido pelo WhatsApp'}
             </Botao>
             <Botao variante="discreto-escuro" tamanho="md" largo onClick={() => setResumoAberto(false)}>
               Continuar a escolher

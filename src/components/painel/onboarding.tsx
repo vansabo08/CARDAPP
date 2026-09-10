@@ -248,10 +248,11 @@ export function Onboarding({ demonstracao }: { demonstracao: boolean }) {
               <Botao
                 variante="ouro"
                 tamanho="lg"
-                disabled={!podeAvancar || ocupado}
+                disabled={!podeAvancar}
+                aCarregar={ocupado}
                 onClick={concluir}
               >
-                {ocupado ? 'A criar…' : 'Criar o cardápio'}
+                Criar o cardápio
               </Botao>
             )}
           </div>
