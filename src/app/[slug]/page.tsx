@@ -4,6 +4,8 @@ import { CardapioPublico } from '@/components/cardapio/cardapio-publico';
 import { AvisoDemonstracao } from '@/components/aviso-demonstracao';
 import { obterCardapio, obterMesaPorNumero, obterRestaurantePorSlug } from '@/lib/dados';
 import { LIMITES_PLANO } from '@/lib/tipos';
+import { cardapioNoAr, estadoDaConta } from '@/lib/planos';
+import { ForaDoAr } from '@/components/cardapio/fora-do-ar';
 
 /**
  * Cardápio público. Sem autenticação e renderizado no servidor: quem lê
@@ -59,6 +61,13 @@ export default async function PaginaCardapio({ params, searchParams }: Props) {
 
   const restaurante = await obterRestaurantePorSlug(slug);
   if (!restaurante) notFound();
+
+  /*
+   * Passada a cortesia, o cardápio sai do ar. Antes disso serve na
+   * mesma: um QR morto numa mesa castiga quem está a jantar, e não quem
+   * se esqueceu de pagar.
+   */
+  if (!cardapioNoAr(estadoDaConta(restaurante.acesso_expira_em))) return <ForaDoAr />;
 
   const numero = lerNumeroDaMesa(mesaBruta);
 

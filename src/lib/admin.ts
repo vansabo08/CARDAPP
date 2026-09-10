@@ -59,6 +59,8 @@ export type ContaAdmin = {
   pedidos30Dias: number;
   testeTerminaEm: string | null;
   pagoAte: string | null;
+  acessoExpiraEm: string | null;
+  whatsapp: string;
 };
 
 export type ResumoAdmin = {
@@ -82,7 +84,9 @@ export async function resumoAdministrativo(): Promise<ResumoAdmin> {
   const [restaurantes, utilizadores] = await Promise.all([
     supabase
       .from('restaurants')
-      .select('id, nome, slug, plano, activo, owner_id, created_at, teste_termina_em, pago_ate')
+      .select(
+        'id, nome, slug, plano, activo, owner_id, created_at, whatsapp, teste_termina_em, pago_ate, acesso_expira_em',
+      )
       .order('created_at', { ascending: false }),
     supabase.auth.admin.listUsers({ page: 1, perPage: 1000 }),
   ]);
@@ -95,8 +99,10 @@ export async function resumoAdministrativo(): Promise<ResumoAdmin> {
     activo: boolean;
     owner_id: string;
     created_at: string;
+    whatsapp: string;
     teste_termina_em: string | null;
     pago_ate: string | null;
+    acesso_expira_em: string | null;
   }[];
 
   const porDono = new Map(
@@ -157,6 +163,8 @@ export async function resumoAdministrativo(): Promise<ResumoAdmin> {
       pedidos30Dias: pedidosPorRestaurante.get(linha.id) ?? 0,
       testeTerminaEm: linha.teste_termina_em ?? null,
       pagoAte: linha.pago_ate ?? null,
+      acessoExpiraEm: linha.acesso_expira_em ?? null,
+      whatsapp: linha.whatsapp,
     };
   });
 

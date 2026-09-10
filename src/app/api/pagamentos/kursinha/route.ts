@@ -1,8 +1,8 @@
 import { createHash, createHmac, timingSafeEqual } from 'node:crypto';
 import { after, NextResponse } from 'next/server';
 import { clienteAdministrador } from '@/lib/supabase/administrador';
-import { lerEvento, novoPagoAte, planoDoProduto, planoDoValor } from '@/lib/pagamentos';
-import { PRECO_PLANO, PRODUTO_KURSINHA } from '@/lib/planos';
+import { lerEvento, planoDoProduto, planoDoValor } from '@/lib/pagamentos';
+import { PLANOS, PRECO_PLANO, PRODUTO_KURSINHA, proximaExpiracao } from '@/lib/planos';
 
 /**
  * O aviso de pagamento da Kursinha.
@@ -181,13 +181,13 @@ async function processar(bruto: unknown) {
   if (evento.email) {
     const { data } = await supabase.rpc('restaurante_por_email', { e: evento.email });
     const linha = (Array.isArray(data) ? data[0] : data) as
-      | { id: string; plano: string; pago_ate: string | null }
+      | { id: string; plano: string; pago_ate: string | null; acesso_expira_em: string | null }
       | undefined;
 
     if (linha) {
       restauranteId = linha.id;
       planoActual = linha.plano;
-      pagoAteActual = linha.pago_ate;
+      pagoAteActual = linha.acesso_expira_em ?? linha.pago_ate;
     }
   }
 
@@ -247,16 +247,24 @@ async function processar(bruto: unknown) {
   /* ---------------------------------------------------------------- */
   /* Abrir ou fechar                                                   */
   /* ---------------------------------------------------------------- */
+  /*
+   * A Kursinha só vende pagamento único: não há assinatura nem evento de
+   * renovação. Cada compra aprovada acrescenta os dias do plano — a
+   * partir da data que já lá está, se ainda for futura, para quem paga
+   * adiantado não perder o que lhe faltava.
+   */
+  const plano = (planoComprado ?? planoActual ?? 'mesa') as keyof typeof PLANOS;
+
   const mudanca: Record<string, unknown> =
     tipo === 'pago'
       ? {
-          pago_ate: novoPagoAte(pagoAteActual, evento.meses).toISOString(),
+          acesso_expira_em: proximaExpiracao(pagoAteActual, plano).toISOString(),
           // O plano só muda se o produto o disser. Um aviso sem produto
           // reconhecido renova o que a casa já tinha, em vez de a
           // despromover em silêncio.
-          plano: planoComprado ?? planoActual ?? 'mesa',
+          plano,
         }
-      : { pago_ate: new Date().toISOString() };
+      : { acesso_expira_em: new Date().toISOString() };
 
   const { error: erroMudanca } = await supabase
     .from('restaurants')

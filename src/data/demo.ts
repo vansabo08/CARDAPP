@@ -20,6 +20,7 @@ export const RESTAURANTE_DEMO: Restaurante = {
   // O exemplo acompanha dentro da aplicacao, que e a novidade a mostrar.
   modo_pedido: 'app',
   // O exemplo nunca expira: nao ha conta nenhuma por tras dele.
+  acesso_expira_em: null,
   teste_termina_em: null,
   pago_ate: null,
 };

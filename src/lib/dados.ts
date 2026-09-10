@@ -55,7 +55,7 @@ export function eDemonstracao(restaurantId: string) {
  * funcionalidade, não a aplicação.
  */
 const COLUNAS_RESTAURANTE =
-  'id, nome, slug, logo_url, capa_url, whatsapp, cor_marca, plano, activo, modo_pedido, teste_termina_em, pago_ate';
+  'id, nome, slug, logo_url, capa_url, whatsapp, cor_marca, plano, activo, modo_pedido, teste_termina_em, pago_ate, acesso_expira_em';
 
 /** As que existem desde o primeiro dia, e por isso nunca faltam. */
 const COLUNAS_RESTAURANTE_BASE = 'id, nome, slug, logo_url, whatsapp, cor_marca, plano, activo';
@@ -84,6 +84,7 @@ function comColunasNovas(linha: unknown): Restaurante {
     // resultado possível de um deploy à frente da migração.
     teste_termina_em: r.teste_termina_em ?? null,
     pago_ate: r.pago_ate ?? null,
+    acesso_expira_em: r.acesso_expira_em ?? null,
   };
 }
 

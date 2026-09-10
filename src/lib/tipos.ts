@@ -32,9 +32,13 @@ export type Restaurante = {
   plano: Plano;
   activo: boolean;
   modo_pedido: ModoPedido;
-  /** Fim dos sete dias livres. */
+  /**
+   * Até quando a casa tem acesso. Uma data só: o teste é o primeiro
+   * crédito de dias, e cada compra acrescenta mais.
+   */
+  acesso_expira_em: string | null;
+  /** Ficam do modelo anterior, para não partir leituras antigas. */
   teste_termina_em: string | null;
-  /** Até quando está pago. Manda sobre o teste enquanto for futuro. */
   pago_ate: string | null;
 };
 

@@ -6,10 +6,61 @@ import { Interruptor } from '@/components/ui/interruptor';
 import { Campo } from '@/components/ui/campo';
 import { cn } from '@/lib/utils';
 import { NOME_PLANO, type Plano } from '@/lib/tipos';
+import { PLANOS as CONFIG_PLANOS, estadoDaConta, linkDePagamento, type EstadoConta } from '@/lib/planos';
+import { formatarKz } from '@/lib/format';
 import type { ContaAdmin } from '@/lib/admin';
 import { alternarActivo, mudarPlano } from '@/app/admin/accoes';
 
 const PLANOS: Plano[] = ['mesa', 'sala'];
+
+const ROTULO_ESTADO: Record<EstadoConta, string> = {
+  activa: '',
+  a_expirar: 'a acabar',
+  cortesia: 'em cortesia',
+  expirada: 'fora do ar',
+};
+
+const COR_ESTADO: Record<EstadoConta, string> = {
+  activa: 'text-creme',
+  a_expirar: 'text-ouro',
+  cortesia: 'text-ouro',
+  expirada: 'text-[#e0655a]',
+};
+
+function rotuloDoEstado(e: EstadoConta) {
+  return ROTULO_ESTADO[e];
+}
+
+function corDoEstado(e: EstadoConta) {
+  return COR_ESTADO[e];
+}
+
+/**
+ * O recado pronto a enviar à casa que está a chegar ao fim.
+ *
+ * Vai com o nome, o prazo, o preço e o endereço de pagamento — tudo o
+ * que a pessoa do outro lado precisa para decidir sem responder a
+ * perguntar.
+ */
+function avisoPorWhatsApp(conta: ContaAdmin) {
+  const plano = CONFIG_PLANOS[conta.plano];
+  const estado = estadoDaConta(conta.acessoExpiraEm);
+
+  const abertura =
+    estado === 'expirada'
+      ? `O cardápio do ${conta.nome} saiu do ar.`
+      : estado === 'cortesia'
+        ? `O prazo do Cardapp do ${conta.nome} acabou — o cardápio ainda serve, mas por pouco tempo.`
+        : `O Cardapp do ${conta.nome} está a chegar ao fim.`;
+
+  const recado = [
+    abertura,
+    `O plano ${plano.nome} custa ${formatarKz(plano.preco)} e dá mais ${plano.dias} dias.`,
+    `Renovar aqui: ${linkDePagamento(conta.plano)}`,
+  ].join('\n\n');
+
+  return `https://wa.me/${conta.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(recado)}`;
+}
 
 function dataCurta(iso: string | null) {
   if (!iso) return '—';
@@ -158,7 +209,37 @@ export function TabelaContas({ contas }: { contas: ContaAdmin[] }) {
                     {dataCurta(conta.criadoEm)}
                   </dd>
                 </div>
+                <div>
+                  <dt className="etiqueta text-tenue">Acesso até</dt>
+                  <dd className="mt-1 font-sans text-sm">
+                    <span className={corDoEstado(estadoDaConta(conta.acessoExpiraEm))}>
+                      {conta.acessoExpiraEm ? dataCurta(conta.acessoExpiraEm) : '—'}
+                    </span>
+                    {conta.acessoExpiraEm ? (
+                      <span className="ml-2 text-tenue">
+                        {rotuloDoEstado(estadoDaConta(conta.acessoExpiraEm))}
+                      </span>
+                    ) : null}
+                  </dd>
+                </div>
               </dl>
+
+              {/*
+                Enquanto a Resend não estiver ligada, os avisos saem daqui
+                à mão. O recado vai pronto — quem tem de avisar dez casas
+                não vai escrever dez vezes a mesma coisa, e acaba por não
+                avisar nenhuma.
+              */}
+              {estadoDaConta(conta.acessoExpiraEm) !== 'activa' ? (
+                <a
+                  href={avisoPorWhatsApp(conta)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full border border-verde/40 px-3.5 py-1.5 font-sans text-xs font-semibold text-verde transition-colors duration-rapida ease-assinatura hover:bg-verde/[0.08]"
+                >
+                  Avisar por WhatsApp
+                </a>
+              ) : null}
 
               <div className="flex items-center gap-1 rounded-full border border-linha p-1">
                 {PLANOS.map((plano) => (

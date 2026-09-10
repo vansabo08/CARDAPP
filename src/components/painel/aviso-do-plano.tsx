@@ -1,68 +1,64 @@
-import Link from 'next/link';
 import { Botao } from '@/components/ui/botao';
-import { NOME_PLANO, type Restaurante } from '@/lib/tipos';
-import { PRECO_PLANO, avisoDoTeste, diasDeTesteQueFaltam, estadoAssinatura } from '@/lib/planos';
 import { formatarKz } from '@/lib/format';
+import {
+  PLANOS,
+  avisoDoPrazo,
+  diasAteExpirar,
+  estadoDaConta,
+  linkDePagamento,
+} from '@/lib/planos';
+import type { Restaurante } from '@/lib/tipos';
 
 /**
  * O estado da conta, no topo do painel.
  *
- * Quem pagou não vê nada: um aviso permanente sobre uma coisa resolvida
- * deixa de se ler ao fim de dois dias, e depois já não se lê quando
- * passa a ser importante.
+ * Quem tem tempo não vê nada. Um aviso permanente sobre uma coisa que
+ * ainda falta um mês deixa de se ler ao fim de dois dias — e depois já
+ * não se lê quando passa a ser urgente.
  *
- * Quem está a experimentar vê a contagem, e ela muda de tom nos últimos
- * três dias. Quem já passou do prazo vê que passou — e vê também o que
- * continua a funcionar, porque a informação que falta numa barra destas
- * é sempre a mesma: "e agora, o que é que se perde?".
+ * Aparece a partir dos sete dias e vai apertando o tom. Traz sempre o
+ * preço e o botão de pagar: um aviso que diz "está a acabar" sem dizer
+ * quanto custa nem por onde se paga obriga a ir procurar, e quem tem um
+ * restaurante para gerir não vai procurar.
  */
 export function AvisoDoPlano({ restaurante }: { restaurante: Restaurante }) {
-  const estado = estadoAssinatura(restaurante);
-  if (estado === 'activo') return null;
+  const estado = estadoDaConta(restaurante.acesso_expira_em);
+  if (estado === 'activa') return null;
 
-  const dias = diasDeTesteQueFaltam(restaurante);
-  const expirado = estado === 'expirado';
-  const apertado = dias <= 3;
+  const dias = diasAteExpirar(restaurante.acesso_expira_em);
+  const plano = PLANOS[restaurante.plano];
+  const urgente = estado === 'cortesia' || estado === 'expirada' || dias <= 3;
 
   return (
     <div
       className={`border-b ${
-        expirado
-          ? 'border-ouro/30 bg-ouro/[0.07]'
-          : apertado
-            ? 'border-ouro/20 bg-ouro/[0.04]'
-            : 'border-linha bg-transparent'
+        urgente ? 'border-ouro/30 bg-ouro/[0.07]' : 'border-linha bg-transparent'
       }`}
     >
       <div className="mx-auto flex max-w-[880px] flex-wrap items-center justify-between gap-3 px-5 py-3 md:px-10">
         <div className="min-w-0">
-          <p
-            className={`font-sans text-sm font-semibold ${
-              expirado || apertado ? 'text-ouro' : 'text-creme'
-            }`}
-          >
-            {expirado ? 'O período de experiência terminou.' : avisoDoTeste(dias)}
+          <p className={`font-sans text-sm font-semibold ${urgente ? 'text-ouro' : 'text-creme'}`}>
+            {avisoDoPrazo(estado, dias)}
           </p>
           <p className="mt-0.5 text-pretty font-sans text-xs leading-normal text-tenue">
-            {expirado ? (
+            {estado === 'cortesia' ? (
               <>
-                O cardápio das suas mesas continua a funcionar e os pedidos continuam a entrar.
-                Para manter o painel, o plano {NOME_PLANO[restaurante.plano]} custa{' '}
-                {formatarKz(PRECO_PLANO[restaurante.plano])} por mês.
+                O cardápio das suas mesas ainda está a servir, mas sai do ar dentro de dias. O plano{' '}
+                {plano.nome} custa {formatarKz(plano.preco)} e dá mais {plano.dias} dias.
               </>
             ) : (
               <>
-                Está tudo aberto até lá. Depois, o plano {NOME_PLANO[restaurante.plano]} custa{' '}
-                {formatarKz(PRECO_PLANO[restaurante.plano])} por mês.
+                O plano {plano.nome} custa {formatarKz(plano.preco)} e acrescenta {plano.dias} dias
+                aos que ainda tem — quem paga adiantado não perde nenhum.
               </>
             )}
           </p>
         </div>
 
-        <Botao asChild variante={expirado ? 'ouro' : 'contorno'} tamanho="sm">
-          <Link href="/painel/definicoes#plano">
-            {expirado ? 'Tratar do pagamento' : 'Ver planos'}
-          </Link>
+        <Botao asChild variante={urgente ? 'ouro' : 'contorno'} tamanho="sm">
+          <a href={linkDePagamento(restaurante.plano)} target="_blank" rel="noreferrer">
+            Renovar por {formatarKz(plano.preco)}
+          </a>
         </Botao>
       </div>
     </div>

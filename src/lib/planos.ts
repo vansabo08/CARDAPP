@@ -1,20 +1,29 @@
-import type { Plano } from './tipos';
+import {
+  AVISAR_A,
+  DIAS_DE_CORTESIA,
+  DIAS_DE_TESTE,
+  ORDEM_DOS_PLANOS,
+  PLANOS,
+  type Plano,
+} from '@/config/planos';
 
-/**
- * Os planos, os preços e a conta dos sete dias.
- *
- * Fica isolado aqui, sem React nem Supabase, porque a mesma pergunta —
- * "esta casa pode usar o Cardapp hoje?" — é feita pelo painel, pela
- * página de preços e pela administração. Se cada um a respondesse à sua
- * maneira, mais dia menos dia discordavam.
- */
+export { DIAS_DE_CORTESIA, DIAS_DE_TESTE, ORDEM_DOS_PLANOS, PLANOS };
+export type { Plano };
 
-export const DIAS_DE_TESTE = 7;
+const DIA = 86_400_000;
 
-/** Kwanzas por mês. */
+/* ------------------------------------------------------------------ */
+/* Atalhos sobre a configuração                                        */
+/* ------------------------------------------------------------------ */
+
 export const PRECO_PLANO: Record<Plano, number> = {
-  mesa: 14900,
-  sala: 19900,
+  mesa: PLANOS.mesa.preco,
+  sala: PLANOS.sala.preco,
+};
+
+export const PRODUTO_KURSINHA: Record<Plano, string> = {
+  mesa: PLANOS.mesa.produtoId,
+  sala: PLANOS.sala.produtoId,
 };
 
 /**
@@ -43,104 +52,182 @@ export const INCLUI: Record<Plano, string[]> = {
 };
 
 /**
- * Onde se paga cada plano.
- *
- * Os endereços vivem no ambiente e não no código: são criados na
- * Kursinha, podem mudar, e uma mudança de endereço de pagamento não
- * merece um deploy. Sem eles configurados, o botão leva à conversa de
- * WhatsApp — que é o que já funcionava antes de haver plataforma.
- *
- * `NEXT_PUBLIC_` porque isto é lido no browser e não tem nada de
- * secreto: é o mesmo endereço que qualquer cliente vê na barra.
+ * Onde se paga. O ambiente manda sobre a configuração, para um endereço
+ * poder mudar sem deploy.
  */
-export const PAGAMENTO_POR_OMISSAO: Record<Plano, string> = {
-  mesa: 'https://pay.kursinha.com/c/6a0c3beddb1169d43a28e16c',
-  sala: 'https://pay.kursinha.com/c/69fc6b443420b95cb08c1ebe',
-};
+export function linkDePagamento(plano: Plano): string {
+  const doAmbiente = (
+    plano === 'mesa' ? process.env.NEXT_PUBLIC_KURSINHA_MESA : process.env.NEXT_PUBLIC_KURSINHA_SALA
+  )?.trim();
 
-/**
- * O troço final do endereço é o identificador do produto na Kursinha, e
- * é por ele que o webhook sabe qual plano foi comprado. Fica aqui ao
- * lado do link para os dois não se separarem: mudar um sem o outro
- * daria um pagamento que abre a conta no plano errado.
- */
-export const PRODUTO_KURSINHA: Record<Plano, string> = {
-  mesa: '6a0c3beddb1169d43a28e16c',
-  sala: '69fc6b443420b95cb08c1ebe',
-};
-
-export function linkDePagamento(plano: Plano): string | null {
-  const links: Record<Plano, string | undefined> = {
-    mesa: process.env.NEXT_PUBLIC_KURSINHA_MESA,
-    sala: process.env.NEXT_PUBLIC_KURSINHA_SALA,
-  };
-
-  const doAmbiente = links[plano]?.trim();
-  const link = doAmbiente && /^https?:\/\//.test(doAmbiente) ? doAmbiente : PAGAMENTO_POR_OMISSAO[plano];
-
-  return /^https?:\/\//.test(link) ? link : null;
+  return doAmbiente && /^https?:\/\//.test(doAmbiente) ? doAmbiente : PLANOS[plano].link;
 }
 
-export type EstadoAssinatura = 'teste' | 'activo' | 'expirado';
+/* ------------------------------------------------------------------ */
+/* Quando acaba o acesso                                               */
+/* ------------------------------------------------------------------ */
 
-type Assinatura = {
-  teste_termina_em?: string | null;
-  pago_ate?: string | null;
-};
-
-function data(valor: string | null | undefined) {
+function data(valor: string | Date | null | undefined): Date | null {
   if (!valor) return null;
-  const d = new Date(valor);
+  const d = valor instanceof Date ? valor : new Date(valor);
   return Number.isNaN(d.getTime()) ? null : d;
 }
 
 /**
- * Em que pé está a conta.
+ * A nova data de expiração depois de uma compra aprovada.
  *
- * Duas datas em vez de um estado guardado: um estado tem de ser
- * corrigido por alguém a cada mudança, e uma data corrige-se sozinha com
- * a passagem do tempo. Quem pagou manda sobre quem está em teste — se
- * alguém pagar ao terceiro dia, não perde os quatro que faltavam nem
- * fica preso ao estado antigo.
- *
- * Uma conta sem nenhuma das datas conta como em teste, e não como
- * expirada: é o que acontece a uma linha antiga que a migração não
- * apanhou, e trancar uma casa por causa de um campo vazio é o pior erro
- * que este código pode cometer.
+ * Soma a partir da data que já lá está, e não a partir de hoje: quem
+ * paga com cinco dias de sobra não pode perder esses cinco dias — pagou
+ * por trinta e recebe trinta. Só quando já expirou é que a contagem
+ * recomeça de agora, porque os dias que passaram sem pagamento não se
+ * devolvem.
  */
-export function estadoAssinatura(r: Assinatura, agora: Date = new Date()): EstadoAssinatura {
-  const pago = data(r.pago_ate);
-  if (pago && pago > agora) return 'activo';
+export function proximaExpiracao(
+  actual: string | Date | null | undefined,
+  plano: Plano,
+  agora: Date = new Date(),
+): Date {
+  const dias = PLANOS[plano].dias;
+  const anterior = data(actual);
+  const base = anterior && anterior > agora ? anterior : agora;
 
-  const teste = data(r.teste_termina_em);
-  if (!teste) return 'teste';
+  return new Date(base.getTime() + dias * DIA);
+}
 
-  return teste > agora ? 'teste' : 'expirado';
+/* ------------------------------------------------------------------ */
+/* Em que pé está a conta                                              */
+/* ------------------------------------------------------------------ */
+
+/**
+ * `activa` está longe do fim. `a_expirar` está nos últimos sete dias e
+ * ainda serve tudo. `cortesia` já passou da data mas continua a servir o
+ * cardápio — não se deixa QR morto nas mesas de um restaurante por causa
+ * de um pagamento que atrasou um dia. `expirada` é o fim: painel
+ * fechado e cardápio fora do ar.
+ */
+export type EstadoConta = 'activa' | 'a_expirar' | 'cortesia' | 'expirada';
+
+export function estadoDaConta(
+  acessoExpiraEm: string | Date | null | undefined,
+  agora: Date = new Date(),
+): EstadoConta {
+  const expira = data(acessoExpiraEm);
+
+  // Sem data, conta como activa. Uma linha que a migração não apanhou
+  // não pode fechar uma casa: é o pior erro que este código pode fazer.
+  if (!expira) return 'activa';
+
+  const restante = expira.getTime() - agora.getTime();
+
+  if (restante > AVISAR_A[0] * DIA) return 'activa';
+  if (restante > 0) return 'a_expirar';
+  if (-restante <= DIAS_DE_CORTESIA * DIA) return 'cortesia';
+
+  return 'expirada';
+}
+
+/** O painel abre? */
+export function painelAberto(estado: EstadoConta) {
+  return estado !== 'expirada';
 }
 
 /**
- * Dias que faltam do teste, arredondados para cima.
+ * O cardápio público serve?
  *
- * Para cima porque "falta 1 dia" com dezoito horas pela frente é
- * verdade, e "faltam 0 dias" com dezoito horas pela frente é mentira.
+ * Continua a servir em cortesia, de propósito. Quem paga a conta de um
+ * cardápio morto a meio do serviço são os clientes sentados à mesa, que
+ * não têm nada a ver com a assinatura de ninguém.
  */
-export function diasDeTesteQueFaltam(r: Assinatura, agora: Date = new Date()): number {
-  const teste = data(r.teste_termina_em);
-  if (!teste) return DIAS_DE_TESTE;
-
-  const restante = teste.getTime() - agora.getTime();
-  return restante <= 0 ? 0 : Math.ceil(restante / 86_400_000);
+export function cardapioNoAr(estado: EstadoConta) {
+  return estado !== 'expirada';
 }
 
-/** O que dizer a quem está em teste, sem alarmar quem tem tempo. */
-export function avisoDoTeste(dias: number): string {
-  if (dias <= 0) return 'O período de experiência terminou.';
-  if (dias === 1) return 'Último dia de experiência.';
-  if (dias <= 3) return `Faltam ${dias} dias de experiência.`;
-  return `Está a experimentar o Cardapp. Faltam ${dias} dias.`;
+/** Dias inteiros até expirar. Zero ou menos quando já passou. */
+export function diasAteExpirar(
+  acessoExpiraEm: string | Date | null | undefined,
+  agora: Date = new Date(),
+): number {
+  const expira = data(acessoExpiraEm);
+  if (!expira) return DIAS_DE_TESTE;
+
+  const restante = expira.getTime() - agora.getTime();
+  return restante <= 0 ? 0 : Math.ceil(restante / DIA);
 }
 
-/** Quando um teste iniciado agora termina. */
-export function fimDoTeste(inicio: Date = new Date()): Date {
-  return new Date(inicio.getTime() + DIAS_DE_TESTE * 86_400_000);
+/** Dias inteiros desde que expirou. Zero enquanto não passou. */
+export function diasDesdeExpirar(
+  acessoExpiraEm: string | Date | null | undefined,
+  agora: Date = new Date(),
+): number {
+  const expira = data(acessoExpiraEm);
+  if (!expira) return 0;
+
+  const passado = agora.getTime() - expira.getTime();
+  return passado <= 0 ? 0 : Math.floor(passado / DIA);
+}
+
+/* ------------------------------------------------------------------ */
+/* Lembretes                                                           */
+/* ------------------------------------------------------------------ */
+
+export type TipoLembrete = 'faltam_7' | 'faltam_3' | 'falta_1' | 'expira_hoje' | 'fim_cortesia';
+
+const POR_DIAS: Record<number, TipoLembrete> = {
+  7: 'faltam_7',
+  3: 'faltam_3',
+  1: 'falta_1',
+};
+
+/**
+ * Que aviso é devido hoje, se algum.
+ *
+ * Devolve um só: se uma conta estivesse a dois dias e o cron não tivesse
+ * corrido ontem, mandar os avisos todos de uma vez seria três emails
+ * seguidos a dizer quase o mesmo. Manda-se o mais urgente e segue-se.
+ *
+ * A repetição não é travada aqui — é o índice único de
+ * `lembretes_enviados` que a trava, e é onde tem de estar: o cron corre
+ * todos os dias, e a conta que está a sete dias hoje continua "a sete
+ * dias" durante quase vinte e quatro horas.
+ */
+export function lembreteDevido(
+  acessoExpiraEm: string | Date | null | undefined,
+  agora: Date = new Date(),
+): TipoLembrete | null {
+  const expira = data(acessoExpiraEm);
+  if (!expira) return null;
+
+  const restante = expira.getTime() - agora.getTime();
+
+  if (restante > 0) {
+    const dias = Math.ceil(restante / DIA);
+    return POR_DIAS[dias] ?? null;
+  }
+
+  const passados = Math.floor(-restante / DIA);
+  if (passados === 0) return 'expira_hoje';
+  if (passados === DIAS_DE_CORTESIA) return 'fim_cortesia';
+
+  return null;
+}
+
+export const ASSUNTO_LEMBRETE: Record<TipoLembrete, string> = {
+  faltam_7: 'Faltam 7 dias do seu Cardapp',
+  faltam_3: 'Faltam 3 dias do seu Cardapp',
+  falta_1: 'Amanhã acaba o seu Cardapp',
+  expira_hoje: 'O seu Cardapp acaba hoje',
+  fim_cortesia: 'O seu cardápio saiu do ar',
+};
+
+/** O que dizer a quem está a chegar ao fim, sem alarmar quem tem tempo. */
+export function avisoDoPrazo(estado: EstadoConta, dias: number): string {
+  if (estado === 'expirada') return 'O acesso terminou e o cardápio saiu do ar.';
+  if (estado === 'cortesia') {
+    return 'O prazo acabou. O cardápio ainda está no ar, mas por pouco tempo.';
+  }
+  if (estado === 'a_expirar') {
+    if (dias <= 1) return 'Último dia. Renove para o cardápio não sair do ar.';
+    return `Faltam ${dias} dias. Renove para o cardápio não sair do ar.`;
+  }
+  return '';
 }

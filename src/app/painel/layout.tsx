@@ -3,7 +3,7 @@ import { DocaPainel, NavegacaoPainel } from '@/components/painel/navegacao';
 import { AvisoDemonstracao } from '@/components/aviso-demonstracao';
 import { AvisoDoPlano } from '@/components/painel/aviso-do-plano';
 import { PortaFechada } from '@/components/painel/porta-fechada';
-import { estadoAssinatura } from '@/lib/planos';
+import { estadoDaConta, painelAberto } from '@/lib/planos';
 import { FundoVivo } from '@/components/marketing/fundo-vivo';
 import { ConviteInstalar } from '@/components/convite-instalar';
 import { SinoDePedidos } from '@/components/painel/sino-de-pedidos';
@@ -24,7 +24,8 @@ export default async function LayoutPainel({ children }: { children: React.React
     eAdministrador(),
   ]);
 
-  const fechado = Boolean(restaurante) && estadoAssinatura(restaurante!) === 'expirado';
+  const fechado =
+    Boolean(restaurante) && !painelAberto(estadoDaConta(restaurante!.acesso_expira_em));
 
   return (
     <div className="relative min-h-dvh">
