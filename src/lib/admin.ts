@@ -20,8 +20,29 @@ function listaDeAdministradores() {
     .filter(Boolean);
 }
 
+/**
+ * Há alguém definido como administrador?
+ *
+ * Quando não há, o painel responde 404 — a quem não é administrador não
+ * interessa saber que esta secção existe. Mas o 404 é o mesmo nos dois
+ * casos, e por isso o dono da aplicação, com a variável por pôr, vê
+ * exactamente o que veria um estranho: nada, e sem pista nenhuma.
+ *
+ * Fica escrito no registo do servidor. Não aparece no ecrã de ninguém —
+ * não diz quem é administrador nem que a secção existe — mas quem tem
+ * acesso aos registos passa a saber em dez segundos porque é que a porta
+ * não abre.
+ */
 export function haAdministradoresDefinidos() {
-  return listaDeAdministradores().length > 0;
+  const ha = listaDeAdministradores().length > 0;
+
+  if (!ha) {
+    console.warn(
+      '[cardapp] ADMIN_EMAILS não está definida: o painel de administração responde 404 a toda a gente.',
+    );
+  }
+
+  return ha;
 }
 
 /**
