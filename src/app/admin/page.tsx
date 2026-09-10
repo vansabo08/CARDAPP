@@ -2,7 +2,13 @@ import { TabelaContas } from '@/components/admin/tabela-contas';
 import { Barras, Cartao, LinhaDoTempo, Numero } from '@/components/admin/graficos';
 import { COR_ESTADO } from '@/lib/cores';
 import { LivroDeAuditoria } from '@/components/admin/livro-de-auditoria';
-import { metricasAdmin, resumoAdministrativo, type ContaAdmin } from '@/lib/admin';
+import { LivroDePagamentos } from '@/components/admin/livro-de-pagamentos';
+import {
+  metricasAdmin,
+  pagamentosRecentes,
+  resumoAdministrativo,
+  type ContaAdmin,
+} from '@/lib/admin';
 import { PLANOS, estadoDaConta, type EstadoConta } from '@/lib/planos';
 import { formatarKz } from '@/lib/format';
 import { NOME_PLANO, type Plano } from '@/lib/tipos';
@@ -33,10 +39,8 @@ const TOM_ESTADO: Record<EstadoConta, string> = {
 };
 
 export default async function PaginaAdmin() {
-  const [{ contas, totalPedidos30Dias, semServico }, { serie, auditoria }] = await Promise.all([
-    resumoAdministrativo(),
-    metricasAdmin(30),
-  ]);
+  const [{ contas, totalPedidos30Dias, semServico }, { serie, auditoria }, pagamentos] =
+    await Promise.all([resumoAdministrativo(), metricasAdmin(30), pagamentosRecentes()]);
 
   if (semServico) {
     return (
@@ -208,6 +212,10 @@ export default async function PaginaAdmin() {
       {/* ------------------------------------------------------------ */}
       {/* O livro                                                       */}
       {/* ------------------------------------------------------------ */}
+      <div className="mt-4">
+        <LivroDePagamentos pagamentos={pagamentos} contas={contas} />
+      </div>
+
       <div className="mt-4">
         <LivroDeAuditoria linhas={auditoria} />
       </div>

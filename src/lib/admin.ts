@@ -256,3 +256,82 @@ export async function metricasAdmin(dias = 30): Promise<MetricasAdmin> {
 
   return { serie, auditoria };
 }
+
+/* ------------------------------------------------------------------ */
+/* O livro dos pagamentos                                              */
+/* ------------------------------------------------------------------ */
+
+export type LinhaDePagamento = {
+  id: string;
+  restauranteId: string | null;
+  restauranteNome: string | null;
+  tipo: string;
+  email: string | null;
+  plano: Plano | null;
+  valor: number | null;
+  nota: string | null;
+  quando: string;
+  /** Entrou dinheiro e não abriu conta nenhuma. É o que precisa de mão. */
+  orfao: boolean;
+};
+
+/**
+ * Todos os avisos de pagamento que entraram, e o que cada um fez.
+ *
+ * Existe por causa de uma avaria que é a mais provável de todas, porque
+ * é a mais humana: pagar na Kursinha com um email e ter a conta do
+ * Cardapp noutro. O webhook faz o que deve — grava, não abre nada a
+ * ninguém, e escreve porquê — mas até aqui isso ficava só na base de
+ * dados, e ninguém vai à base de dados ver se alguém pagou.
+ *
+ * Um pagamento que entrou e não abriu a porta é dinheiro recebido com o
+ * serviço por entregar. Tem de estar à vista.
+ */
+export async function pagamentosRecentes(limite = 40): Promise<LinhaDePagamento[]> {
+  const supabase = clienteAdministrador();
+  if (!supabase) return [];
+
+  const { data } = await supabase
+    .from('pagamentos')
+    .select('id, restaurant_id, tipo, email, plano, valor, nota, criado_em')
+    .order('criado_em', { ascending: false })
+    .limit(limite);
+
+  const linhas = (data ?? []) as {
+    id: string;
+    restaurant_id: string | null;
+    tipo: string;
+    email: string | null;
+    plano: Plano | null;
+    valor: number | string | null;
+    nota: string | null;
+    criado_em: string;
+  }[];
+
+  if (!linhas.length) return [];
+
+  // Os nomes numa ida só. Uma consulta por linha seria N+1 num sítio
+  // onde N cresce com as vendas, que é justamente o que se quer que
+  // cresça.
+  const ids = [...new Set(linhas.map((l) => l.restaurant_id).filter(Boolean))] as string[];
+  const { data: casas } = ids.length
+    ? await supabase.from('restaurants').select('id, nome').in('id', ids)
+    : { data: [] };
+
+  const nomes = new Map(
+    ((casas ?? []) as { id: string; nome: string }[]).map((c) => [c.id, c.nome]),
+  );
+
+  return linhas.map((l) => ({
+    id: l.id,
+    restauranteId: l.restaurant_id,
+    restauranteNome: l.restaurant_id ? nomes.get(l.restaurant_id) ?? null : null,
+    tipo: l.tipo,
+    email: l.email,
+    plano: l.plano,
+    valor: l.valor == null ? null : Number(l.valor),
+    nota: l.nota,
+    quando: l.criado_em,
+    orfao: !l.restaurant_id && l.tipo !== 'reembolsado',
+  }));
+}

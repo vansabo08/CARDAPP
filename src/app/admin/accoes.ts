@@ -181,3 +181,94 @@ export async function marcarPago(id: string, meses = 1): Promise<Resultado> {
   );
   return actualizou((data as { slug?: string } | null)?.slug);
 }
+
+/**
+ * Cola um pagamento órfão à conta a que ele pertence.
+ *
+ * Um pagamento fica órfão quando entra com um email que não tem conta no
+ * Cardapp — pagou-se com o email do costume e registou-se com outro, que
+ * é a avaria mais humana que este sistema tem. O webhook faz o que deve:
+ * grava, não abre nada a ninguém, e escreve porquê. Faltava a outra
+ * metade, que é alguém poder dizer "este pagamento é desta casa".
+ *
+ * Só se aplica um pagamento que ainda não tenha dono. Se já tem, já
+ * contou dias uma vez, e voltar a aplicá-lo dava dois meses por um
+ * pagamento — e a segunda vez ninguém dava por ela.
+ */
+export async function aplicarPagamento(
+  pagamentoId: string,
+  restauranteId: string,
+): Promise<Resultado> {
+  await exigirAdministrador();
+
+  const supabase = clienteAdministrador();
+  if (!supabase) return { ok: false, erro: 'SUPABASE_SERVICE_ROLE_KEY em falta.' };
+
+  const { data: pago } = await supabase
+    .from('pagamentos')
+    .select('id, restaurant_id, plano, email, valor')
+    .eq('id', pagamentoId)
+    .maybeSingle();
+
+  const pagamento = pago as
+    | { id: string; restaurant_id: string | null; plano: Plano | null; email: string | null }
+    | null;
+
+  if (!pagamento) return { ok: false, erro: 'Pagamento não encontrado.' };
+  if (pagamento.restaurant_id) {
+    return { ok: false, erro: 'Este pagamento já foi aplicado a uma conta.' };
+  }
+
+  const { data: actual } = await supabase
+    .from('restaurants')
+    .select('plano, acesso_expira_em, slug')
+    .eq('id', restauranteId)
+    .maybeSingle();
+
+  const casa = actual as
+    | { plano?: Plano; acesso_expira_em?: string | null; slug?: string }
+    | null;
+
+  if (!casa) return { ok: false, erro: 'Conta não encontrada.' };
+
+  /*
+   * O plano do pagamento manda; o da casa é o recurso.
+   *
+   * Quem pagou 19.900 comprou Sala, e a conta tem de passar a Sala mesmo
+   * que estivesse em Mesa — é a mesma regra do webhook, e por aqui tem
+   * de ser a mesma, senão o caminho manual dava resultado diferente do
+   * automático para o mesmo dinheiro.
+   */
+  const plano = pagamento.plano ?? casa.plano ?? 'mesa';
+  const ate = proximaExpiracao(casa.acesso_expira_em ?? null, plano).toISOString();
+
+  const { error } = await supabase
+    .from('restaurants')
+    .update({ acesso_expira_em: ate, plano })
+    .eq('id', restauranteId);
+
+  if (error) return { ok: false, erro: error.message };
+
+  /*
+   * A conta já abriu. Daqui para baixo nada pode desfazer isso: se o
+   * carimbo no pagamento falhar, fica um pagamento por marcar — chato, e
+   * visível na lista — em vez de uma casa fechada com o dinheiro pago.
+   */
+  await supabase
+    .from('pagamentos')
+    .update({
+      restaurant_id: restauranteId,
+      tipo: 'pago',
+      nota: `Aplicado à mão a partir de ${pagamento.email ?? 'email desconhecido'}.`,
+    })
+    .eq('id', pagamentoId);
+
+  await registar(
+    'pagamento aplicado à mão',
+    restauranteId,
+    { acesso_expira_em: casa.acesso_expira_em ?? null, plano: casa.plano ?? null },
+    { acesso_expira_em: ate, plano },
+  );
+
+  return actualizou(casa.slug);
+}
