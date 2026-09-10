@@ -1,5 +1,6 @@
 import { TabelaContas } from '@/components/admin/tabela-contas';
-import { Barras, Cartao, COR_ESTADO, LinhaDoTempo, Numero } from '@/components/admin/graficos';
+import { Barras, Cartao, LinhaDoTempo, Numero } from '@/components/admin/graficos';
+import { COR_ESTADO } from '@/lib/cores';
 import { LivroDeAuditoria } from '@/components/admin/livro-de-auditoria';
 import { metricasAdmin, resumoAdministrativo, type ContaAdmin } from '@/lib/admin';
 import { PLANOS, estadoDaConta, type EstadoConta } from '@/lib/planos';
@@ -123,7 +124,7 @@ export default async function PaginaAdmin() {
         <Numero
           rotulo="A trabalhar agora"
           valor={String(online.length)}
-          nota={online.length ? online.map((c) => c.nome).join(', ').slice(0, 40) : 'ninguém'}
+          nota={quemEsta(online.map((c) => c.nome))}
           tom={online.length ? 'bom' : undefined}
         />
         <Numero
@@ -144,7 +145,7 @@ export default async function PaginaAdmin() {
       <div className="mt-6 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
         <Cartao
           titulo="Pedidos por dia"
-          descricao="Últimos 30 dias, à hora de Luanda. Passe o rato para ver cada dia."
+          descricao="Últimos 30 dias, à hora de Luanda."
         >
           <LinhaDoTempo pontos={serie} />
         </Cartao>
@@ -226,6 +227,19 @@ export default async function PaginaAdmin() {
       </div>
     </div>
   );
+}
+
+/**
+ * Quem está a trabalhar agora, sem cortar um nome a meio.
+ *
+ * Cortar a lista aos 40 caracteres dava "Tamariz do Mussulo, Cantinho da
+ * Avó, Chi" — e um nome truncado a meio lê-se como coisa partida, e não
+ * como lista que continua.
+ */
+function quemEsta(nomes: string[]) {
+  if (!nomes.length) return 'ninguém';
+  if (nomes.length <= 2) return nomes.join(' e ');
+  return `${nomes.slice(0, 2).join(', ')} e mais ${nomes.length - 2}`;
 }
 
 function quandoFoi(iso: string) {

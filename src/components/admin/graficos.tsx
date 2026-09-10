@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { COR_ESTADO, COR_SERIE, type TomDeEstado } from '@/lib/cores';
 import { formatarKz } from '@/lib/format';
 import { cn } from '@/lib/utils';
 
@@ -22,14 +23,6 @@ import { cn } from '@/lib/utils';
  * distinguem o suficiente.
  */
 
-/** Cores de estado. Nunca sozinhas: vão sempre com rótulo ao lado. */
-export const COR_ESTADO = {
-  bom: '#0ca30c',
-  aviso: '#fab219',
-  serio: '#ec835a',
-  critico: '#d03b3b',
-} as const;
-
 const TINTA = 'rgba(250,247,242,0.55)';
 const GRELHA = 'rgba(250,247,242,0.10)';
 
@@ -50,7 +43,7 @@ export function Numero({
   rotulo: string;
   valor: string;
   nota?: string;
-  tom?: keyof typeof COR_ESTADO;
+  tom?: TomDeEstado;
 }) {
   return (
     <div className="vidro rounded-cartao p-5">
@@ -88,13 +81,21 @@ export function LinhaDoTempo({ pontos }: { pontos: Ponto[] }) {
 
   const L = 640;
   const A = 180;
-  const MARGEM = { cima: 12, baixo: 22, lado: 8 };
+
+  /*
+   * A goteira da esquerda é para os números do eixo.
+   *
+   * Sem eles a grelha eram três traços mudos: via-se a forma e não se
+   * sabia se o pico era vinte pedidos ou duzentos, que é metade do que
+   * um gráfico destes tem para dizer.
+   */
+  const MARGEM = { cima: 12, baixo: 22, esquerda: 34, direita: 8 };
 
   const maximo = Math.max(1, ...pontos.map((p) => p.total));
-  const largura = (L - MARGEM.lado * 2) / (pontos.length - 1);
+  const largura = (L - MARGEM.esquerda - MARGEM.direita) / (pontos.length - 1);
   const alturaUtil = A - MARGEM.cima - MARGEM.baixo;
 
-  const x = (i: number) => MARGEM.lado + i * largura;
+  const x = (i: number) => MARGEM.esquerda + i * largura;
   const y = (v: number) => MARGEM.cima + alturaUtil * (1 - v / maximo);
 
   const caminho = pontos.map((p, i) => `${i === 0 ? 'M' : 'L'} ${x(i)} ${y(p.total)}`).join(' ');
@@ -112,27 +113,38 @@ export function LinhaDoTempo({ pontos }: { pontos: Ponto[] }) {
         onMouseLeave={() => setActivo(null)}
       >
         {/* Grelha recessiva: três traços, e não uma gaiola. */}
-        {[0, 0.5, 1].map((f) => (
-          <line
-            key={f}
-            x1={MARGEM.lado}
-            x2={L - MARGEM.lado}
-            y1={y(maximo * f)}
-            y2={y(maximo * f)}
-            stroke={GRELHA}
-            strokeWidth={1}
-          />
+        {[0, 1].map((f) => (
+          <g key={f}>
+            <line
+              x1={MARGEM.esquerda}
+              x2={L - MARGEM.direita}
+              y1={y(maximo * f)}
+              y2={y(maximo * f)}
+              stroke={GRELHA}
+              strokeWidth={1}
+            />
+            <text
+              x={MARGEM.esquerda - 8}
+              y={y(maximo * f)}
+              fill={TINTA}
+              fontSize={11}
+              textAnchor="end"
+              dominantBaseline="middle"
+            >
+              {Math.round(maximo * f)}
+            </text>
+          </g>
         ))}
 
         <defs>
           <linearGradient id="sombra-linha" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#c98500" stopOpacity="0.22" />
-            <stop offset="100%" stopColor="#c98500" stopOpacity="0" />
+            <stop offset="0%" stopColor={COR_SERIE} stopOpacity="0.22" />
+            <stop offset="100%" stopColor={COR_SERIE} stopOpacity="0" />
           </linearGradient>
         </defs>
 
         <path d={area} fill="url(#sombra-linha)" />
-        <path d={caminho} fill="none" stroke="#c98500" strokeWidth={2} strokeLinejoin="round" />
+        <path d={caminho} fill="none" stroke={COR_SERIE} strokeWidth={2} strokeLinejoin="round" />
 
         {/* A mira. */}
         {activo != null ? (
@@ -150,7 +162,7 @@ export function LinhaDoTempo({ pontos }: { pontos: Ponto[] }) {
               cx={x(activo)}
               cy={y(pontos[activo].total)}
               r={5}
-              fill="#c98500"
+              fill={COR_SERIE}
               stroke="#0b0b0b"
               strokeWidth={2}
             />
@@ -171,10 +183,10 @@ export function LinhaDoTempo({ pontos }: { pontos: Ponto[] }) {
         ))}
 
         {/* Só as pontas levam data: uma etiqueta por dia seria ilegível. */}
-        <text x={MARGEM.lado} y={A - 6} fill={TINTA} fontSize={11}>
+        <text x={MARGEM.esquerda} y={A - 6} fill={TINTA} fontSize={11}>
           {diaCurto(pontos[0].dia)}
         </text>
-        <text x={L - MARGEM.lado} y={A - 6} fill={TINTA} fontSize={11} textAnchor="end">
+        <text x={L - MARGEM.direita} y={A - 6} fill={TINTA} fontSize={11} textAnchor="end">
           {diaCurto(pontos[pontos.length - 1].dia)}
         </text>
       </svg>
@@ -227,7 +239,7 @@ export function Barras({ dados, sufixo }: { dados: Barra[]; sufixo?: string }) {
               className="h-full rounded-full transition-[width] duration-lenta ease-assinatura"
               style={{
                 width: `${Math.max(2, (d.valor / maximo) * 100)}%`,
-                backgroundColor: d.cor ?? '#c98500',
+                backgroundColor: d.cor ?? COR_SERIE,
               }}
             />
           </div>

@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { NOME_PLANO, type Plano } from '@/lib/tipos';
 import { PLANOS as CONFIG_PLANOS, estadoDaConta, linkDePagamento, type EstadoConta } from '@/lib/planos';
 import { formatarKz } from '@/lib/format';
+import { COR_ESTADO } from '@/lib/cores';
 import type { ContaAdmin } from '@/lib/admin';
 import { alternarActivo, mudarPlano } from '@/app/admin/accoes';
 
@@ -20,11 +21,22 @@ const ROTULO_ESTADO: Record<EstadoConta, string> = {
   expirada: 'fora do ar',
 };
 
-const COR_ESTADO: Record<EstadoConta, string> = {
-  activa: 'text-creme',
-  a_expirar: 'text-ouro',
-  cortesia: 'text-ouro',
-  expirada: 'text-[#e0655a]',
+/**
+ * A data do acesso leva a cor do estado em que a conta está.
+ *
+ * São os mesmos quatro tons dos gráficos, do módulo validado. Antes o
+ * "a acabar" e o "em cortesia" partilhavam o dourado, e duas situações
+ * diferentes ficavam com o mesmo aspecto.
+ *
+ * A cor nunca vai sozinha: o rótulo está sempre ao lado, para quem não
+ * distingue os tons. E a conta em dia não leva cor nenhuma — pintar o
+ * normal gasta a atenção que é precisa para o que não está normal.
+ */
+const TOM_ESTADO: Record<EstadoConta, string | undefined> = {
+  activa: undefined,
+  a_expirar: COR_ESTADO.aviso,
+  cortesia: COR_ESTADO.serio,
+  expirada: COR_ESTADO.critico,
 };
 
 function rotuloDoEstado(e: EstadoConta) {
@@ -32,7 +44,8 @@ function rotuloDoEstado(e: EstadoConta) {
 }
 
 function corDoEstado(e: EstadoConta) {
-  return COR_ESTADO[e];
+  const tom = TOM_ESTADO[e];
+  return tom ? { color: tom } : undefined;
 }
 
 /**
@@ -212,7 +225,7 @@ export function TabelaContas({ contas }: { contas: ContaAdmin[] }) {
                 <div>
                   <dt className="etiqueta text-tenue">Acesso até</dt>
                   <dd className="mt-1 font-sans text-sm">
-                    <span className={corDoEstado(estadoDaConta(conta.acessoExpiraEm))}>
+                    <span className="text-creme" style={corDoEstado(estadoDaConta(conta.acessoExpiraEm))}>
                       {conta.acessoExpiraEm ? dataCurta(conta.acessoExpiraEm) : '—'}
                     </span>
                     {conta.acessoExpiraEm ? (
