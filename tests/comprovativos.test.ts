@@ -33,6 +33,17 @@ const estado: { comprovativos: Comprovativo[]; casas: Casa[]; auditoria: unknown
 
 let admin = true;
 
+/**
+ * Um simulador que encadeia como o Supabase encadeia.
+ *
+ * O construtor do Supabase só corre quando alguém espera por ele — ou
+ * quando se pede `select()`. A primeira versão disto aplicava a
+ * alteração logo no primeiro `eq()`, e por isso não sabia executar
+ * `update().eq().eq().select()` — que é exactamente a forma de reclamar
+ * uma linha sem correr o risco de outra pessoa a reclamar ao mesmo
+ * tempo. O teste falhava por não saber imitar o que o código faz de
+ * certo.
+ */
 function tabela(nome: string) {
   const alvo = () =>
     nome === 'comprovativos'
@@ -41,15 +52,34 @@ function tabela(nome: string) {
         ? (estado.casas as unknown as Record<string, unknown>[])
         : (estado.auditoria as Record<string, unknown>[]);
 
-  const c = {
-    _filtros: [] as { campo: string; valor: unknown }[],
-    _mudanca: null as null | Record<string, unknown>,
+  const filtros: { campo: string; valor: unknown }[] = [];
+  let mudanca: Record<string, unknown> | null = null;
 
+  const combina = (l: Record<string, unknown>) =>
+    filtros.every((f) => l[f.campo] === f.valor);
+
+  function aplicar() {
+    const tocadas = alvo().filter(combina);
+    if (mudanca) {
+      for (const linha of tocadas) Object.assign(linha, mudanca);
+      mudanca = null;
+    }
+    return tocadas;
+  }
+
+  const c = {
     select() {
-      return c;
+      const tocadas = aplicar();
+      return Object.assign(Promise.resolve({ data: tocadas, error: null }), {
+        maybeSingle: () => Promise.resolve({ data: tocadas[0] ?? null, error: null }),
+        single: () => Promise.resolve({ data: tocadas[0] ?? null, error: null }),
+        eq: c.eq,
+        order: c.order,
+        limit: c.limit,
+      });
     },
     update(m: Record<string, unknown>) {
-      c._mudanca = m;
+      mudanca = m;
       return c;
     },
     insert(linha: Record<string, unknown>) {
@@ -57,26 +87,23 @@ function tabela(nome: string) {
       return Promise.resolve({ data: null, error: null });
     },
     eq(campo: string, valor: unknown) {
-      c._filtros.push({ campo, valor });
-
-      if (c._mudanca) {
-        const m = c._mudanca;
-        const filtros = c._filtros;
-        c._mudanca = null;
-        c._filtros = [];
-        for (const linha of alvo()) {
-          if (filtros.every((f) => linha[f.campo] === f.valor)) Object.assign(linha, m);
-        }
-        return Promise.resolve({ data: null, error: null });
-      }
-
+      filtros.push({ campo, valor });
+      return c;
+    },
+    order() {
+      return c;
+    },
+    limit() {
       return c;
     },
     maybeSingle() {
-      const filtros = c._filtros;
-      c._filtros = [];
-      const achada = alvo().find((l) => filtros.every((f) => l[f.campo] === f.valor)) ?? null;
-      return Promise.resolve({ data: achada, error: null });
+      const tocadas = aplicar();
+      return Promise.resolve({ data: tocadas[0] ?? null, error: null });
+    },
+    // Como no Supabase: só corre quando alguém espera por ele.
+    then(resolve: (v: { data: unknown; error: null }) => void) {
+      const tocadas = aplicar();
+      resolve({ data: tocadas, error: null });
     },
   };
 
@@ -203,6 +230,31 @@ describe('decidir um comprovativo', () => {
     await expect(decidirComprovativo('comp-1', true)).rejects.toThrow(/autoriza/i);
     expect(estado.casas[0].acesso_expira_em).toBe(antes);
     expect(estado.comprovativos[0].estado).toBe('a_espera');
+  });
+
+  it('duas decisões ao mesmo tempo só contam uma vez', async () => {
+    /*
+     * A verificação do estado não chega: entre lê-lo como "à espera" e
+     * mexer na conta há uma janela. Dois separadores abertos, ou um
+     * duplo-clique que passa, e ambos somavam trinta dias — sessenta por
+     * um pagamento de trinta, sem nada no ecrã que denunciasse.
+     */
+    const antes = new Date(estado.casas[0].acesso_expira_em!).getTime();
+
+    const [a, b] = await Promise.all([
+      decidirComprovativo('comp-1', true),
+      decidirComprovativo('comp-1', true),
+    ]);
+
+    const passaram = [a, b].filter((r) => r.ok).length;
+    expect(passaram).toBe(1);
+
+    const ficou = new Date(estado.casas[0].acesso_expira_em!).getTime();
+    const acrescentados = Math.round((ficou - antes) / DIA);
+
+    // Um mês, e não dois. (A conta soma a partir da data de antes da
+    // cortesia, que estava um dia à frente da actual.)
+    expect(acrescentados).toBeLessThan(35);
   });
 
   it('deixa rasto no livro', async () => {

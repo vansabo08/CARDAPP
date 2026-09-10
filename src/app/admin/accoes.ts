@@ -315,9 +315,36 @@ export async function decidirComprovativo(
 
   if (!comprovativo) return { ok: false, erro: 'Comprovativo não encontrado.' };
 
-  // Decidir duas vezes o mesmo comprovativo dava dois meses por um
-  // pagamento — e a segunda vez ninguém a via.
   if (comprovativo.estado !== 'a_espera') {
+    return { ok: false, erro: 'Este comprovativo já foi decidido.' };
+  }
+
+  /*
+   * RECLAMAR ANTES DE APLICAR.
+   *
+   * A verificação acima não chega. Entre lê-lo como "à espera" e mexer
+   * na conta há uma janela — dois separadores abertos, um duplo-clique
+   * que passa, a página aberta em dois sítios — em que duas decisões
+   * lêem ambas "à espera" e ambas somam trinta dias. Sessenta por um
+   * pagamento de trinta, sem nada no ecrã que denuncie.
+   *
+   * O carimbo vai primeiro, condicionado ao estado ainda ser "à espera".
+   * A base só deixa um passar; quem chegar em segundo não muda linha
+   * nenhuma e vai-se embora sem tocar na conta.
+   */
+  const { data: reclamado } = await supabase
+    .from('comprovativos')
+    .update({
+      estado: aprovado ? 'aprovado' : 'recusado',
+      decidido_em: new Date().toISOString(),
+      decidido_por: (await utilizadorActual())?.email ?? 'desconhecido',
+      nota: nota?.trim() || null,
+    })
+    .eq('id', comprovativoId)
+    .eq('estado', 'a_espera')
+    .select('id');
+
+  if (!reclamado || !reclamado.length) {
     return { ok: false, erro: 'Este comprovativo já foi decidido.' };
   }
 
@@ -343,20 +370,25 @@ export async function decidirComprovativo(
     .update({ acesso_expira_em: ate })
     .eq('id', comprovativo.restaurant_id);
 
-  if (error) return { ok: false, erro: error.message };
+  if (error) {
+    /*
+     * A reclamação já lá está e os dias não entraram. Devolve-se o
+     * comprovativo à fila: um carimbo sem efeito é a pior das duas
+     * pontas — a casa fica sem os dias e o comprovativo desaparece do
+     * que está por decidir, e ninguém volta a olhar para ele.
+     */
+    await supabase
+      .from('comprovativos')
+      .update({
+        estado: 'a_espera',
+        decidido_em: null,
+        decidido_por: null,
+        nota: `Não foi possível aplicar: ${error.message}`,
+      })
+      .eq('id', comprovativoId);
 
-  // A conta já mudou. Se o carimbo falhar fica um comprovativo por
-  // decidir na fila — visível, e corrigível — em vez de uma casa com o
-  // acesso mexido sem se saber porquê.
-  await supabase
-    .from('comprovativos')
-    .update({
-      estado: aprovado ? 'aprovado' : 'recusado',
-      decidido_em: new Date().toISOString(),
-      decidido_por: (await utilizadorActual())?.email ?? 'desconhecido',
-      nota: nota?.trim() || null,
-    })
-    .eq('id', comprovativoId);
+    return { ok: false, erro: error.message };
+  }
 
   await registar(
     aprovado ? 'comprovativo aprovado' : 'comprovativo recusado',

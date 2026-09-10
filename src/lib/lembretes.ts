@@ -1,5 +1,6 @@
 import 'server-only';
 import { clienteAdministrador } from './supabase/administrador';
+import { enderecoDePagarAbsoluto } from '@/config/pagamento';
 import { formatarKz } from './format';
 import {
   ASSUNTO_LEMBRETE,
@@ -76,7 +77,12 @@ export async function casasParaAvisar(agora = new Date()): Promise<CasaParaAvisa
 
 export function textoDoLembrete(casa: CasaParaAvisar) {
   const plano = PLANOS[casa.plano];
-  const link = linkDePagamento(casa.plano);
+  /*
+   * O lembrete leva a pessoa ao painel, e não a uma plataforma de fora.
+   * É lá que estão as credenciais, e é lá que ela sobe o comprovativo —
+   * mandá-la para outro sítio era pedir-lhe que fizesse dois caminhos.
+   */
+  const link = enderecoDePagarAbsoluto();
   const preco = formatarKz(plano.preco);
 
   const abertura: Record<TipoLembrete, string> = {

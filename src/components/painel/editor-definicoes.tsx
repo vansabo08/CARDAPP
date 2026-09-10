@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import Link from 'next/link';
 import { Botao, useSinalDeBotao } from '@/components/ui/botao';
 import { Distintivo } from '@/components/ui/distintivo';
 import { Erro } from '@/components/ui/campo';
@@ -11,7 +12,8 @@ import {
   type ValoresRestaurante,
 } from '@/components/painel/formulario-restaurante';
 import { formatarKz } from '@/lib/format';
-import { INCLUI, PRECO_PLANO, linkDePagamento } from '@/lib/planos';
+import { INCLUI, PRECO_PLANO } from '@/lib/planos';
+import { CONTA_PARA_PAGAR, ENDERECO_DE_PAGAR } from '@/config/pagamento';
 import { NOME_PLANO, type ModoPedido, type Plano, type Restaurante } from '@/lib/tipos';
 import { guardarModoPedido, guardarRestaurante } from '@/app/painel/definicoes/accoes';
 import { desbloquearSom, lembrarSom } from '@/lib/som';
@@ -166,8 +168,8 @@ export function EditorDefinicoes({
       <section id="plano" className="scroll-mt-24 border-t border-linha pt-12">
         <h2 className="font-display text-xl text-creme">Plano</h2>
         <p className="mt-2 max-w-[54ch] font-sans text-sm leading-normal text-tenue">
-          O pagamento é feito na Kursinha. Assim que entrar, o painel abre sozinho — não é preciso
-          avisar ninguém nem voltar a entrar.
+          Paga-se por transferência — Multicaixa Express {CONTA_PARA_PAGAR.express} ou IBAN — e
+          envia-se o comprovativo aqui no app. O painel reabre assim que o comprovativo entrar.
         </p>
 
         <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -200,17 +202,17 @@ export function EditorDefinicoes({
                 </ul>
 
                 {/*
-                  O pagamento acontece fora daqui, na Kursinha, e volta
-                  por webhook. Sem link configurado o botão não aparece —
-                  mais vale não haver botão do que haver um que não leva
-                  a lado nenhum.
+                  O botão só aparece no plano que a casa tem.
+                  
+                  Mudar de plano não é coisa que se faça por um botão que
+                  cobra: a casa paga o que tem e o plano muda-se a pedido.
+                  Um "Mudar para Sala" que levasse ao mesmo ecrã de pagar
+                  prometia uma mudança que o pagamento sozinho não faz.
                 */}
-                {linkDePagamento(plano) ? (
+                {actual ? (
                   <div className="mt-5">
-                    <Botao asChild variante={actual ? 'ouro' : 'contorno'} tamanho="sm" largo>
-                      <a href={linkDePagamento(plano)!} target="_blank" rel="noreferrer">
-                        {actual ? 'Pagar este plano' : `Mudar para ${NOME_PLANO[plano]}`}
-                      </a>
+                    <Botao asChild variante="ouro" tamanho="sm" largo>
+                      <Link href={ENDERECO_DE_PAGAR}>Pagar este plano</Link>
                     </Botao>
                   </div>
                 ) : null}

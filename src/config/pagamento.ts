@@ -44,3 +44,21 @@ export const COMPROVATIVO = {
   tamanhoMaximo: 6 * 1024 * 1024,
   balde: 'comprovativos',
 } as const;
+
+/** Onde se paga, dentro da aplicação. */
+export const ENDERECO_DE_PAGAR = '/painel/pagar';
+
+/**
+ * O mesmo endereço, absoluto, para caber num email ou num WhatsApp.
+ *
+ * Sem `NEXT_PUBLIC_SITE_URL` fica o endereço de produção escrito à mão.
+ * Um lembrete que diz "renove aqui: /painel/pagar" não leva ninguém a
+ * lado nenhum, e é a única frase que aquele email tem para dar.
+ */
+export function enderecoDePagarAbsoluto() {
+  const base = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://cardaapp.vercel.app').replace(
+    /\/+$/,
+    '',
+  );
+  return base + ENDERECO_DE_PAGAR;
+}

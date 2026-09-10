@@ -6,7 +6,8 @@ import { Interruptor } from '@/components/ui/interruptor';
 import { Campo } from '@/components/ui/campo';
 import { cn } from '@/lib/utils';
 import { NOME_PLANO, type Plano } from '@/lib/tipos';
-import { PLANOS as CONFIG_PLANOS, estadoDaConta, linkDePagamento, type EstadoConta } from '@/lib/planos';
+import { PLANOS as CONFIG_PLANOS, estadoDaConta, type EstadoConta } from '@/lib/planos';
+import { enderecoDePagarAbsoluto } from '@/config/pagamento';
 import { formatarKz } from '@/lib/format';
 import { COR_ESTADO } from '@/lib/cores';
 import type { ContaAdmin } from '@/lib/admin';
@@ -69,7 +70,7 @@ function avisoPorWhatsApp(conta: ContaAdmin) {
   const recado = [
     abertura,
     `O plano ${plano.nome} custa ${formatarKz(plano.preco)} e dá mais ${plano.dias} dias.`,
-    `Renovar aqui: ${linkDePagamento(conta.plano)}`,
+    `Renovar aqui: ${enderecoDePagarAbsoluto()}`,
   ].join('\n\n');
 
   return `https://wa.me/${conta.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(recado)}`;
