@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { lerEvento, novoPagoAte, planoDoProduto } from '../src/lib/pagamentos';
+import { lerEvento, novoPagoAte, planoDoProduto, planoDoValor } from '../src/lib/pagamentos';
 
 const AGORA = new Date('2026-09-10T12:00:00Z');
 
@@ -128,6 +128,38 @@ describe('do produto para o plano', () => {
   it('devolve nulo quando nao reconhece', () => {
     expect(planoDoProduto('outra coisa', mapa)).toBeNull();
     expect(planoDoProduto(null, mapa)).toBeNull();
+  });
+});
+
+describe('do valor para o plano', () => {
+  const precos = { mesa: 14900, sala: 19900 };
+
+  it('reconhece os dois precos', () => {
+    expect(planoDoValor(14900, precos)).toBe('mesa');
+    expect(planoDoValor(19900, precos)).toBe('sala');
+  });
+
+  it('aguenta o valor em centimos', () => {
+    expect(planoDoValor(1490000, precos)).toBe('mesa');
+    expect(planoDoValor(1990000, precos)).toBe('sala');
+  });
+
+  it('perdoa taxas e arredondamentos pequenos', () => {
+    expect(planoDoValor(14750, precos)).toBe('mesa');
+    expect(planoDoValor(20100, precos)).toBe('sala');
+  });
+
+  it('nao confunde os dois planos, que estao a 5.000 Kz um do outro', () => {
+    // A margem tem de ser muito menor do que a distancia entre eles.
+    expect(planoDoValor(14900, precos)).not.toBe('sala');
+    expect(planoDoValor(19900, precos)).not.toBe('mesa');
+  });
+
+  it('devolve nulo para valores que nao sao de plano nenhum', () => {
+    expect(planoDoValor(5000, precos)).toBeNull();
+    expect(planoDoValor(0, precos)).toBeNull();
+    expect(planoDoValor(null, precos)).toBeNull();
+    expect(planoDoValor(-14900, precos)).toBeNull();
   });
 });
 

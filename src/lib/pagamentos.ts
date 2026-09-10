@@ -271,6 +271,37 @@ export function planoDoProduto(
 }
 
 /**
+ * Qual o plano, a julgar pelo que foi pago.
+ *
+ * Segundo sinal, para quando o aviso não traz produto reconhecível. Sem
+ * ele, um pagamento sem produto renovava o plano que a casa já tinha —
+ * e quem pagasse 19.900 para subir de Mesa para Sala pagava e ficava em
+ * Mesa. Pior do que não abrir: cobra e não entrega.
+ *
+ * Os preços podem chegar em Kwanzas ou em cêntimos, conforme a
+ * plataforma, por isso testam-se os dois. A margem é de 500 Kz para
+ * aguentar taxas e arredondamentos sem confundir os planos, que estão a
+ * 5.000 Kz um do outro.
+ */
+export function planoDoValor(
+  valor: number | null,
+  precos: { mesa: number; sala: number },
+): 'mesa' | 'sala' | null {
+  if (!valor || valor <= 0) return null;
+
+  const MARGEM = 500;
+  // Em cêntimos, 14.900 Kz chegam como 1490000.
+  const candidatos = [valor, valor / 100];
+
+  for (const v of candidatos) {
+    if (Math.abs(v - precos.sala) <= MARGEM) return 'sala';
+    if (Math.abs(v - precos.mesa) <= MARGEM) return 'mesa';
+  }
+
+  return null;
+}
+
+/**
  * Até quando fica pago.
  *
  * Soma a partir do que já lá está, e não a partir de hoje: quem renova

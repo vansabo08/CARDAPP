@@ -1,8 +1,8 @@
 import { timingSafeEqual } from 'node:crypto';
 import { NextResponse } from 'next/server';
 import { clienteAdministrador } from '@/lib/supabase/administrador';
-import { lerEvento, novoPagoAte, planoDoProduto } from '@/lib/pagamentos';
-import { PRODUTO_KURSINHA } from '@/lib/planos';
+import { lerEvento, novoPagoAte, planoDoProduto, planoDoValor } from '@/lib/pagamentos';
+import { PRECO_PLANO, PRODUTO_KURSINHA } from '@/lib/planos';
 
 /**
  * O aviso de pagamento da Kursinha.
@@ -99,10 +99,19 @@ export async function POST(pedido: Request) {
     }
   }
 
-  const planoComprado = planoDoProduto(evento.produto, {
-    mesa: process.env.KURSINHA_PRODUTO_MESA ?? PRODUTO_KURSINHA.mesa,
-    sala: process.env.KURSINHA_PRODUTO_SALA ?? PRODUTO_KURSINHA.sala,
-  });
+  /*
+   * Um endereço serve os dois planos: qual foi comprado sai do aviso.
+   *
+   * Primeiro pelo identificador do produto, que é o sinal fiável.
+   * Depois pelo valor, para quando o aviso não traz produto nenhum
+   * reconhecível — sem esse segundo sinal, quem pagasse 19.900 para
+   * subir de Mesa para Sala pagava e ficava em Mesa.
+   */
+  const planoComprado =
+    planoDoProduto(evento.produto, {
+      mesa: process.env.KURSINHA_PRODUTO_MESA ?? PRODUTO_KURSINHA.mesa,
+      sala: process.env.KURSINHA_PRODUTO_SALA ?? PRODUTO_KURSINHA.sala,
+    }) ?? planoDoValor(evento.valor, PRECO_PLANO);
 
   let tipo = evento.tipo;
   let nota = evento.motivo ?? null;
