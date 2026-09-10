@@ -96,6 +96,10 @@ export type Pedido = {
   created_at: string;
   estado: EstadoPedido;
   actualizado_em: string;
+  /** O que o cliente escreveu sobre o pedido todo. */
+  observacao?: string | null;
+  /** Quando alguém da casa confirmou que viu. É o que cala o alarme. */
+  confirmado_em?: string | null;
   mesa?: number | null;
 };
 
@@ -129,6 +133,8 @@ export type PedidoParaMensagem = {
   data?: Date;
   /** Opcional: por omissao "na mesa". */
   pagamento?: string;
+  /** Observação do pedido inteiro, não de um prato. */
+  observacao?: string | null;
 };
 
 /**

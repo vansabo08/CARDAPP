@@ -33,6 +33,7 @@ export function CardapioPublico({
   const [pratoAberto, setPratoAberto] = React.useState<Prato | null>(null);
   const [resumoAberto, setResumoAberto] = React.useState(false);
   const [falhou, setFalhou] = React.useState<string | null>(null);
+  const [observacao, setObservacao] = React.useState('');
   const [sinal, sinalizar] = useSinalDeBotao();
 
   // Quem manda é a casa, nas definições. O cliente não escolhe a via:
@@ -149,6 +150,7 @@ export function CardapioPublico({
         table_id: tableId,
         itens,
         total: carrinho.total,
+        observacao: observacao.trim() || null,
       }),
     };
   }
@@ -171,6 +173,7 @@ export function CardapioPublico({
       mesa,
       itens,
       total: carrinho.total,
+      observacao: observacao.trim() || null,
     });
 
     try {
@@ -477,7 +480,34 @@ export function CardapioPublico({
             ))}
           </ul>
 
-          <div className="mt-6 flex items-baseline justify-between border-t border-linha-escura pt-5">
+          {/*
+            Observação do pedido inteiro, e não de um prato.
+
+            Já havia a de cada prato — "sem cebola" naquele prato. Esta é
+            para o que não pertence a nenhum: alergias, talheres a mais,
+            "somos seis mas queremos servir em dois tempos". Sem sítio
+            para o escrever, isso era dito em voz alta a quem passasse —
+            ou não era dito de todo.
+          */}
+          <div className="mt-6 border-t border-linha-escura pt-5">
+            <label htmlFor="obs-pedido" className="etiqueta mb-2 block text-tenue-escuro">
+              Alguma observação para a cozinha?
+            </label>
+            <AreaTexto
+              id="obs-pedido"
+              value={observacao}
+              onChange={(e) => setObservacao(e.target.value.slice(0, 200))}
+              placeholder="Sem cebola, pouco sal, talheres a mais…"
+              rows={2}
+            />
+            {observacao.length > 150 ? (
+              <p className="mt-1 text-right font-sans text-xs text-tenue-escuro">
+                {200 - observacao.length} caracteres
+              </p>
+            ) : null}
+          </div>
+
+          <div className="mt-5 flex items-baseline justify-between border-t border-linha-escura pt-5">
             <span className="etiqueta text-tenue-escuro">Total</span>
             <span className="font-sans text-2xl font-extrabold tracking-[-0.02em]">
               {formatarKz(carrinho.total)}

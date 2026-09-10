@@ -172,27 +172,58 @@ export async function tocarSino() {
   if (ctx.state !== 'running') return false;
 
   /*
-   * Quatro impulsos secos, alternados entre duas notas altas.
+   * Uma sirene, não uma campainha.
    *
-   * A versão anterior eram duas notas suaves em quinta — bonito de
-   * ouvir e inútil: numa sala com gente e um extractor a trabalhar,
-   * ninguém dava por ela. Isto é o padrão de um alarme, não de uma
-   * campainha de hotel: repetido, rápido, e nas frequências onde o
-   * ouvido é mais sensível (2 a 4 kHz).
+   * Passou por duas notas suaves (inaudíveis numa cozinha) e depois por
+   * quatro apitos secos (melhor, mas ainda se confundia com um telemóvel
+   * qualquer). Isto é um varrimento de frequência: sobe de 1.1 kHz a
+   * 2.4 kHz e volta, três vezes seguidas.
    *
-   * O volume está a 0.4 em vez de 0.16. Não sobe mais porque somar
-   * quatro osciladores acima disto entra em saturação, e um som
-   * distorcido ouve-se pior do que um som limpo alto.
+   * O varrimento é o que faz a diferença. O ouvido habitua-se depressa a
+   * um tom fixo e deixa de o notar — é por isso que os alarmes a sério,
+   * dos bombeiros às ambulâncias, variam sempre. Um som que muda não se
+   * deixa ignorar.
+   *
+   * Um oscilador de cada vez, com espaço entre eles: assim pode ir a
+   * 0.55 de ganho sem saturar. Somar vozes ao mesmo tempo obrigava a
+   * baixar cada uma, e um som distorcido ouve-se pior do que um som
+   * limpo alto.
    */
   const agora = ctx.currentTime;
-  const PASSO = 0.16;
+  const CICLO = 0.36;
 
-  for (let i = 0; i < 4; i++) {
-    const alto = i % 2 === 0;
-    nota(ctx, alto ? 2093 : 1568, agora + i * PASSO, 0.11, alto ? 0.4 : 0.34);
+  for (let i = 0; i < 3; i++) {
+    sirene(ctx, agora + i * CICLO, CICLO * 0.82, 0.55);
   }
 
   return true;
+}
+
+/**
+ * Meio ciclo de sirene: sobe e volta a descer.
+ *
+ * A frequência é desenhada com rampas em vez de saltos — um salto de
+ * frequência ouve-se como um estalo, e o que se quer é o deslize.
+ */
+function sirene(ctx: Contexto, comeco: number, duracao: number, volume: number) {
+  const oscilador = ctx.createOscillator();
+  const ganho = ctx.createGain();
+
+  oscilador.type = 'square';
+  oscilador.frequency.setValueAtTime(1100, comeco);
+  oscilador.frequency.linearRampToValueAtTime(2400, comeco + duracao * 0.5);
+  oscilador.frequency.linearRampToValueAtTime(1100, comeco + duracao);
+
+  ganho.gain.setValueAtTime(0.0001, comeco);
+  ganho.gain.exponentialRampToValueAtTime(volume, comeco + 0.01);
+  ganho.gain.setValueAtTime(volume, comeco + duracao - 0.03);
+  ganho.gain.exponentialRampToValueAtTime(0.0001, comeco + duracao);
+
+  oscilador.connect(ganho);
+  ganho.connect(ctx.destination);
+
+  oscilador.start(comeco);
+  oscilador.stop(comeco + duracao + 0.02);
 }
 
 /* ------------------------------------------------------------------ */

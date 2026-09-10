@@ -9,42 +9,60 @@ import type { Pedido } from '@/lib/tipos';
 /**
  * O sino, montado no painel inteiro e não só no ecrã dos pedidos.
  *
- * Estava dentro da lista de pedidos, o que queria dizer que a casa só
- * era avisada se estivesse com essa página aberta. Quem estivesse a
- * mexer no cardápio, nas mesas ou no resumo — que é onde se passa metade
- * do tempo — não ouvia nada. Um aviso que só toca quando já se está a
- * olhar para o sítio não é um aviso.
+ * Toca em qualquer página do painel: quem está a mexer no cardápio ou
+ * nas mesas — que é onde se passa metade do tempo — também tem de ouvir.
  *
- * E não toca uma vez: insiste enquanto houver pedidos por confirmar.
- * Um toque único perde-se — se ninguém estava perto naquele segundo, o
- * pedido fica esquecido e o cliente fica à espera sem saber de quê. O
- * barulho só pára quando alguém pega no pedido e o põe a preparar, que
- * é a prova de que foi visto por uma pessoa.
+ * E insiste enquanto houver pedidos por confirmar. Um toque único
+ * perde-se: se ninguém estava perto naquele segundo, o pedido fica
+ * esquecido e o cliente à espera sem saber de quê.
  *
- * Não desenha nada.
+ * DUAS COISAS QUE O CALAM, E SÓ ESSAS:
+ *
+ * Alguém carregar em "Recebido" — que é a confirmação de que uma pessoa
+ * viu — ou o pedido avançar de estado, o que implica que alguém o viu.
+ *
+ * E UMA QUE JÁ O FEZ TOCAR A MAIS:
+ *
+ * Contava todos os pedidos por confirmar, sem limite de data. Havia
+ * pedidos de dias antes que nunca chegaram a ser mexidos, e o alarme
+ * tocava por eles todas as manhãs — por serviço que já tinha acabado há
+ * muito. Agora só conta os de hoje: um pedido de anteontem não é uma
+ * urgência, é histórico.
  */
 
 /** De quanto em quanto tempo volta a tocar enquanto houver por confirmar. */
 const INSISTENCIA = 4000;
 
+/**
+ * Meia-noite de hoje em Luanda, devolvida em UTC.
+ * Angola não muda a hora, por isso o desvio é sempre de uma hora.
+ */
+function inicioDoDia() {
+  const luanda = new Date(Date.now() + 3_600_000);
+  const meiaNoite = Date.UTC(luanda.getUTCFullYear(), luanda.getUTCMonth(), luanda.getUTCDate());
+  return new Date(meiaNoite - 3_600_000);
+}
+
+/** Um pedido só faz o alarme tocar se for de hoje e ninguém o tiver visto. */
+function porAtender(pedido: Pick<Pedido, 'created_at' | 'confirmado_em' | 'estado'>) {
+  if (pedido.confirmado_em) return false;
+  if (pedido.estado !== 'novo') return false;
+  return new Date(pedido.created_at) >= inicioDoDia();
+}
+
 export function SinoDePedidos({ restauranteId }: { restauranteId: string }) {
   /**
-   * Os pedidos que ainda ninguém confirmou.
-   *
    * Guardados por id, e não contados: o Realtime pode repetir o mesmo
-   * evento, e um contador subiria duas vezes pelo mesmo pedido e ficava
-   * a tocar para sempre.
+   * evento, e um contador subiria duas vezes pelo mesmo pedido — ficando
+   * a tocar para sempre por causa de um pedido só.
    */
   const porConfirmar = React.useRef<Set<string>>(new Set());
   const [aToar, setAToar] = React.useState(false);
 
-  function actualizar() {
+  const actualizar = React.useCallback(() => {
     setAToar(porConfirmar.current.size > 0);
-  }
+  }, []);
 
-  /* ---------------------------------------------------------------- */
-  /* Quem está por confirmar, agora                                    */
-  /* ---------------------------------------------------------------- */
   React.useEffect(() => {
     const supabase = clienteNavegador();
     if (!supabase) return;
@@ -52,12 +70,14 @@ export function SinoDePedidos({ restauranteId }: { restauranteId: string }) {
     let vivo = true;
 
     // Quem entra no painel a meio do serviço tem de ouvir os pedidos que
-    // já lá estavam à espera, não só os que caírem daqui para a frente.
+    // já lá estavam à espera — mas só os de hoje.
     void supabase
       .from('orders')
-      .select('id')
+      .select('id, created_at, confirmado_em, estado')
       .eq('restaurant_id', restauranteId)
       .eq('estado', 'novo')
+      .is('confirmado_em', null)
+      .gte('created_at', inicioDoDia().toISOString())
       .then(({ data }) => {
         if (!vivo || !data) return;
         for (const linha of data as { id: string }[]) porConfirmar.current.add(linha.id);
@@ -78,6 +98,8 @@ export function SinoDePedidos({ restauranteId }: { restauranteId: string }) {
         },
         (evento) => {
           const pedido = evento.new as Pedido;
+          if (!porAtender(pedido)) return;
+
           porConfirmar.current.add(pedido.id);
           actualizar();
 
@@ -97,8 +119,7 @@ export function SinoDePedidos({ restauranteId }: { restauranteId: string }) {
         },
         (evento) => {
           const pedido = evento.new as Pedido;
-          // Sair de "novo" é a prova de que uma pessoa o viu.
-          if (pedido.estado === 'novo') porConfirmar.current.add(pedido.id);
+          if (porAtender(pedido)) porConfirmar.current.add(pedido.id);
           else porConfirmar.current.delete(pedido.id);
           actualizar();
         },
@@ -109,11 +130,9 @@ export function SinoDePedidos({ restauranteId }: { restauranteId: string }) {
       vivo = false;
       supabase.removeChannel(canal);
     };
-  }, [restauranteId]);
+  }, [restauranteId, actualizar]);
 
-  /* ---------------------------------------------------------------- */
-  /* A insistência                                                     */
-  /* ---------------------------------------------------------------- */
+  /* A insistência. */
   React.useEffect(() => {
     if (!aToar) return;
 

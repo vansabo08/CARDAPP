@@ -55,6 +55,19 @@ export function buildWhatsAppMessage(pedido: PedidoParaMensagem): string {
     if (obs) linhas.push(`   ${SETA_OBS} ${obs}`);
   }
 
+  /*
+   * A observação do pedido vai depois dos itens e antes do total.
+   *
+   * Não vai no fim: quem lê isto está de pé, numa cozinha, e o que vem
+   * depois do total costuma não ser lido. Uma alergia lida tarde de
+   * mais vale o mesmo que uma alergia não escrita.
+   */
+  const observacao = pedido.observacao?.trim();
+  if (observacao) {
+    linhas.push('');
+    linhas.push(`${SETA_OBS} ${observacao}`);
+  }
+
   linhas.push('');
   linhas.push(alinhar('TOTAL', formatarKz(total)));
   linhas.push(`Pagamento: ${pagamento}`);

@@ -20,7 +20,7 @@ import {
   tocarSino,
 } from '@/lib/som';
 import { cn } from '@/lib/utils';
-import { mudarEstado } from '@/app/painel/pedidos/accoes';
+import { confirmarPedido, mudarEstado } from '@/app/painel/pedidos/accoes';
 import type { EstadoPedido, Pedido } from '@/lib/tipos';
 
 /** Cor de cada estado na lista. O novo salta à vista; o resto acalma. */
@@ -301,6 +301,33 @@ function CartaoPedido({
 
   const avancos = avancosPossiveis(pedido.estado);
 
+  // Só se confirma o que ainda ninguém viu, e só o que está por atender.
+  const porConfirmar = !pedido.confirmado_em && pedido.estado === 'novo';
+
+  async function confirmar() {
+    if (aGuardar) return;
+    setAGuardar(true);
+    setErro(null);
+
+    // Cala-se já no ecrã: quem carrega quer silêncio no instante, não
+    // dentro de meio segundo. O Realtime confirma logo a seguir.
+    const agora = new Date().toISOString();
+    aoMudar((antes) =>
+      antes.map((p) => (p.id === pedido.id ? { ...p, confirmado_em: agora } : p)),
+    );
+
+    const resultado = await confirmarPedido(pedido.id);
+
+    if (!resultado.ok) {
+      aoMudar((antes) =>
+        antes.map((p) => (p.id === pedido.id ? { ...p, confirmado_em: null } : p)),
+      );
+      setErro(resultado.erro ?? 'Não foi possível confirmar.');
+    }
+
+    setAGuardar(false);
+  }
+
   return (
     <li className={cn('rounded-cartao border p-5 transition-colors duration-500 ease-calmo', TOM[pedido.estado])}>
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -324,10 +351,38 @@ function CartaoPedido({
         ))}
       </ul>
 
+      {/*
+        A observação do pedido inteiro, destacada.
+
+        Vai numa caixa própria e não misturada com os pratos: é aqui que
+        aparece uma alergia, e uma alergia perdida no meio de uma lista é
+        uma alergia que não foi lida.
+      */}
+      {pedido.observacao ? (
+        <p className="mt-4 rounded-campo border border-ouro/40 bg-ouro/[0.06] px-3.5 py-2.5 font-sans text-sm leading-snug text-creme">
+          <span className="etiqueta mr-2 text-ouro">Nota</span>
+          {pedido.observacao}
+        </p>
+      ) : null}
+
       {erro ? (
         <p role="alert" className="mt-4 font-sans text-xs text-[#e0655a]">
           {erro}
         </p>
+      ) : null}
+
+      {/*
+        "Recebido" só aparece enquanto ninguém confirmou, e é o primeiro
+        botão: numa cozinha, ver e decidir são dois momentos. Primeiro
+        alguém confirma que o pedido chegou — e o alarme cala-se —, e só
+        depois é que se vê se dá para começar já.
+      */}
+      {porConfirmar ? (
+        <div className="mt-5">
+          <Botao variante="ouro" tamanho="md" largo onClick={confirmar} disabled={aGuardar}>
+            Recebido — calar o alarme
+          </Botao>
+        </div>
       ) : null}
 
       {avancos.length ? (

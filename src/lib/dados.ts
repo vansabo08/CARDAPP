@@ -253,7 +253,7 @@ export async function obterPedidosDeHoje(restaurantId: string): Promise<Pedido[]
   const { data } = await supabase
     .from('orders')
     .select(
-      'id, restaurant_id, table_id, itens, total, created_at, estado, actualizado_em, tables (numero)',
+      'id, restaurant_id, table_id, itens, total, created_at, estado, actualizado_em, observacao, confirmado_em, tables (numero)',
     )
     .eq('restaurant_id', restaurantId)
     .gte('created_at', inicio.toISOString())

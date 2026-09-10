@@ -69,6 +69,11 @@ export async function POST(pedido: Request) {
 
   const tableId = typeof corpo.table_id === 'string' && corpo.table_id ? corpo.table_id : null;
 
+  // A observação do pedido inteiro. Cortada, porque vem de fora e vai
+  // parar a um ecrã de cozinha que não tem espaço para um romance.
+  const observacao =
+    typeof corpo.observacao === 'string' ? corpo.observacao.trim().slice(0, 200) || null : null;
+
   /**
    * O id gera-se aqui em vez de se ler de volta.
    *
