@@ -13,36 +13,54 @@ import type { Plano } from './tipos';
  * mexer no ambiente e voltar a fazer deploy — devagar, e com rasto.
  */
 
+/**
+ * O dono da aplicação, escrito no código.
+ *
+ * Estava só na variável de ambiente, e a variável nunca chegou a existir
+ * em produção — a secção funcionava no computador de quem a escreveu e
+ * respondia 404 no sítio onde é precisa. Uma barreira que só se percebe
+ * depois de se ir aos registos do servidor é uma barreira mal desenhada.
+ *
+ * Escrever aqui não afrouxa nada. As três propriedades que interessam
+ * mantêm-se: não há ecrã nenhum na aplicação que altere esta lista,
+ * mudá-la obriga a mexer no código e voltar a fazer deploy, e cada
+ * mudança fica no histórico do git com data e autor — mais rasto do que
+ * uma variável de ambiente alguma vez deixa.
+ *
+ * E não é segredo. O endereço já assina todos os commits deste
+ * repositório; conhecê-lo não dá acesso a coisa nenhuma, porque entrar
+ * exige a sessão do Supabase desse endereço, que continua onde sempre
+ * esteve.
+ */
+const DONO = 'vansabo08@gmail.com';
+
+/**
+ * O ambiente manda sobre o código.
+ *
+ * Definir `ADMIN_EMAILS` substitui esta lista por inteiro — é assim que
+ * se acrescenta ou se troca um administrador sem publicar o endereço de
+ * ninguém. Sem ela, fica o dono, e a porta nunca está fechada a quem é
+ * dono disto.
+ */
 function listaDeAdministradores() {
-  return (process.env.ADMIN_EMAILS ?? '')
+  const doAmbiente = (process.env.ADMIN_EMAILS ?? '')
     .split(',')
     .map((e) => e.trim().toLowerCase())
     .filter(Boolean);
+
+  return doAmbiente.length ? doAmbiente : [DONO];
 }
 
 /**
  * Há alguém definido como administrador?
  *
- * Quando não há, o painel responde 404 — a quem não é administrador não
- * interessa saber que esta secção existe. Mas o 404 é o mesmo nos dois
- * casos, e por isso o dono da aplicação, com a variável por pôr, vê
- * exactamente o que veria um estranho: nada, e sem pista nenhuma.
- *
- * Fica escrito no registo do servidor. Não aparece no ecrã de ninguém —
- * não diz quem é administrador nem que a secção existe — mas quem tem
- * acesso aos registos passa a saber em dez segundos porque é que a porta
- * não abre.
+ * Com o dono escrito no código, isto é sempre verdade — fica de pé
+ * porque é a barreira do layout, e uma barreira que se pode remover
+ * "porque agora é sempre verdade" é a que volta a faltar quando alguém
+ * mexer na lista.
  */
 export function haAdministradoresDefinidos() {
-  const ha = listaDeAdministradores().length > 0;
-
-  if (!ha) {
-    console.warn(
-      '[cardapp] ADMIN_EMAILS não está definida: o painel de administração responde 404 a toda a gente.',
-    );
-  }
-
-  return ha;
+  return listaDeAdministradores().length > 0;
 }
 
 /**
