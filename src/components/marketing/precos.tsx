@@ -84,7 +84,12 @@ export function Precos() {
             Preços
           </span>
 
-          <h2 className="mt-7 font-sans text-4xl font-extrabold leading-none tracking-[-0.035em] text-creme md:text-5xl">
+          {/*
+            Estava em Manrope extrabold, contra a regra fixa da tipografia:
+            os títulos são Playfair Display, a 400 ou 600, e nunca a 700 ou
+            mais. Era o único título da página a fugir-lhe.
+          */}
+          <h2 className="mt-7 text-balance font-display text-4xl leading-none text-creme md:text-5xl">
             Escolha o seu plano
           </h2>
 

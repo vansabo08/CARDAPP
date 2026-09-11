@@ -19,12 +19,22 @@ const PERGUNTAS: { pergunta: string; resposta: string }[] = [
   {
     pergunta: 'Os pedidos chegam ao meu WhatsApp normal?',
     resposta:
-      'Chegam. É o mesmo número que já usa. A mensagem vem escrita de uma vez, com o número da mesa, os pratos, as quantidades, as observações e o total em Kwanzas. Ninguém tem de decifrar nada.',
+      'Se quiser, chegam. É o mesmo número que já usa, e a mensagem vem escrita de uma vez, com a mesa, os pratos, as observações e o total em Kwanzas. Se preferir, recebe-os no painel do Cardapp, com alarme e com o estado de cada pedido. Escolhe nas definições e muda quando quiser.',
+  },
+  {
+    pergunta: 'E se ninguém ouvir o pedido a chegar?',
+    resposta:
+      'No painel, o alarme toca quando o pedido entra e volta a tocar de quatro em quatro segundos até alguém carregar em Recebido. Não se cala sozinho. Deixe o painel aberto no telemóvel do balcão, com o som ligado, e instale-o como aplicação quando ele o sugerir.',
+  },
+  {
+    pergunta: 'Como é que o cliente sabe que o pedido foi recebido?',
+    resposta:
+      'Quando a casa recebe os pedidos no painel, o cliente fica com um ecrã que mostra o caminho do pedido: recebido, a preparar, pronto, a caminho da mesa. Muda sozinho sempre que a cozinha marca um passo. No modo WhatsApp é a própria conversa que faz esse papel.',
   },
   {
     pergunta: 'E se a internet da zona estiver fraca?',
     resposta:
-      'O cardápio foi feito para abrir em 3G num telemóvel modesto: as fotografias vão comprimidas e cada página carrega só o que desenha. O pedido em si segue pelo WhatsApp, que é a aplicação que costuma aguentar quando as outras já não aguentam.',
+      'O cardápio foi feito para abrir em 3G num telemóvel modesto: as fotografias vão comprimidas e cada página carrega só o que desenha. Se a rede da zona costuma falhar, o modo WhatsApp é o mais resistente, porque o WhatsApp costuma aguentar quando as outras aplicações já não aguentam.',
   },
   {
     pergunta: 'Tenho de imprimir alguma coisa?',
@@ -44,6 +54,11 @@ const PERGUNTAS: { pergunta: string; resposta: string }[] = [
     pergunta: 'Preciso de cartão de crédito para experimentar?',
     resposta:
       'Não. Os sete dias abrem sem cartão nenhum. Só se fala em pagamento no fim deles, e se decidir ficar.',
+  },
+  {
+    pergunta: 'Como se paga o plano?',
+    resposta:
+      'Por Multicaixa Express ou por transferência bancária. O painel mostra para onde transferir; depois envia a fotografia do comprovativo ali mesmo, e o painel reabre na hora enquanto confirmamos a transferência. Não há débito automático, e quem paga antes do fim não perde os dias que ainda tinha: somam-se.',
   },
   {
     pergunta: 'O cardápio funciona fora do restaurante?',

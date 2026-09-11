@@ -1,6 +1,14 @@
 import * as React from 'react';
 import Image from 'next/image';
 import { formatarKz } from '@/lib/format';
+import {
+  ESTADOS,
+  EXPLICACAO_CLIENTE,
+  ROTULO_CLIENTE,
+  ROTULO_CURTO,
+  ROTULO_PAINEL,
+  progresso,
+} from '@/lib/pedidos';
 import { buildWhatsAppMessage } from '@/lib/whatsapp';
 import { cn } from '@/lib/utils';
 import { MarcaSimbolo } from '@/components/marca-simbolo';
@@ -242,6 +250,205 @@ export const MENSAGEM_EXEMPLO = buildWhatsAppMessage({
     { nome: 'Cuca 33cl', qtd: 3, preco: 600 },
   ],
 });
+
+/* ------------------------------------------------------------------ */
+/* O painel da casa — os pedidos a chegar dentro do app                 */
+/* ------------------------------------------------------------------ */
+
+/**
+ * O painel de pedidos, como a cozinha o vê.
+ *
+ * Os rótulos, os tons e o texto do botão vêm do mesmo sítio que o painel
+ * a sério usa. Uma página de vendas que mostra um estado que o produto
+ * não tem é uma promessa que se parte no primeiro dia de uso.
+ */
+const PEDIDOS_DO_PAINEL: {
+  mesa: number;
+  minutos: number;
+  estado: 'novo' | 'preparar' | 'pronto';
+  total: number;
+  itens: { qtd: number; nome: string; obs?: string }[];
+  nota?: string;
+}[] = [
+  {
+    mesa: 7,
+    minutos: 1,
+    estado: 'novo',
+    total: 16300,
+    itens: [
+      { qtd: 2, nome: 'Muamba de Galinha' },
+      { qtd: 1, nome: 'Calulu de Peixe', obs: 'sem piripiri' },
+      { qtd: 3, nome: 'Cuca 33cl' },
+    ],
+    nota: 'Uma das muambas sem quiabo, por favor.',
+  },
+  {
+    mesa: 3,
+    minutos: 6,
+    estado: 'preparar',
+    total: 11100,
+    itens: [
+      { qtd: 1, nome: 'Mufete' },
+      { qtd: 2, nome: 'Kitaba' },
+    ],
+  },
+  {
+    mesa: 12,
+    minutos: 11,
+    estado: 'pronto',
+    total: 6800,
+    itens: [{ qtd: 1, nome: 'Espetada de Vaca' }],
+  },
+];
+
+const TOM_DO_PAINEL = {
+  novo: 'border-ouro/45 bg-ouro/[0.07]',
+  preparar: 'border-linha bg-white/[0.03]',
+  pronto: 'border-verde/40 bg-verde/[0.06]',
+} as const;
+
+export function EcraPainel() {
+  return (
+    <div className="relative h-full w-full overflow-hidden bg-grafite px-4 pt-14">
+      <div className="flex items-center justify-between">
+        <p className="font-display text-3xl leading-none text-creme">Pedidos</p>
+        <span className="flex items-center gap-2 font-sans text-xs text-tenue">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-verde opacity-60" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-verde" />
+          </span>
+          ao vivo
+        </span>
+      </div>
+
+      <ul className="mt-6 flex flex-col gap-3">
+        {PEDIDOS_DO_PAINEL.map((p) => (
+          <li key={p.mesa} className={cn('rounded-cartao border p-4', TOM_DO_PAINEL[p.estado])}>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="font-display text-xl leading-tight text-creme">Mesa {p.mesa}</p>
+                <p className="mt-1 font-sans text-xs text-tenue">
+                  há {p.minutos} min · {ROTULO_PAINEL[p.estado]}
+                </p>
+              </div>
+              <p className="font-display text-xl text-ouro">{formatarKz(p.total)}</p>
+            </div>
+
+            <ul className="mt-3 flex flex-col gap-1 border-t border-linha pt-3">
+              {p.itens.map((item) => (
+                <li key={item.nome} className="font-sans text-sm leading-snug text-creme/90">
+                  {item.qtd}x {item.nome}
+                  {item.obs ? <span className="text-tenue"> — {item.obs}</span> : null}
+                </li>
+              ))}
+            </ul>
+
+            {p.nota ? (
+              <p className="mt-3 rounded-campo border border-ouro/40 bg-ouro/[0.06] px-3 py-2 font-sans text-sm leading-snug text-creme">
+                <span className="etiqueta mr-2 text-ouro">Nota</span>
+                {p.nota}
+              </p>
+            ) : null}
+
+            {p.estado === 'novo' ? (
+              <div className="mt-4">
+                {/*
+                  O som não se desenha. Esta linha diz o que se estaria a
+                  ouvir, para quem olha para um ecrã mudo numa página.
+                */}
+                <p className="mb-2 flex items-center gap-2 font-sans text-xs text-ouro">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ouro opacity-70" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-ouro" />
+                  </span>
+                  O alarme volta a tocar até alguém carregar
+                </p>
+                <span className="flex h-12 w-full items-center justify-center rounded-full bg-ouro font-sans text-base font-semibold text-grafite">
+                  Recebido — calar o alarme
+                </span>
+              </div>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* O cliente a acompanhar o pedido                                     */
+/* ------------------------------------------------------------------ */
+
+/**
+ * O ecrã que o cliente vê depois de pedir.
+ *
+ * Mesmos rótulos, mesma barra e mesma frase do ecrã a sério. O estado
+ * escolhido é o do meio — "a preparar" —, que é o que responde à pergunta
+ * que faz o cliente levantar a mão: "o meu prato já está a ser feito?"
+ */
+export function EcraAcompanhar() {
+  const estado = 'preparar' as const;
+  const avanco = progresso(estado);
+
+  return (
+    <div className="relative h-full w-full bg-grafite px-6 pt-20">
+      <header className="text-center">
+        <span className="etiqueta text-ouro-fundo">Tia Bela</span>
+        <p className="mt-4 text-balance font-display text-3xl leading-none text-creme">
+          {ROTULO_CLIENTE[estado]}
+        </p>
+        <p className="mt-3 font-sans text-sm text-tenue">{EXPLICACAO_CLIENTE[estado]}</p>
+        <p className="mt-2 font-sans text-sm text-tenue">Mesa 07</p>
+      </header>
+
+      <div className="mt-10">
+        <div className="h-1 w-full overflow-hidden rounded-full bg-white/[0.08]">
+          <div className="h-full rounded-full bg-ouro" style={{ width: `${Math.round(avanco * 100)}%` }} />
+        </div>
+        <ol className="mt-3 flex justify-between">
+          {ESTADOS.map((e) => (
+            <li
+              key={e}
+              className={cn(
+                'font-sans text-xs',
+                progresso(e) <= avanco ? 'text-creme' : 'text-creme/30',
+              )}
+            >
+              {ROTULO_CURTO[e]}
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <div className="vidro mt-10 rounded-cartao p-5">
+        <p className="etiqueta text-tenue">O seu pedido</p>
+        <ul className="mt-4 flex flex-col gap-3">
+          {[
+            { qtd: 2, nome: 'Muamba de Galinha', preco: 9000 },
+            { qtd: 1, nome: 'Calulu de Peixe', preco: 5500, obs: 'sem piripiri' },
+            { qtd: 3, nome: 'Cuca 33cl', preco: 1800 },
+          ].map((item) => (
+            <li key={item.nome} className="flex items-start justify-between gap-4">
+              <span className="min-w-0">
+                <span className="block font-display text-base leading-snug text-creme">
+                  {item.qtd}x {item.nome}
+                </span>
+                {item.obs ? (
+                  <span className="mt-0.5 block font-sans text-xs text-tenue">{item.obs}</span>
+                ) : null}
+              </span>
+              <span className="shrink-0 font-sans text-sm text-tenue">{formatarKz(item.preco)}</span>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-5 flex items-center justify-between border-t border-linha pt-4">
+          <span className="font-sans text-sm text-tenue">Total</span>
+          <span className="font-display text-xl text-ouro">{formatarKz(16300)}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function EcraWhatsApp() {
   return (

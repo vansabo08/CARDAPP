@@ -4,7 +4,13 @@ import { Botao } from '@/components/ui/botao';
 import { Revelar } from '@/components/ui/revelar';
 import { Marca } from '@/components/marca';
 import { Telemovel } from '@/components/marketing/telemovel';
-import { CartaoMesa, EcraCardapio, EcraWhatsApp } from '@/components/marketing/mockups';
+import {
+  CartaoMesa,
+  EcraAcompanhar,
+  EcraCardapio,
+  EcraPainel,
+  MENSAGEM_EXEMPLO,
+} from '@/components/marketing/mockups';
 import { FundoVivo } from '@/components/marketing/fundo-vivo';
 import { FaixaPratos } from '@/components/marketing/faixa-pratos';
 import { FraseRevelada } from '@/components/marketing/frase-revelada';
@@ -27,9 +33,33 @@ const PASSOS = [
   },
   {
     numero: '03',
-    titulo: 'O pedido chega ao WhatsApp',
+    titulo: 'O pedido chega à cozinha',
     texto:
-      'Uma mensagem já formatada, com mesa, itens, observações e total. A cozinha lê e começa a trabalhar.',
+      'No WhatsApp ou no painel do Cardapp, como a casa escolher. No painel, um alarme toca até alguém carregar em Recebido.',
+  },
+];
+
+/**
+ * O que o painel faz, dito pelo que resolve.
+ *
+ * Cada linha diz primeiro o problema que acaba e só depois como. "Alarme
+ * que insiste" é uma funcionalidade; "nenhum pedido fica por ver" é a
+ * razão para alguém a querer.
+ */
+const CAMINHO_PAINEL = [
+  {
+    titulo: 'Nenhum pedido fica por ver',
+    texto:
+      'Um alarme toca quando o pedido entra e volta a tocar de quatro em quatro segundos, até alguém carregar em Recebido.',
+  },
+  {
+    titulo: 'A alergia não se perde na lista',
+    texto:
+      'O que o cliente escreve, como "sem cebola" ou "alérgico a amendoim", aparece numa caixa própria, destacada dos pratos.',
+  },
+  {
+    titulo: 'A cozinha marca cada passo',
+    texto: 'A preparar, pronto, a caminho. Um toque em cada um, e o cliente vê a mudança na mesa.',
   },
 ];
 
@@ -59,6 +89,9 @@ export default function PaginaInicial() {
           <div className="hidden items-center gap-9 md:flex">
             <a href="#como-funciona" className="font-sans text-sm text-tenue transition-colors hover:text-creme">
               Como funciona
+            </a>
+            <a href="#caminhos" className="font-sans text-sm text-tenue transition-colors hover:text-creme">
+              Onde chegam os pedidos
             </a>
             <a href="#precos" className="font-sans text-sm text-tenue transition-colors hover:text-creme">
               Preços
@@ -137,9 +170,10 @@ export default function PaginaInicial() {
               </Revelar>
 
               <Revelar atraso={120}>
-                <p className="mt-8 max-w-[44ch] font-sans text-lg leading-relaxed text-tenue">
-                  O cliente lê o QR da mesa, escolhe o que quer e o pedido chega ao WhatsApp do
-                  restaurante já escrito — sem aplicações, sem login, sem papel.
+                <p className="mt-8 max-w-[44ch] text-pretty font-sans text-lg leading-relaxed text-tenue">
+                  O cliente lê o QR da mesa e pede sem instalar nada. O pedido chega à cozinha já
+                  escrito, no WhatsApp ou no painel do Cardapp, e ele acompanha no telemóvel até o
+                  prato chegar.
                 </p>
               </Revelar>
 
@@ -235,7 +269,7 @@ export default function PaginaInicial() {
             <PassoCabecalho {...PASSOS[2]} />
             <div className="vidro mt-9 flex flex-1 items-center justify-center rounded-cartao px-6 py-11 transition-colors duration-300 hover:border-ouro/30">
               <Telemovel largura={216} sombra={false}>
-                <EcraWhatsApp />
+                <EcraPainel />
               </Telemovel>
             </div>
           </Revelar>
@@ -255,38 +289,110 @@ export default function PaginaInicial() {
       </section>
 
       {/* ---------------------------------------------------------- */}
-      {/* A mensagem                                                   */}
+      {/* Dois caminhos                                                */}
       {/* ---------------------------------------------------------- */}
-      <section className="vidro border-x-0 border-y/55 backdrop-blur-md">
-        <div className="mx-auto grid max-w-conteudo items-center gap-14 px-5 py-24 md:grid-cols-2 md:px-8 md:py-28">
+      {/*
+        Isto era "A mensagem", e mostrava só o WhatsApp — do tempo em que
+        era o único caminho. Uma casa que lesse a página até aqui ficava a
+        pensar que o Cardapp era um gerador de mensagens, e não sabia que
+        podia receber os pedidos num painel com alarme.
+      */}
+      <section id="caminhos" className="border-t border-linha">
+        <div className="mx-auto max-w-conteudo px-5 py-24 md:px-8 md:py-32">
           <Revelar>
-            <span className="etiqueta text-ouro-fundo">A mensagem</span>
-            <h2 className="mt-5 max-w-[18ch] text-balance font-display text-3xl leading-none text-creme md:text-4xl">
-              Escrita para ser lida na cozinha, não por um computador.
+            <span className="etiqueta text-ouro-fundo">Onde chegam os pedidos</span>
+            {/*
+              Parte no ponto final, que é onde o pensamento parte. Com um
+              limite de largura em caracteres partia em "Dois caminhos. A /
+              casa escolhe o seu", com o artigo pendurado no fim da linha.
+            */}
+            <h2 className="mt-5 text-balance font-display text-4xl leading-none text-creme md:text-5xl">
+              <span className="block">Dois caminhos.</span>{" "}
+              <span className="block">A casa escolhe o seu.</span>
             </h2>
-            <p className="mt-6 max-w-[44ch] font-sans text-base leading-relaxed text-tenue">
-              Mesa, quantidades, observações e total alinhado. Chega ao mesmo WhatsApp que o
-              restaurante já usa todos os dias — nada de painel novo para aprender.
+            <p className="mt-6 max-w-[52ch] text-pretty font-sans text-base leading-relaxed text-tenue">
+              Escolhe nas definições e muda quando quiser. O cardápio das mesas é o mesmo nos dois.
             </p>
           </Revelar>
 
+          <div className="mt-16 grid gap-6 md:grid-cols-2">
+            {/* WhatsApp */}
+            <Revelar className="flex">
+              <article className="vidro flex w-full flex-col rounded-cartao p-6 md:p-8">
+                <span className="etiqueta text-verde">No WhatsApp</span>
+                <h3 className="mt-4 text-balance font-display text-2xl leading-tight text-creme">
+                  O número que a casa já usa todos os dias.
+                </h3>
+                <p className="mt-3 text-pretty font-sans text-sm leading-relaxed text-tenue">
+                  A mensagem chega escrita de uma vez, com a mesa, as quantidades, as observações e o
+                  total alinhado. Não há nada novo para aprender.
+                </p>
+                <div className="vidro-leve mt-6 overflow-x-auto rounded-cartao p-5">
+                  <pre className="whitespace-pre font-mono text-xs leading-relaxed text-creme/90">
+                    {MENSAGEM_EXEMPLO}
+                  </pre>
+                </div>
+              </article>
+            </Revelar>
+
+            {/* Painel */}
+            <Revelar atraso={80} className="flex">
+              <article className="vidro flex w-full flex-col rounded-cartao border-ouro/30 p-6 md:p-8">
+                <span className="etiqueta text-ouro">No painel do Cardapp</span>
+                <h3 className="mt-4 text-balance font-display text-2xl leading-tight text-creme">
+                  Os pedidos numa lista que se mexe sozinha.
+                </h3>
+                <p className="mt-3 text-pretty font-sans text-sm leading-relaxed text-tenue">
+                  Fica aberto no telemóvel do balcão, instalado como uma aplicação. Cada pedido novo
+                  aparece em cima, na hora.
+                </p>
+
+                <ul className="mt-6 flex flex-col gap-5">
+                  {CAMINHO_PAINEL.map((linha) => (
+                    <li key={linha.titulo} className="flex gap-4">
+                      <span className="mt-2 block h-1.5 w-1.5 shrink-0 rounded-full bg-ouro" aria-hidden />
+                      <span>
+                        <span className="block font-sans text-sm font-semibold text-creme">
+                          {linha.titulo}
+                        </span>
+                        <span className="mt-1 block text-pretty font-sans text-sm leading-relaxed text-tenue">
+                          {linha.texto}
+                        </span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            </Revelar>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------- */}
+      {/* O cliente acompanha                                          */}
+      {/* ---------------------------------------------------------- */}
+      <section className="vidro border-x-0 border-y/55 backdrop-blur-md">
+        <div className="mx-auto grid max-w-conteudo items-center gap-16 px-5 py-24 md:grid-cols-2 md:px-8 md:py-28">
+          <Revelar className="flex justify-center md:order-2">
+            <Telemovel largura={300} sombra={false}>
+              <EcraAcompanhar />
+            </Telemovel>
+          </Revelar>
+
           <Revelar atraso={80}>
-            <div className="vidro-leve overflow-x-auto rounded-cartao p-6">
-              <pre className="whitespace-pre font-mono text-xs leading-relaxed text-creme/90 sm:text-xs">
-{`🍽 NOVO PEDIDO — Mesa 07
-Tia Bela · 19:42
-
-▪️ 2x Muamba de Galinha ......... 9.000 Kz
-▪️ 1x Calulu de Peixe ........... 5.500 Kz
-   ↳ sem piripiri
-▪️ 3x Cuca 33cl ................. 1.800 Kz
-
-TOTAL ....................... 16.300 Kz
-Pagamento: na mesa
-
-— enviado via Cardapp`}
-              </pre>
-            </div>
+            <span className="etiqueta text-ouro-fundo">Depois de pedir</span>
+            <h2 className="mt-5 text-balance font-display text-3xl leading-none text-creme md:text-4xl">
+              <span className="block">O cliente sabe que o prato</span>{" "}
+              <span className="block">já está a ser feito.</span>
+            </h2>
+            <p className="mt-6 max-w-[46ch] text-pretty font-sans text-base leading-relaxed text-tenue">
+              Quando a casa recebe os pedidos no painel, o telemóvel do cliente mostra o caminho do
+              dele: recebido, a preparar, pronto, a caminho da mesa. Muda sozinho a cada passo que a
+              cozinha dá, sem recarregar nada.
+            </p>
+            <p className="mt-4 max-w-[46ch] text-pretty font-sans text-base leading-relaxed text-tenue">
+              É a pergunta que faz levantar a mão a meio da refeição. Deixa de ser preciso fazê-la.
+            </p>
           </Revelar>
         </div>
       </section>
