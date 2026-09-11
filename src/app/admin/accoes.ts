@@ -430,3 +430,61 @@ export async function comprovativosPendentes(): Promise<{
   const linhas = (data ?? []) as { id: string }[];
   return { quantos: linhas.length, ultimo: linhas[0]?.id ?? null };
 }
+
+/* ------------------------------------------------------------------ */
+/* Entrar na casa de outra pessoa                                      */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Abre a auditoria de uma casa.
+ *
+ * A partir daqui, e durante duas horas, o painel mostra a casa desta
+ * pessoa e o que lá se escrever escreve-se nos dados dela. Foi pedido
+ * assim, com escrita, para se poder arranjar o cardápio de quem ligue a
+ * pedir ajuda.
+ *
+ * Fica escrito no livro à entrada, e não à saída. Se ficasse à saída, o
+ * único registo que interessa perder-se-ia precisamente no caso que mais
+ * interessa: alguém que entra, faz o que não devia, e nunca sai.
+ */
+export async function entrarNaCasa(restauranteId: string): Promise<Resultado> {
+  await exigirAdministrador();
+
+  const supabase = clienteAdministrador();
+  if (!supabase) return { ok: false, erro: 'SUPABASE_SERVICE_ROLE_KEY em falta.' };
+
+  const { data } = await supabase
+    .from('restaurants')
+    .select('id, nome')
+    .eq('id', restauranteId)
+    .maybeSingle();
+
+  if (!data) return { ok: false, erro: 'Casa não encontrada.' };
+
+  const { marcarAuditoria } = await import('@/lib/auditoria');
+  await marcarAuditoria(restauranteId);
+
+  await registar('entrou na casa em auditoria', restauranteId, null, {
+    entrou_em: new Date().toISOString(),
+  });
+
+  revalidatePath('/painel');
+  revalidatePath('/admin');
+  return { ok: true };
+}
+
+/** Fecha a auditoria e devolve quem administra à sua própria casa. */
+export async function sairDaCasa(): Promise<Resultado> {
+  const { casaEmAuditoria, limparAuditoria } = await import('@/lib/auditoria');
+  const casa = await casaEmAuditoria();
+
+  await limparAuditoria();
+
+  if (casa) {
+    await registar('saiu da casa', casa, null, { saiu_em: new Date().toISOString() });
+  }
+
+  revalidatePath('/painel');
+  revalidatePath('/admin');
+  return { ok: true };
+}

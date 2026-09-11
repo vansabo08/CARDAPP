@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { clienteServidor } from '@/lib/supabase/servidor';
+import { clienteDoPainel } from '@/lib/supabase/servidor';
 import { obterRestauranteDoDono } from '@/lib/dados';
 
 /**
@@ -13,7 +13,7 @@ import { obterRestauranteDoDono } from '@/lib/dados';
 type Resultado = { ok: boolean; demonstracao?: boolean; erro?: string; id?: string };
 
 async function contexto() {
-  const supabase = await clienteServidor();
+  const supabase = await clienteDoPainel();
   if (!supabase) return null;
   const restaurante = await obterRestauranteDoDono();
   if (!restaurante) return null;

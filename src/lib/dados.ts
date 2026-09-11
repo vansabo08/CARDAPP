@@ -201,6 +201,31 @@ export async function obterPedidoPublico(id: string): Promise<PedidoPublico | nu
 /* ------------------------------------------------------------------ */
 
 export async function obterRestauranteDoDono(): Promise<Restaurante | null> {
+  /*
+   * Em auditoria, a "casa do dono" é a casa em que se entrou.
+   *
+   * Fica aqui e não em cada ecrã porque o painel inteiro — cardápio,
+   * mesas, pedidos, definições — pergunta por esta função e mais nada.
+   * Um ecrã que se esquecesse mostraria a casa errada com a barra da
+   * casa certa, que é a maneira mais fácil de alguém mexer no sítio
+   * errado a pensar que está no seu.
+   */
+  const { casaEmAuditoria } = await import('./auditoria');
+  const auditada = await casaEmAuditoria();
+
+  if (auditada) {
+    const { clienteAdministrador } = await import('./supabase/administrador');
+    const servico = clienteAdministrador();
+    if (servico) {
+      const { data } = await servico
+        .from('restaurants')
+        .select(COLUNAS_RESTAURANTE)
+        .eq('id', auditada)
+        .maybeSingle();
+      return data ? comColunasNovas(data) : null;
+    }
+  }
+
   const supabase = await clienteServidor();
   if (!supabase) return RESTAURANTE_DEMO;
 

@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { clienteServidor } from '@/lib/supabase/servidor';
+import { clienteDoPainel } from '@/lib/supabase/servidor';
 import { obterMesas, obterRestauranteDoDono } from '@/lib/dados';
 import { gerarToken } from '@/lib/utils';
 import { LIMITES_PLANO, type Mesa } from '@/lib/tipos';
@@ -12,7 +12,7 @@ type Resultado = { ok: boolean; demonstracao?: boolean; erro?: string; mesas?: M
 export async function acrescentarMesas(quantidade: number): Promise<Resultado> {
   const quantas = Math.max(1, Math.min(50, Math.floor(quantidade)));
 
-  const supabase = await clienteServidor();
+  const supabase = await clienteDoPainel();
   const restaurante = await obterRestauranteDoDono();
   if (!supabase || !restaurante) return { ok: true, demonstracao: true };
 
@@ -44,7 +44,7 @@ export async function acrescentarMesas(quantidade: number): Promise<Resultado> {
 }
 
 export async function apagarMesa(id: string): Promise<Resultado> {
-  const supabase = await clienteServidor();
+  const supabase = await clienteDoPainel();
   if (!supabase) return { ok: true, demonstracao: true };
 
   const { error } = await supabase.from('tables').delete().eq('id', id);

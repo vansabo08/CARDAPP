@@ -102,6 +102,8 @@ export type ContaAdmin = {
   whatsapp: string;
   /** Última batida do painel. É por aqui que se sabe quem sumiu. */
   vistoEm: string | null;
+  /** Casa que nunca é cobrada. A base garante-o apagando-lhe o prazo. */
+  isento: boolean;
 };
 
 export type ResumoAdmin = {
@@ -126,7 +128,7 @@ export async function resumoAdministrativo(): Promise<ResumoAdmin> {
     supabase
       .from('restaurants')
       .select(
-        'id, nome, slug, plano, activo, owner_id, created_at, whatsapp, teste_termina_em, pago_ate, acesso_expira_em, visto_em',
+        'id, nome, slug, plano, activo, owner_id, created_at, whatsapp, teste_termina_em, pago_ate, acesso_expira_em, visto_em, isento',
       )
       .order('created_at', { ascending: false }),
     supabase.auth.admin.listUsers({ page: 1, perPage: 1000 }),
@@ -145,6 +147,7 @@ export async function resumoAdministrativo(): Promise<ResumoAdmin> {
     pago_ate: string | null;
     acesso_expira_em: string | null;
     visto_em: string | null;
+    isento: boolean | null;
   }[];
 
   const porDono = new Map(
@@ -208,6 +211,7 @@ export async function resumoAdministrativo(): Promise<ResumoAdmin> {
       acessoExpiraEm: linha.acesso_expira_em ?? null,
       whatsapp: linha.whatsapp,
       vistoEm: linha.visto_em ?? null,
+      isento: Boolean(linha.isento),
     };
   });
 

@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { clienteServidor } from '@/lib/supabase/servidor';
+import { clienteDoPainel } from '@/lib/supabase/servidor';
 import { estadoValido } from '@/lib/pedidos';
 import type { EstadoPedido } from '@/lib/tipos';
 
@@ -31,7 +31,7 @@ import type { EstadoPedido } from '@/lib/tipos';
  * preparar" só porque alguém calou um alarme.
  */
 export async function confirmarPedido(id: string): Promise<{ ok: boolean; erro?: string }> {
-  const supabase = await clienteServidor();
+  const supabase = await clienteDoPainel();
   if (!supabase) return { ok: true };
 
   const {
@@ -62,7 +62,7 @@ export async function mudarEstado(
 ): Promise<{ ok: boolean; erro?: string }> {
   if (!estadoValido(estado)) return { ok: false, erro: 'Estado desconhecido.' };
 
-  const supabase = await clienteServidor();
+  const supabase = await clienteDoPainel();
   if (!supabase) return { ok: true };
 
   const {

@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { clienteServidor } from '@/lib/supabase/servidor';
+import { clienteDoPainel } from '@/lib/supabase/servidor';
 import { obterRestauranteDoDono } from '@/lib/dados';
 import { normalizarWhatsApp, whatsAppValido } from '@/lib/format';
 import { gerarToken, slugify } from '@/lib/utils';
@@ -63,7 +63,20 @@ export async function criarRestaurante(
   const problema = validar(dados);
   if (problema) return { ok: false, erro: problema };
 
-  const supabase = await clienteServidor();
+  /*
+   * Criar uma casa é a única coisa que a auditoria não pode fazer.
+   *
+   * As outras acções mexem numa casa que já existe e que se sabe qual é.
+   * Esta cria uma nova e prende-a a um dono — e em auditoria o dono da
+   * sessão é quem administra, não a casa em que se entrou. O resultado
+   * seria uma casa órfã presa à conta errada, e ninguém daria por ela.
+   */
+  const { casaEmAuditoria } = await import('@/lib/auditoria');
+  if (await casaEmAuditoria()) {
+    return { ok: false, erro: 'Saia da auditoria antes de criar uma casa nova.' };
+  }
+
+  const supabase = await clienteDoPainel();
   if (!supabase) return { ok: true, demonstracao: true, slug: slugify(dados.slug || dados.nome) };
 
   const {
@@ -166,7 +179,7 @@ export async function guardarRestaurante(dados: DadosRestaurante): Promise<Resul
   const problema = validar(dados);
   if (problema) return { ok: false, erro: problema };
 
-  const supabase = await clienteServidor();
+  const supabase = await clienteDoPainel();
   const actual = await obterRestauranteDoDono();
   if (!supabase || !actual) return { ok: true, demonstracao: true };
 
@@ -219,7 +232,7 @@ export async function guardarRestaurante(dados: DadosRestaurante): Promise<Resul
  * do que a própria via.
  */
 export async function guardarModoPedido(modo: ModoPedido): Promise<Resultado> {
-  const supabase = await clienteServidor();
+  const supabase = await clienteDoPainel();
   const actual = await obterRestauranteDoDono();
   if (!supabase || !actual) return { ok: true, demonstracao: true };
 
@@ -242,7 +255,7 @@ export async function guardarModoPedido(modo: ModoPedido): Promise<Resultado> {
 
 /** Acrescenta um sufixo se o endereço já estiver ocupado por outra casa. */
 async function slugLivre(
-  supabase: NonNullable<Awaited<ReturnType<typeof clienteServidor>>>,
+  supabase: NonNullable<Awaited<ReturnType<typeof clienteDoPainel>>>,
   base: string,
   ignorarId?: string,
 ) {

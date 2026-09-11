@@ -11,7 +11,7 @@ import { enderecoDePagarAbsoluto } from '@/config/pagamento';
 import { formatarKz } from '@/lib/format';
 import { COR_ESTADO } from '@/lib/cores';
 import type { ContaAdmin } from '@/lib/admin';
-import { alternarActivo, mudarPlano } from '@/app/admin/accoes';
+import { alternarActivo, entrarNaCasa, mudarPlano } from '@/app/admin/accoes';
 
 const PLANOS: Plano[] = ['mesa', 'sala'];
 
@@ -138,6 +138,26 @@ export function TabelaContas({ contas }: { contas: ContaAdmin[] }) {
     if (!ok) setEstado((e) => ({ ...e, [conta.id]: { ...e[conta.id], activo: !activo } }));
   }
 
+  /**
+   * Entrar na casa desta pessoa.
+   *
+   * Pede confirmação com o nome escrito por extenso. Não é cerimónia: a
+   * seguir a isto tudo o que se escrever no painel escreve-se nos dados
+   * dela, e o clique que abre isso não pode ser igual ao clique que
+   * muda um plano.
+   */
+  async function entrar(conta: ContaAdmin) {
+    const confirmou = window.confirm(
+      `Entrar no painel do ${conta.nome}?
+
+Durante duas horas vê e escreve nos dados desta casa como se fosse ela. A entrada fica registada no livro.`,
+    );
+    if (!confirmou) return;
+
+    const ok = await comEstado(conta.id, () => entrarNaCasa(conta.id));
+    if (ok) window.location.href = '/painel';
+  }
+
   async function trocarPlano(conta: ContaAdmin, plano: Plano) {
     const anterior = conta.plano;
     setEstado((e) => ({ ...e, [conta.id]: { ...e[conta.id], plano } }));
@@ -177,6 +197,7 @@ export function TabelaContas({ contas }: { contas: ContaAdmin[] }) {
                 <div className="flex flex-wrap items-center gap-2.5">
                   <h3 className="font-display text-xl text-creme">{conta.nome}</h3>
                   {!conta.activo ? <Distintivo tom="linha">Desligado</Distintivo> : null}
+                  {conta.isento ? <Distintivo tom="verde">Isenta</Distintivo> : null}
                 </div>
 
                 <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 font-sans text-xs text-tenue">
@@ -254,6 +275,15 @@ export function TabelaContas({ contas }: { contas: ContaAdmin[] }) {
                   Avisar por WhatsApp
                 </a>
               ) : null}
+
+              <button
+                type="button"
+                disabled={ocupado === conta.id}
+                onClick={() => entrar(conta)}
+                className="inline-flex items-center gap-2 rounded-full border border-linha px-3.5 py-1.5 font-sans text-xs font-semibold text-tenue transition-colors duration-rapida ease-assinatura hover:border-ouro hover:text-ouro disabled:opacity-40"
+              >
+                Entrar em auditoria
+              </button>
 
               <div className="flex items-center gap-1 rounded-full border border-linha p-1">
                 {PLANOS.map((plano) => (

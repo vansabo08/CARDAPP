@@ -9,6 +9,8 @@ import { ConviteInstalar } from '@/components/convite-instalar';
 import { SinoDePedidos } from '@/components/painel/sino-de-pedidos';
 import { BatidaDePresenca } from '@/components/painel/batida-de-presenca';
 import { SinoDeComprovativos } from '@/components/painel/sino-de-comprovativos';
+import { FaixaDeAuditoria } from '@/components/painel/faixa-de-auditoria';
+import { casaEmAuditoria } from '@/lib/auditoria';
 import { comprovativoAEspera, emModoDemonstracao, obterRestauranteDoDono } from '@/lib/dados';
 import { eAdministrador } from '@/lib/admin';
 import { utilizadorActual } from '@/lib/supabase/servidor';
@@ -21,9 +23,10 @@ export default async function LayoutPainel({ children }: { children: React.React
     if (!utilizador) redirect('/entrar');
   }
 
-  const [restaurante, administrador] = await Promise.all([
+  const [restaurante, administrador, emAuditoria] = await Promise.all([
     obterRestauranteDoDono(),
     eAdministrador(),
+    casaEmAuditoria(),
   ]);
 
   const fechado =
@@ -42,11 +45,12 @@ export default async function LayoutPainel({ children }: { children: React.React
   return (
     <div className="relative min-h-dvh">
       <FundoVivo />
+      {emAuditoria && restaurante ? <FaixaDeAuditoria nome={restaurante.nome} /> : null}
       <AvisoDemonstracao />
       {restaurante ? (
         <AvisoDoPlano restaurante={restaurante} aEsperarConfirmacao={aEsperarConfirmacao} />
       ) : null}
-      {administrador ? <SinoDeComprovativos /> : null}
+      {administrador && !emAuditoria ? <SinoDeComprovativos /> : null}
 
       <div className="md:flex">
         <NavegacaoPainel
