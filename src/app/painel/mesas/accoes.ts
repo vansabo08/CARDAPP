@@ -45,9 +45,15 @@ export async function acrescentarMesas(quantidade: number): Promise<Resultado> {
 
 export async function apagarMesa(id: string): Promise<Resultado> {
   const supabase = await clienteDoPainel();
-  if (!supabase) return { ok: true, demonstracao: true };
+  const restaurante = await obterRestauranteDoDono();
+  if (!supabase || !restaurante) return { ok: true, demonstracao: true };
 
-  const { error } = await supabase.from('tables').delete().eq('id', id);
+  // A casa vai por extenso: em auditoria a RLS não está a guardar isto.
+  const { error } = await supabase
+    .from('tables')
+    .delete()
+    .eq('id', id)
+    .eq('restaurant_id', restaurante.id);
   if (error) return { ok: false, erro: error.message };
 
   revalidatePath('/painel/mesas');

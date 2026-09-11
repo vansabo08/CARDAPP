@@ -4,6 +4,8 @@ import * as React from 'react';
 import { clienteNavegador } from '@/lib/supabase/cliente';
 import { formatarKz } from '@/lib/format';
 import { avisarDoPedido, ligarSomAoPrimeiroGesto, tocarSino } from '@/lib/som';
+import { aoVerPedido } from '@/lib/sinal-do-pedido';
+import { decidirPorConfirmar } from '@/lib/decisao-do-sino';
 import type { Pedido } from '@/lib/tipos';
 
 /**
@@ -33,6 +35,16 @@ import type { Pedido } from '@/lib/tipos';
 /** De quanto em quanto tempo volta a tocar enquanto houver por confirmar. */
 const INSISTENCIA = 4000;
 
+
+/**
+ * De quanto em quanto tempo se vai à base mesmo com o sino calado.
+ *
+ * O Realtime também perde pedidos novos, não só confirmações. Um pedido
+ * que entra enquanto o canal está a religar-se não faz tocar nada — e um
+ * pedido que ninguém ouviu é o pior que este ecrã pode deixar acontecer.
+ */
+const VIGIA = 30_000;
+
 /**
  * Meia-noite de hoje em Luanda, devolvida em UTC.
  * Angola não muda a hora, por isso o desvio é sempre de uma hora.
@@ -57,32 +69,78 @@ export function SinoDePedidos({ restauranteId }: { restauranteId: string }) {
    * a tocar para sempre por causa de um pedido só.
    */
   const porConfirmar = React.useRef<Set<string>>(new Set());
+
+  /** Pedidos em que alguém carregou há pouco, e quando. */
+  const vistosAgora = React.useRef<Map<string, number>>(new Map());
+
   const [aToar, setAToar] = React.useState(false);
+  const supabase = React.useMemo(() => clienteNavegador(), []);
 
   const actualizar = React.useCallback(() => {
     setAToar(porConfirmar.current.size > 0);
   }, []);
 
-  React.useEffect(() => {
-    const supabase = clienteNavegador();
-    if (!supabase) return;
+  /**
+   * Ir à base ver o que está mesmo por confirmar.
+   *
+   * O sino deixou de confiar só no que o Realtime lhe conta. Antes de
+   * cada toque pergunta à base, e a base é a verdade: se o pedido foi
+   * confirmado noutro telemóvel, se o evento se perdeu com o ecrã
+   * apagado, se a confirmação falhou — a resposta é a mesma e é certa.
+   *
+   * Devolve verdadeiro quando apareceu um pedido que o sino não conhecia,
+   * para quem chama poder tocar por ele.
+   */
+  const ressincronizar = React.useCallback(async () => {
+    if (!supabase) return false;
 
-    let vivo = true;
-
-    // Quem entra no painel a meio do serviço tem de ouvir os pedidos que
-    // já lá estavam à espera — mas só os de hoje.
-    void supabase
+    const { data } = await supabase
       .from('orders')
-      .select('id, created_at, confirmado_em, estado')
+      .select('id')
       .eq('restaurant_id', restauranteId)
       .eq('estado', 'novo')
       .is('confirmado_em', null)
-      .gte('created_at', inicioDoDia().toISOString())
-      .then(({ data }) => {
-        if (!vivo || !data) return;
-        for (const linha of data as { id: string }[]) porConfirmar.current.add(linha.id);
+      .gte('created_at', inicioDoDia().toISOString());
+
+    if (!data) return false;
+
+    // A conta vive numa função pura, testada à parte, porque foi numa conta
+    // escondida aqui dentro que o defeito do "Recebido" se escondeu.
+    const decisao = decidirPorConfirmar(
+      (data as { id: string }[]).map((linha) => linha.id),
+      porConfirmar.current,
+      vistosAgora.current,
+      Date.now(),
+    );
+
+    porConfirmar.current = decisao.porConfirmar;
+    vistosAgora.current = decisao.vistosAgora;
+    actualizar();
+    return decisao.apareceuNovo;
+  }, [supabase, restauranteId, actualizar]);
+
+  /* ---------------------------------------------------------------- */
+  /* Caminho 1 — o clique, no mesmo instante                           */
+  /* ---------------------------------------------------------------- */
+  React.useEffect(
+    () =>
+      aoVerPedido((id) => {
+        vistosAgora.current.set(id, Date.now());
+        porConfirmar.current.delete(id);
         actualizar();
-      });
+      }),
+    [actualizar],
+  );
+
+  /* ---------------------------------------------------------------- */
+  /* Caminho 2 — o Realtime, quando chega                              */
+  /* ---------------------------------------------------------------- */
+  React.useEffect(() => {
+    if (!supabase) return;
+
+    // Quem entra no painel a meio do serviço tem de ouvir os pedidos que
+    // já lá estavam à espera — mas só os de hoje.
+    void ressincronizar();
 
     const canal = supabase
       // Nome próprio: a lista de pedidos tem o seu canal, e dois canais
@@ -119,29 +177,61 @@ export function SinoDePedidos({ restauranteId }: { restauranteId: string }) {
         },
         (evento) => {
           const pedido = evento.new as Pedido;
-          if (porAtender(pedido)) porConfirmar.current.add(pedido.id);
-          else porConfirmar.current.delete(pedido.id);
+          // Um pedido em que alguém acabou de carregar não volta a entrar
+          // por um evento atrasado que ainda o traz por confirmar.
+          if (porAtender(pedido) && !vistosAgora.current.has(pedido.id)) {
+            porConfirmar.current.add(pedido.id);
+          } else {
+            porConfirmar.current.delete(pedido.id);
+          }
           actualizar();
         },
       )
       .subscribe();
 
     return () => {
-      vivo = false;
       supabase.removeChannel(canal);
     };
-  }, [restauranteId, actualizar]);
+  }, [supabase, restauranteId, actualizar, ressincronizar]);
 
-  /* A insistência. */
+  /* ---------------------------------------------------------------- */
+  /* Caminho 3 — a base, antes de cada toque                           */
+  /* ---------------------------------------------------------------- */
   React.useEffect(() => {
     if (!aToar) return;
 
-    const relogio = setInterval(() => {
-      void tocarSino();
+    const relogio = setInterval(async () => {
+      await ressincronizar();
+      // Só toca se, depois de perguntar à base, ainda houver alguém à
+      // espera. É isto que impede o toque "a mais" depois do Recebido.
+      if (porConfirmar.current.size) void tocarSino();
     }, INSISTENCIA);
 
     return () => clearInterval(relogio);
-  }, [aToar]);
+  }, [aToar, ressincronizar]);
+
+  /* A vigia: com o sino calado, apanha pedidos que o Realtime perdeu. */
+  React.useEffect(() => {
+    if (!supabase) return;
+
+    const vigia = setInterval(async () => {
+      if (document.hidden) return;
+      if (await ressincronizar()) void tocarSino();
+    }, VIGIA);
+
+    // Ao voltar ao ecrã vai-se logo à base: foi com o ecrã apagado que os
+    // eventos se perderam, e é agora que se descobre.
+    const aoVoltar = async () => {
+      if (document.hidden) return;
+      if (await ressincronizar()) void tocarSino();
+    };
+    document.addEventListener('visibilitychange', aoVoltar);
+
+    return () => {
+      clearInterval(vigia);
+      document.removeEventListener('visibilitychange', aoVoltar);
+    };
+  }, [supabase, ressincronizar]);
 
   // O primeiro toque em qualquer sítio do painel serve de gesto e
   // desbloqueia o áudio para o resto da sessão.

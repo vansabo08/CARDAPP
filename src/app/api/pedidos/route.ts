@@ -88,12 +88,23 @@ export async function POST(pedido: Request) {
    */
   const id = crypto.randomUUID();
 
+  /*
+   * A observação vai na gravação.
+   *
+   * Esteve calculada lá em cima e nunca chegou aqui: lida do corpo,
+   * cortada aos 200 caracteres, guardada numa variável, e depois deixada
+   * de fora deste objecto. A casa em modo WhatsApp via-a na mesma, porque
+   * vai no texto da mensagem; a casa em modo app nunca a viu, porque o
+   * painel lê da base e na base não havia nada. Um "sem cebola" escrito
+   * pelo cliente chegava ao servidor e morria a três linhas daqui.
+   */
   const { error } = await supabase.from('orders').insert({
     id,
     restaurant_id: restaurante.id,
     table_id: tableId,
     itens,
     total,
+    observacao,
   });
 
   if (error) {

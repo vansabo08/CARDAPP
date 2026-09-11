@@ -170,20 +170,28 @@ export async function tocarSino() {
   if (ctx.state !== 'running') return false;
 
   /*
-   * As duas notas do princípio — lá e mi, uma quinta —, só que altas.
+   * As duas notas do princípio — lá e mi, uma quinta —, no máximo que dão.
    *
    * Isto passou por uma sirene de onda quadrada, tecnicamente muito mais
    * audível e insuportável de ouvir. Um alarme que a casa desliga ao fim
    * do primeiro serviço não avisa ninguém: o som que fica ligado é
    * melhor do que o som que corta a sala ao meio.
    *
-   * O que se manteve foi o ganho. Estava em 0.16 e 0.12, que era um
-   * murmúrio; está em 0.45 e 0.34. A onda é sinusoidal e as duas notas
-   * quase não se sobrepõem, por isso sobe até aqui sem saturar.
+   * O timbre não se mexe; sobe a energia, e está medida. O ganho foi de
+   * 0.16/0.12 (um murmúrio) para 0.45/0.34, e agora para 0.95/0.85, com a
+   * cauda de cada nota mais longa — o ouvido lê como mais alto um som que
+   * fica mais tempo perto do pico. Face ao anterior são +8.4 dB de
+   * energia, com o pico a 0.948.
+   *
+   * ISTO É O TECTO. O áudio digital acaba em 1.0, e as duas notas quase
+   * não se sobrepõem, por isso cada uma pode chegar lá perto sozinha.
+   * Acima disto a onda satura — distorce, fica áspera, e volta a ser a
+   * sirene que ninguém aguentava. Mais alto do que isto, só o volume do
+   * próprio aparelho.
    */
   const agora = ctx.currentTime;
-  nota(ctx, 880, agora, 0.34, 0.45); // lá
-  nota(ctx, 1318.5, agora + 0.13, 0.42, 0.34); // mi, uma quinta acima
+  nota(ctx, 880, agora, 0.5, 0.95); // lá
+  nota(ctx, 1318.5, agora + 0.13, 0.62, 0.85); // mi, uma quinta acima
 
   return true;
 }

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { clienteDoPainel } from '@/lib/supabase/servidor';
+import { obterRestauranteDoDono } from '@/lib/dados';
 import { estadoValido } from '@/lib/pedidos';
 import type { EstadoPedido } from '@/lib/tipos';
 
@@ -34,15 +35,23 @@ export async function confirmarPedido(id: string): Promise<{ ok: boolean; erro?:
   const supabase = await clienteDoPainel();
   if (!supabase) return { ok: true };
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { ok: false, erro: 'Sessão terminada. Entre outra vez.' };
+  /*
+   * A casa, e não o utilizador.
+   *
+   * Isto perguntava pela sessão — e em auditoria o cliente é a chave de
+   * serviço, que não tem sessão nenhuma. Respondia "Sessão terminada" a
+   * quem administra, e em auditoria não se conseguia confirmar nem mover
+   * um pedido. A casa responde nos dois casos: a do dono, ou aquela em
+   * que se entrou.
+   */
+  const restaurante = await obterRestauranteDoDono();
+  if (!restaurante) return { ok: false, erro: 'Sessão terminada. Entre outra vez.' };
 
   const { data, error } = await supabase
     .from('orders')
     .update({ confirmado_em: new Date().toISOString() })
     .eq('id', id)
+    .eq('restaurant_id', restaurante.id)
     .is('confirmado_em', null)
     .select('id')
     .maybeSingle();
@@ -65,10 +74,17 @@ export async function mudarEstado(
   const supabase = await clienteDoPainel();
   if (!supabase) return { ok: true };
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { ok: false, erro: 'Sessão terminada. Entre outra vez.' };
+  /*
+   * A casa, e não o utilizador.
+   *
+   * Isto perguntava pela sessão — e em auditoria o cliente é a chave de
+   * serviço, que não tem sessão nenhuma. Respondia "Sessão terminada" a
+   * quem administra, e em auditoria não se conseguia confirmar nem mover
+   * um pedido. A casa responde nos dois casos: a do dono, ou aquela em
+   * que se entrou.
+   */
+  const restaurante = await obterRestauranteDoDono();
+  if (!restaurante) return { ok: false, erro: 'Sessão terminada. Entre outra vez.' };
 
   const { data, error } = await supabase
     .from('orders')
@@ -80,6 +96,7 @@ export async function mudarEstado(
       confirmado_em: new Date().toISOString(),
     })
     .eq('id', id)
+    .eq('restaurant_id', restaurante.id)
     .select('id')
     .maybeSingle();
 

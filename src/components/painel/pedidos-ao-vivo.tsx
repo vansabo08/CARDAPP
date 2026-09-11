@@ -21,6 +21,7 @@ import {
 } from '@/lib/som';
 import { cn } from '@/lib/utils';
 import { confirmarPedido, mudarEstado } from '@/app/painel/pedidos/accoes';
+import { avisarQueFoiVisto } from '@/lib/sinal-do-pedido';
 import type { EstadoPedido, Pedido } from '@/lib/tipos';
 
 /** Cor de cada estado na lista. O novo salta à vista; o resto acalma. */
@@ -286,6 +287,10 @@ function CartaoPedido({
       antes.map((p) => (p.id === pedido.id ? { ...p, estado: para } : p)),
     );
 
+    // Quem move um pedido viu-o. O sino tem de saber já, e não quando o
+    // Realtime lho disser — que pode ser nunca.
+    avisarQueFoiVisto(pedido.id);
+
     const resultado = await mudarEstado(pedido.id, para);
 
     if (!resultado.ok) {
@@ -309,12 +314,20 @@ function CartaoPedido({
     setAGuardar(true);
     setErro(null);
 
-    // Cala-se já no ecrã: quem carrega quer silêncio no instante, não
-    // dentro de meio segundo. O Realtime confirma logo a seguir.
+    /*
+     * Cala-se já — e agora de verdade.
+     *
+     * O comentário que aqui estava dizia o mesmo, mas o código só
+     * actualizava a lista. O sino é outro componente, e continuava a tocar
+     * até o Realtime lhe trazer a alteração; se ela se perdesse, tocava
+     * para sempre, com o botão já escondido. Quem carregou em "Recebido"
+     * ouvia o alarme a insistir e concluía que o botão não funcionava.
+     */
     const agora = new Date().toISOString();
     aoMudar((antes) =>
       antes.map((p) => (p.id === pedido.id ? { ...p, confirmado_em: agora } : p)),
     );
+    avisarQueFoiVisto(pedido.id);
 
     const resultado = await confirmarPedido(pedido.id);
 
