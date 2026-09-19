@@ -53,7 +53,7 @@ export async function imagemDePartilha({
   const [fonte, chapa, simbolo] = await Promise.all([
     fonteDisplay(),
     ficheiro('public', 'og', 'prato.jpg'),
-    ficheiro('public', 'simbolo.png'),
+    ficheiro('public', 'logo-128.png'),
   ]);
 
   const simboloUrl = `data:image/png;base64,${simbolo.toString('base64')}`;

@@ -1,13 +1,13 @@
 import Link from 'next/link';
-import { MarcaSimbolo } from '@/components/marca-simbolo';
+import { Logotipo } from '@/components/logotipo';
 import { cn } from '@/lib/utils';
 
 /**
- * A marca: símbolo + palavra.
+ * A marca: o logótipo e a palavra.
  *
- * O ponto dourado que estava a seguir a "Cardapp" saiu — o símbolo já
- * faz esse trabalho, e dois acentos ao lado um do outro só se roubavam
- * atenção.
+ * O logótipo é a imagem oficial — o disco preto com a faca e o garfo. A
+ * palavra fica ao lado porque o logótipo não tem nome escrito, e uma
+ * barra de navegação só com talheres não diz de quem é.
  */
 export function Marca({
   className,
@@ -20,11 +20,16 @@ export function Marca({
   tamanho?: 'sm' | 'md';
   soSimbolo?: boolean;
 }) {
-  const ladoSimbolo = tamanho === 'sm' ? 'h-[22px] w-[22px]' : 'h-[26px] w-[26px]';
+  /*
+   * Um pouco maior do que o símbolo antigo. Esse eram só os talheres, a
+   * ocupar o quadrado todo; aqui vão dentro de um disco e ocupam três
+   * quartos dele — ao mesmo tamanho, liam-se mais pequenos.
+   */
+  const lado = tamanho === 'sm' ? 24 : 30;
 
   const conteudo = (
     <span className={cn('inline-flex items-center gap-2.5', className)}>
-      <MarcaSimbolo className={cn(ladoSimbolo, 'text-ouro')} />
+      <Logotipo tamanho={lado} alt={soSimbolo ? 'Cardapp' : ''} />
       {!soSimbolo ? (
         <span
           className={cn(
@@ -57,7 +62,7 @@ export function AssinaturaCardapp({ claro = false }: { claro?: boolean }) {
       )}
     >
       feito com
-      <MarcaSimbolo className="h-[13px] w-[13px]" />
+      <Logotipo tamanho={14} />
       <span className="font-display text-xs normal-case tracking-normal">Cardapp</span>
     </a>
   );

@@ -37,11 +37,11 @@ export const metadata: Metadata = {
   manifest: '/manifest.webmanifest',
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: '32x32' },
-      { url: '/favicon-32.png', type: 'image/png', sizes: '32x32' },
-      { url: '/icone-192.png', type: 'image/png', sizes: '192x192' },
+      { url: '/favicon.ico?v=2', sizes: '32x32' },
+      { url: '/favicon-32.png?v=2', type: 'image/png', sizes: '32x32' },
+      { url: '/icone-192.png?v=2', type: 'image/png', sizes: '192x192' },
     ],
-    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }],
+    apple: [{ url: '/apple-touch-icon.png?v=2', sizes: '180x180' }],
   },
   appleWebApp: {
     capable: true,

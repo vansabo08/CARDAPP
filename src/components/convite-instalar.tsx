@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Download, Share, X } from 'lucide-react';
-import { MarcaSimbolo } from '@/components/marca-simbolo';
+import { Logotipo } from '@/components/logotipo';
 import { cn } from '@/lib/utils';
 
 /**
@@ -154,9 +154,11 @@ export function ConviteInstalar() {
       aria-label="Instalar o Cardapp"
     >
       <div className="vidro flex items-start gap-3 rounded-cartao p-3.5 shadow-elevacao-3-escura">
-        <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-campo border border-linha bg-creme/[0.05]">
-          <MarcaSimbolo className="h-5 w-5 text-ouro" />
-        </span>
+        {/*
+          O ícone que vai ficar no ecrã inicial — o mesmo, e não um
+          parecido. Quem instala tem de reconhecer depois o que instalou.
+        */}
+        <Logotipo tamanho={40} className="mt-0.5" />
 
         <div className="min-w-0 flex-1">
           <p className="font-sans text-sm font-semibold text-creme">Instalar o Cardapp</p>
