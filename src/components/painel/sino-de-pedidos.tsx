@@ -3,9 +3,9 @@
 import * as React from 'react';
 import { clienteNavegador } from '@/lib/supabase/cliente';
 import { formatarKz } from '@/lib/format';
-import { avisarDoPedido, ligarSomAoPrimeiroGesto, tocarSino } from '@/lib/som';
+import { avisarDoPedido, calarSino, ligarSomAoPrimeiroGesto, tocarSino } from '@/lib/som';
 import { aoVerPedido } from '@/lib/sinal-do-pedido';
-import { decidirPorConfirmar } from '@/lib/decisao-do-sino';
+import { INSISTENCIA, decidirPorConfirmar } from '@/lib/decisao-do-sino';
 import type { Pedido } from '@/lib/tipos';
 
 /**
@@ -31,10 +31,6 @@ import type { Pedido } from '@/lib/tipos';
  * muito. Agora só conta os de hoje: um pedido de anteontem não é uma
  * urgência, é histórico.
  */
-
-/** De quanto em quanto tempo volta a tocar enquanto houver por confirmar. */
-const INSISTENCIA = 4000;
-
 
 /**
  * De quanto em quanto tempo se vai à base mesmo com o sino calado.
@@ -76,8 +72,21 @@ export function SinoDePedidos({ restauranteId }: { restauranteId: string }) {
   const [aToar, setAToar] = React.useState(false);
   const supabase = React.useMemo(() => clienteNavegador(), []);
 
+  /** Se havia alguém à espera da última vez que se contou. */
+  const tocava = React.useRef(false);
+
   const actualizar = React.useCallback(() => {
-    setAToar(porConfirmar.current.size > 0);
+    const ha = porConfirmar.current.size > 0;
+    setAToar(ha);
+
+    /*
+     * Quando o último pedido é visto, cala-se também o toque que ainda
+     * está a soar. O sino dura mais de um segundo depois de cada pancada,
+     * e uma cauda a ouvir-se depois de "Recebido" soava como o botão não
+     * ter funcionado — a queixa que trouxe isto cá.
+     */
+    if (tocava.current && !ha) calarSino();
+    tocava.current = ha;
   }, []);
 
   /**
@@ -200,11 +209,28 @@ export function SinoDePedidos({ restauranteId }: { restauranteId: string }) {
   React.useEffect(() => {
     if (!aToar) return;
 
-    const relogio = setInterval(async () => {
-      await ressincronizar();
-      // Só toca se, depois de perguntar à base, ainda houver alguém à
-      // espera. É isto que impede o toque "a mais" depois do Recebido.
+    let aPerguntar = false;
+
+    const relogio = setInterval(() => {
+      /*
+       * O toque segue o relógio, e a pergunta à base vai por trás.
+       *
+       * Com quatro segundos de intervalo podia esperar-se pela base antes
+       * de tocar. Com dois, uma resposta lenta numa rede má empurrava
+       * cada toque para mais tarde e o ritmo desfazia-se. A lista local já
+       * sabe do "Recebido" no instante do clique, por isso tocar por ela
+       * é seguro; a base serve para apanhar o que foi confirmado noutro
+       * telemóvel, e isso chega no toque seguinte — no pior caso, um
+       * toque a mais.
+       */
       if (porConfirmar.current.size) void tocarSino();
+
+      // Uma pergunta de cada vez: numa rede lenta não se empilham.
+      if (aPerguntar) return;
+      aPerguntar = true;
+      void ressincronizar().finally(() => {
+        aPerguntar = false;
+      });
     }, INSISTENCIA);
 
     return () => clearInterval(relogio);

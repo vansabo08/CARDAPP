@@ -11,6 +11,19 @@
  * erro não tem onde se esconder.
  */
 
+/**
+ * De quanto em quanto tempo o sino volta a tocar enquanto houver por confirmar.
+ *
+ * Era de 4 em 4 segundos. Com o sino a soar cerca de um segundo e meio,
+ * de 2 em 2 fica quase contínuo sem os toques se atropelarem — e um
+ * alarme quase contínuo é um que não se confunde com barulho de fundo.
+ *
+ * Vive aqui, e não no componente: uma constante exportada de um ficheiro
+ * "use client" chega ao servidor como referência vazia, e já houve uma
+ * paleta inteira a sair toda dourada por causa disso.
+ */
+export const INSISTENCIA = 2000;
+
 /** Quanto tempo um clique em "Recebido" manda sobre o que a base diz. */
 export const CARENCIA_DO_CLIQUE = 12_000;
 
