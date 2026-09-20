@@ -18,6 +18,16 @@ const nextConfig = {
       { protocol: 'https', hostname: 'images.unsplash.com' },
     ],
     formats: ['image/avif', 'image/webp'],
+
+    /*
+     * As qualidades que o site pede, declaradas.
+     *
+     * A fotografia de ambiente da pagina inicial vai a 55 — e um fundo
+     * atras de texto, nao e para se estudar. Ate ao Next 15 bastava pedir;
+     * a partir do 16 uma qualidade que nao esteja nesta lista deixa de ser
+     * servida, e o aviso ja aparece hoje em cada pedido.
+     */
+    qualities: [55, 75],
   },
 };
 

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Botao } from '@/components/ui/botao';
-import { AreaTexto, Campo, Erro, Rotulo } from '@/components/ui/campo';
+import { AreaTexto, Campo, Erro, EscolherFicheiro, Rotulo } from '@/components/ui/campo';
 import { Distintivo } from '@/components/ui/distintivo';
 import { FolhaInferior } from '@/components/ui/folha-inferior';
 import { Interruptor } from '@/components/ui/interruptor';
@@ -526,12 +526,12 @@ function FolhaPrato({
           </span>
           <div className="min-w-0 flex-1">
             <Rotulo htmlFor="foto">Fotografia</Rotulo>
-            <input
+            <EscolherFicheiro
               id="foto"
-              type="file"
               accept="image/jpeg,image/png,image/webp,image/avif"
               onChange={escolherFoto}
-              className="block w-full font-sans text-xs text-tenue file:mr-3 file:rounded-campo file:border file:border-linha file:bg-transparent file:px-3 file:py-2 file:font-sans file:text-xs file:text-creme"
+              rotulo={dados.foto_url ? 'Trocar fotografia' : 'Escolher fotografia'}
+              disabled={aEnviar}
             />
             <p className="mt-2 font-sans text-xs text-tenue">
               {aEnviar ? 'A enviar…' : 'Sem foto, o cardápio mostra uma ilustração do prato.'}

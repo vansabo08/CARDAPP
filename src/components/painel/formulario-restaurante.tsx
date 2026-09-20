@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Ajuda, Campo, Erro, Rotulo } from '@/components/ui/campo';
+import { Ajuda, Campo, Erro, EscolherFicheiro, Rotulo } from '@/components/ui/campo';
 import { mostrarWhatsApp, normalizarWhatsApp, whatsAppValido } from '@/lib/format';
 import { enviarImagem } from '@/lib/armazenamento';
 import { slugify } from '@/lib/utils';
@@ -181,12 +181,11 @@ export function CamposIdentidade({
             )}
           </span>
           <div className="min-w-0 flex-1">
-            <input
-              type="file"
+            <EscolherFicheiro
               accept="image/jpeg,image/png,image/webp,image/avif"
               onChange={escolherLogo}
-              aria-label="Escolher logótipo"
-              className="block w-full font-sans text-xs text-tenue file:mr-3 file:rounded-campo file:border file:border-linha file:bg-transparent file:px-3 file:py-2 file:font-sans file:text-xs file:text-creme"
+              rotulo={valores.logo_url ? 'Trocar logótipo' : 'Escolher logótipo'}
+              disabled={aEnviar}
             />
             <Ajuda>{aEnviar ? 'A enviar…' : 'Opcional. Sem logo usamos as iniciais.'}</Ajuda>
           </div>
@@ -198,15 +197,15 @@ export function CamposIdentidade({
 
       <div>
         <Rotulo htmlFor="slug">Endereço do cardápio</Rotulo>
-        <div className="flex items-center gap-0 rounded-campo border border-linha px-3.5 focus-within:border-laranja">
-          <span className="shrink-0 font-sans text-sm text-tenue">
+        <div className="flex items-center gap-0 rounded-campo border border-transparent bg-white/[0.05] px-4 transition-colors focus-within:border-laranja focus-within:bg-white/[0.07]">
+          <span className="shrink-0 font-sans text-base text-tenue">
             {SITE_URL.replace(/^https?:\/\//, '')}/
           </span>
           <input
             id="slug"
             value={valores.slug}
             onChange={(e) => aoMudar({ slug: slugify(e.target.value) })}
-            className="h-11 min-w-0 flex-1 border-none bg-transparent font-sans text-sm text-creme outline-none"
+            className="h-12 min-w-0 flex-1 border-none bg-transparent font-sans text-base text-creme outline-none placeholder:text-creme/35"
             placeholder="tia-bela"
           />
         </div>
@@ -294,12 +293,11 @@ function CampoCapa({
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
-        <input
-          type="file"
+        <EscolherFicheiro
           accept="image/jpeg,image/png,image/webp,image/avif"
           onChange={escolher}
-          aria-label="Escolher fotografia de capa"
-          className="block font-sans text-xs text-tenue file:mr-3 file:rounded-campo file:border file:border-linha file:bg-transparent file:px-3 file:py-2 file:font-sans file:text-xs file:text-creme"
+          rotulo={valor ? 'Trocar capa' : 'Escolher capa'}
+          disabled={aEnviar}
         />
         {valor ? (
           <button
@@ -336,8 +334,8 @@ export function CampoWhatsApp({
   return (
     <div>
       <Rotulo htmlFor="whatsapp">Número de WhatsApp</Rotulo>
-      <div className="flex items-center gap-0 rounded-campo border border-linha px-3.5 focus-within:border-laranja">
-        <span className="shrink-0 font-sans text-sm text-tenue">+244</span>
+      <div className="flex items-center gap-0 rounded-campo border border-transparent bg-white/[0.05] px-4 transition-colors focus-within:border-laranja focus-within:bg-white/[0.07]">
+        <span className="shrink-0 font-sans text-base text-tenue">+244</span>
         <input
           id="whatsapp"
           inputMode="tel"
@@ -345,7 +343,7 @@ export function CampoWhatsApp({
           value={valor}
           onChange={(e) => aoMudar(e.target.value.replace(/[^\d\s+]/g, ''))}
           placeholder="923 456 789"
-          className="h-11 min-w-0 flex-1 border-none bg-transparent pl-2 font-sans text-sm text-creme outline-none"
+          className="h-12 min-w-0 flex-1 border-none bg-transparent pl-2 font-sans text-base text-creme outline-none placeholder:text-creme/35"
         />
         {valido ? <span className="shrink-0 text-sm text-verde">✓</span> : null}
       </div>

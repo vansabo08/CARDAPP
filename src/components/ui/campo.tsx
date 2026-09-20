@@ -81,3 +81,64 @@ export function Ajuda({ className, ...props }: React.HTMLAttributes<HTMLParagrap
 export function Erro({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
   return <p className={cn('mt-2 font-sans text-xs text-[#ff8a78]', className)} {...props} />;
 }
+
+/**
+ * Escolher um ficheiro, sem o botão que o browser dá.
+ *
+ * O `input type=file` cru desenha um botão do sistema e, ao lado, a
+ * frase "Nenhum ficheiro selecionado" — no idioma do browser, e não no
+ * nosso. Num painel em português de Angola aparecia texto em português
+ * do Brasil, ou em inglês, conforme o telefone. Era a coisa mais
+ * amadora do ecrã das definições.
+ *
+ * O input continua lá, escondido mas focável: é ele que abre a galeria,
+ * que valida o tipo e que o teclado alcança. O que muda é que quem
+ * desenha o botão somos nós, e quem escreve o estado também.
+ */
+export function EscolherFicheiro({
+  id,
+  accept,
+  onChange,
+  rotulo,
+  className,
+  disabled,
+}: {
+  id?: string;
+  accept?: string;
+  onChange: React.ChangeEventHandler<HTMLInputElement>;
+  /** O que o botão diz. "Escolher fotografia", "Trocar capa". */
+  rotulo: string;
+  className?: string;
+  disabled?: boolean;
+}) {
+  return (
+    <label
+      className={cn(
+        'inline-flex h-10 cursor-pointer items-center gap-2 rounded-campo border border-linha px-4 font-sans text-sm font-semibold text-creme transition-colors',
+        'hover:border-laranja hover:text-laranja',
+        'focus-within:border-laranja focus-within:text-laranja',
+        disabled && 'pointer-events-none opacity-50',
+        className,
+      )}
+    >
+      <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden="true">
+        <path
+          d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M4 16v2.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V16"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+      {rotulo}
+      <input
+        id={id}
+        type="file"
+        accept={accept}
+        onChange={onChange}
+        disabled={disabled}
+        className="sr-only"
+      />
+    </label>
+  );
+}

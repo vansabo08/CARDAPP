@@ -12,15 +12,16 @@ import { cn } from '@/lib/utils';
  * formas — uma linha e umas barras — e uma biblioteca de gráficos custa
  * mais a carregar do que o painel inteiro pesa hoje.
  *
- * A PALETA FOI VALIDADA, NÃO ESCOLHIDA A OLHO. Os degraus vêm do sistema
- * de visualização, medidos contra o fundo escuro: banda de luminosidade,
- * chroma mínimo, separação para daltonismo e contraste, tudo passa. A
- * ordem também conta — o vermelho e o verde ficavam adjacentes e o par
- * caía para 6.5 de separação, por isso o azul foi metido entre eles.
+ * A PALETA FOI MEDIDA, NÃO ESCOLHIDA A OLHO, e vem toda de `lib/cores`.
+ * A linha e as barras das casas levam uma cor só — o laranja da marca,
+ * um degrau abaixo — e por isso não levam legenda: o título já diz o que
+ * é. As quatro cores de estado só aparecem juntas na barra do
+ * administrador, cada uma com o seu rótulo ao lado, e nessa ordem passam
+ * as medidas todas.
  *
- * Ficam de fora gráficos de dispersão com estas quatro cores: em todos
- * os pares (e não só nos adjacentes) o vermelho e o dourado não se
- * distinguem o suficiente.
+ * Ficam de fora gráficos de dispersão com as cores de estado: aí qualquer
+ * par pode cair lado a lado, e o âmbar com o vermelho não chegam aos 8
+ * para quem não distingue verdes de vermelhos.
  */
 
 const TINTA = 'rgba(250,247,242,0.55)';
@@ -47,9 +48,10 @@ export function Numero({
 }) {
   return (
     <div className="superficie rounded-cartao p-5">
-      <p className="etiqueta text-tenue">{rotulo}</p>
+      <p className="font-sans text-sm font-semibold text-tenue">{rotulo}</p>
+      {/* Laranja como no resto do painel, a menos que o numero traga um estado. */}
       <p
-        className="mt-2 font-display text-3xl leading-none text-creme"
+        className="mt-2 font-display text-2xl font-bold leading-tight text-laranja md:text-3xl"
         style={tom ? { color: COR_ESTADO[tom] } : undefined}
       >
         {valor}
