@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Download, Share, X } from 'lucide-react';
 import { Logotipo } from '@/components/logotipo';
 import { cn } from '@/lib/utils';
+import { abertoComoApp, eIphone, eSafari } from '@/lib/aparelho';
 
 /**
  * O convite para instalar o Cardapp no ecrã inicial.
@@ -38,27 +39,6 @@ type EventoDeInstalacao = Event & {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 };
 
-function jaInstalado() {
-  if (typeof window === 'undefined') return true;
-  const autonomo = window.matchMedia?.('(display-mode: standalone)').matches;
-  const naDoca = (window.navigator as { standalone?: boolean }).standalone === true;
-  return Boolean(autonomo || naDoca);
-}
-
-function eIphone() {
-  if (typeof navigator === 'undefined') return false;
-  const ua = navigator.userAgent;
-  // O iPad moderno diz que é um Mac; o toque desmente-o.
-  const iPadDisfarcado = /Macintosh/.test(ua) && navigator.maxTouchPoints > 1;
-  return /iPhone|iPad|iPod/.test(ua) || iPadDisfarcado;
-}
-
-/** Dentro do Chrome/Firefox do iOS não há sequer o menu de Partilha certo. */
-function eSafari() {
-  if (typeof navigator === 'undefined') return false;
-  return !/CriOS|FxiOS|EdgiOS|OPiOS/.test(navigator.userAgent);
-}
-
 function descansando() {
   try {
     const ate = Number(localStorage.getItem(CHAVE) ?? 0);
@@ -85,7 +65,7 @@ export function ConviteInstalar() {
   const [modo, setModo] = React.useState<'android' | 'ios' | null>(null);
 
   React.useEffect(() => {
-    if (jaInstalado() || descansando()) return;
+    if (abertoComoApp() || descansando()) return;
 
     let relogio: number | undefined;
 

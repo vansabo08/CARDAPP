@@ -5,6 +5,7 @@ import { AvisoDoPlano } from '@/components/painel/aviso-do-plano';
 import { PortaFechada } from '@/components/painel/porta-fechada';
 import { estadoDaConta, painelAberto } from '@/lib/planos';
 import { ConviteInstalar } from '@/components/convite-instalar';
+import { AvisoDoIcone } from '@/components/aviso-do-icone';
 import { SinoDePedidos } from '@/components/painel/sino-de-pedidos';
 import { BatidaDePresenca } from '@/components/painel/batida-de-presenca';
 import { SinoDeComprovativos } from '@/components/painel/sino-de-comprovativos';
@@ -80,6 +81,7 @@ export default async function LayoutPainel({ children }: { children: React.React
 
       <DocaPainel />
       <ConviteInstalar />
+      <AvisoDoIcone />
       {restaurante ? <SinoDePedidos restauranteId={restaurante.id} /> : null}
       {restaurante ? <BatidaDePresenca /> : null}
     </div>
