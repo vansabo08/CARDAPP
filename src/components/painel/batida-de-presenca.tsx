@@ -28,12 +28,28 @@ export function BatidaDePresenca() {
 
     async function bater() {
       if (!vivo || document.hidden) return;
-      // Sem tipos gerados, o `rpc` não conhece a função. A chamada fica
-      // presa ao objecto: tirá-la para uma variável desliga-a do `this`.
+      /*
+       * Sem tipos gerados, o `rpc` não conhece a função. A chamada fica
+       * presa ao objecto: tirá-la para uma variável desliga-a do `this`.
+       *
+       * E o que vem de lá é um `PromiseLike`, não uma `Promise`: tem
+       * `then` e não tem `catch`. Isto já esteve escrito com um
+       * `.catch(() => {})` ao fundo, que rebentava antes de o pedido
+       * sair — e como rebentava dentro de uma função assíncrona, não
+       * havia erro nenhum no ecrã, só uma batida que nunca chegou. O
+       * painel de administração dava todas as casas como nunca tendo
+       * aberto o painel, que é precisamente o aviso que ele existe
+       * para dar. O molde mentia ao TypeScript, e por isso o `.catch`
+       * compilava.
+       */
       const comRpc = supabase as unknown as {
-        rpc: (nome: string) => Promise<unknown>;
+        rpc: (nome: string) => PromiseLike<{ error: unknown }>;
       };
-      await comRpc.rpc('marcar_visto').catch(() => {});
+      try {
+        await comRpc.rpc('marcar_visto');
+      } catch {
+        // A batida é um extra. Se falhar, ninguém no painel tem de saber.
+      }
     }
 
     void bater();
