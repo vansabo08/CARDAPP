@@ -22,7 +22,7 @@ export default async function PaginaResumo() {
           descricao="Ainda não há restaurante ligado a esta conta. São quatro passos e não demora."
         />
         <div className="mt-8">
-          <Botao asChild variante="ouro" tamanho="lg">
+          <Botao asChild variante="laranja" tamanho="lg">
             <Link href="/comecar">Configurar o restaurante</Link>
           </Botao>
         </div>
@@ -62,7 +62,7 @@ function Estatisticas({ pedidos }: { pedidos: Pedido[] }) {
 
   if (!pedidos.length) {
     return (
-      <div className="vidro mt-10 rounded-cartao px-7 py-14 text-center">
+      <div className="superficie mt-10 rounded-cartao px-7 py-14 text-center">
         <p className="font-display text-xl text-creme">Ainda não entrou nenhum pedido hoje.</p>
         <p className="mx-auto mt-3 max-w-[42ch] font-sans text-sm leading-normal text-tenue">
           Assim que alguém ler o QR de uma mesa e enviar o pedido, ele aparece aqui.
@@ -97,7 +97,7 @@ function Estatisticas({ pedidos }: { pedidos: Pedido[] }) {
                 </div>
                 <div className="mt-2 h-[3px] w-full overflow-hidden rounded-full bg-white/[0.07]">
                   <div
-                    className="h-full rounded-full bg-ouro"
+                    className="h-full rounded-full bg-laranja"
                     style={{ width: `${Math.max(6, (prato.qtd / maiorQtd) * 100)}%` }}
                   />
                 </div>
@@ -112,7 +112,7 @@ function Estatisticas({ pedidos }: { pedidos: Pedido[] }) {
         <ul className="mt-5 divide-y divide-linha border-y border-linha">
           {pedidos.slice(0, 10).map((pedido) => (
             <li key={pedido.id} className="flex items-start gap-4 py-4">
-              <span className="etiqueta w-[68px] shrink-0 pt-1 text-tenue">
+              <span className="w-[68px] shrink-0 pt-0.5 font-sans text-sm font-semibold text-creme/70">
                 {pedido.mesa != null ? `Mesa ${numeroMesa(pedido.mesa)}` : 'Balcão'}
               </span>
               <p className="min-w-0 flex-1 font-sans text-sm leading-normal text-creme/85">
@@ -129,18 +129,26 @@ function Estatisticas({ pedidos }: { pedidos: Pedido[] }) {
   );
 }
 
+/**
+ * Um número do dia.
+ *
+ * O número é o assunto, por isso vai grande e em laranja, e o nome vai
+ * pequeno por cima — lê-se o valor de relance e o nome só se for preciso.
+ */
 function Numero({ rotulo, valor }: { rotulo: string; valor: string }) {
   return (
-    <div className="vidro-leve rounded-cartao px-5 py-6">
-      <p className="etiqueta text-tenue">{rotulo}</p>
-      <p className="mt-2.5 font-sans text-2xl font-bold tracking-[-0.02em] text-creme">{valor}</p>
+    <div className="superficie rounded-cartao px-5 py-5">
+      <p className="font-sans text-sm font-semibold text-tenue">{rotulo}</p>
+      <p className="mt-2 font-display text-2xl font-bold leading-tight text-laranja md:text-3xl">
+        {valor}
+      </p>
     </div>
   );
 }
 
 function Bloqueio({ plano }: { plano: Plano }) {
   return (
-    <div className="vidro mt-10 overflow-hidden rounded-cartao">
+    <div className="superficie mt-10 overflow-hidden rounded-cartao">
       <div className="relative px-7 py-14 text-center">
         {/* Silhueta do que existe do outro lado, esbatida de propósito. */}
         <div aria-hidden className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-[0.07]">
@@ -152,7 +160,7 @@ function Bloqueio({ plano }: { plano: Plano }) {
         </div>
 
         <div className="relative">
-          <p className="etiqueta text-ouro">Plano Sala</p>
+          <p className="etiqueta text-laranja">Plano Sala</p>
           <h2 className="mx-auto mt-4 max-w-[22ch] font-display text-2xl leading-none text-creme">
             As estatísticas fazem parte do plano Sala.
           </h2>
@@ -161,7 +169,7 @@ function Bloqueio({ plano }: { plano: Plano }) {
             {NOME_PLANO[plano]} — o cardápio e as mesas continuam a funcionar na mesma.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Botao asChild variante="ouro" tamanho="md">
+            <Botao asChild variante="laranja" tamanho="md">
               <Link href="/painel/definicoes#plano">Ver planos</Link>
             </Botao>
             <Botao asChild variante="contorno" tamanho="md">

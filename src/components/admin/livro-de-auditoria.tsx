@@ -9,7 +9,7 @@ import type { LinhaDeAuditoria } from '@/lib/admin';
  */
 export function LivroDeAuditoria({ linhas }: { linhas: LinhaDeAuditoria[] }) {
   return (
-    <section className="vidro rounded-cartao p-6">
+    <section className="superficie rounded-cartao p-6">
       <h2 className="font-display text-xl text-creme">Auditoria</h2>
       <p className="mt-1 text-pretty font-sans text-xs leading-normal text-tenue">
         Tudo o que foi mexido em contas alheias, e por quem. Últimas 40 acções.

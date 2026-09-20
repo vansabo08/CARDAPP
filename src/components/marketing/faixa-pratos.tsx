@@ -40,7 +40,7 @@ export function FaixaPratos({ className }: { className?: string }) {
             <span className="whitespace-nowrap font-display text-2xl text-creme/70">
               {prato}
             </span>
-            <span className="block h-[5px] w-[5px] shrink-0 rounded-full bg-ouro/70" />
+            <span className="block h-[5px] w-[5px] shrink-0 rounded-full bg-laranja/70" />
           </span>
         ))}
       </div>

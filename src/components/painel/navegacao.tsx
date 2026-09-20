@@ -58,31 +58,43 @@ export function NavegacaoPainel({
   }
 
   return (
-    <aside className="vidro rounded-none border-x-0 border-t-0 shadow-[inset_0_1px_0_0_rgba(250,247,242,0.11)] md:sticky md:top-0 md:h-dvh md:w-[248px] md:shrink-0 md:border-b-0 md:border-r">
+    <aside className="superficie rounded-none border-x-0 border-t-0 shadow-[inset_0_1px_0_0_rgba(250,247,242,0.11)] md:sticky md:top-0 md:h-dvh md:w-[248px] md:shrink-0 md:border-b-0 md:border-r">
       <div className="flex h-full flex-col">
         <div className="flex items-center justify-between px-5 py-5 md:px-6">
           <Marca tamanho="sm" href="/painel" />
 
-          <div className="flex items-center gap-3">
-            {demonstracao ? <Distintivo tom="ouro">Demonstração</Distintivo> : null}
+          <div className="flex items-center gap-2.5">
+            {demonstracao ? <Distintivo tom="laranja">Demonstração</Distintivo> : null}
 
             {/*
               No telemóvel, tudo o que não é navegação estava escondido
               atrás de `md:` — o nome da casa, o cardápio e o Sair. Quem
               entrasse pelo telefone ficava sem forma de sair da conta.
               Este botão devolve-lhes isso.
+
+              É a inicial da casa num círculo, e não uma pastilha a dizer
+              "Conta": ocupa metade do espaço, e a inicial diz de quem é a
+              conta — num telemóvel de balcão, onde se entra e sai de
+              contas diferentes, isso vale mais do que a palavra.
             */}
             <button
               type="button"
               onClick={() => setMenuAberto((aberto) => !aberto)}
               aria-expanded={menuAberto}
               aria-controls="menu-da-conta"
-              className="flex items-center gap-2 rounded-full border border-linha px-3 py-1.5 font-sans text-xs text-tenue transition-colors duration-200 hover:text-creme md:hidden"
+              aria-label={nomeRestaurante ? `Conta de ${nomeRestaurante}` : 'A sua conta'}
+              className={cn(
+                'relative flex h-10 w-10 items-center justify-center rounded-full',
+                'font-display text-base text-grafite transition-transform duration-200 md:hidden',
+                'bg-laranja active:scale-95',
+              )}
             >
-              Conta
+              {(nomeRestaurante ?? 'C').trim().charAt(0).toUpperCase()}
               <ChevronDown
+                aria-hidden
                 className={cn(
-                  'h-3.5 w-3.5 transition-transform duration-300 ease-calmo',
+                  'absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full bg-grafite-alto p-0.5 text-creme/70',
+                  'transition-transform duration-300 ease-calmo',
                   menuAberto && 'rotate-180',
                 )}
               />
@@ -125,7 +137,7 @@ export function NavegacaoPainel({
             {administrador ? (
               <Link
                 href="/admin"
-                className="rounded-full px-3.5 py-2.5 font-sans text-sm text-ouro transition-colors duration-200 hover:text-ouro-claro"
+                className="rounded-full px-3.5 py-2.5 font-sans text-sm text-laranja transition-colors duration-200 hover:text-laranja-claro"
               >
                 Administração
               </Link>
@@ -134,7 +146,7 @@ export function NavegacaoPainel({
             <button
               type="button"
               onClick={sair}
-              className="rounded-full px-3.5 py-2.5 text-left font-sans text-sm font-semibold text-creme transition-colors duration-200 hover:text-ouro"
+              className="rounded-full px-3.5 py-2.5 text-left font-sans text-sm font-semibold text-creme transition-colors duration-200 hover:text-laranja"
             >
               Sair da conta
             </button>
@@ -186,7 +198,7 @@ export function NavegacaoPainel({
           {administrador ? (
             <Link
               href="/admin"
-              className="rounded-full px-3.5 py-2.5 font-sans text-sm text-ouro transition-colors duration-200 hover:text-ouro-claro"
+              className="rounded-full px-3.5 py-2.5 font-sans text-sm text-laranja transition-colors duration-200 hover:text-laranja-claro"
             >
               Administração
             </Link>
@@ -221,9 +233,8 @@ export function DocaPainel() {
   }));
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 pb-[max(12px,env(safe-area-inset-bottom))] pt-6 md:hidden">
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-grafite via-grafite/85 to-transparent" />
-      <Doca itens={itens} className="relative" />
+    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.06] bg-grafite-alto pb-[max(6px,env(safe-area-inset-bottom))] pt-1.5 md:hidden">
+      <Doca itens={itens} />
     </div>
   );
 }
@@ -238,11 +249,13 @@ export function CabecalhoPagina({
   accao?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-wrap items-start justify-between gap-4 border-b border-linha pb-7">
+    // Sem a linha por baixo: o título forte já separa, e uma régua em
+    // cada página era mais uma coisa a desenhar o ecrã em fatias.
+    <div className="flex flex-wrap items-end justify-between gap-4">
       <div>
         <h1 className="font-display text-3xl leading-tight text-creme md:text-4xl">{titulo}</h1>
         {descricao ? (
-          <p className="mt-2 max-w-[52ch] font-sans text-sm leading-normal text-tenue">
+          <p className="mt-1.5 max-w-[52ch] font-sans text-sm leading-normal text-tenue">
             {descricao}
           </p>
         ) : null}

@@ -189,14 +189,14 @@ export function GestorCardapio({
   return (
     <div>
       {demonstracao ? (
-        <p className="mt-8 rounded-cartao border border-ouro/30 bg-ouro/[0.06] px-4 py-3 font-sans text-xs leading-normal text-ouro">
+        <p className="mt-8 rounded-cartao border border-laranja/30 bg-laranja/[0.06] px-4 py-3 font-sans text-xs leading-normal text-laranja">
           Modo de demonstração: pode mexer à vontade, mas as alterações não são gravadas enquanto o
           Supabase não estiver ligado.
         </p>
       ) : null}
 
       {atingiuLimite ? (
-        <p className="vidro-leve mt-6 rounded-cartao px-4 py-3 font-sans text-xs leading-normal text-tenue">
+        <p className="superficie-leve mt-6 rounded-cartao px-4 py-3 font-sans text-xs leading-normal text-tenue">
           O plano Balcão vai até {limites.pratos} pratos e já lá chegou. Mude para o plano Mesa para
           continuar a acrescentar.
         </p>
@@ -212,7 +212,7 @@ export function GestorCardapio({
             onDragOver={(e) => e.preventDefault()}
             onDrop={() => largarSobre(categoria.id)}
             className={cn(
-              'vidro rounded-cartao transition-opacity duration-200',
+              'superficie rounded-cartao transition-opacity duration-200',
               arrastada === categoria.id && 'opacity-40',
             )}
           >
@@ -231,7 +231,7 @@ export function GestorCardapio({
                 value={categoria.nome}
                 onChange={(e) => mudarNome(categoria.id, e.target.value)}
                 aria-label="Nome da categoria"
-                className="min-w-0 flex-1 rounded-campo border border-transparent bg-transparent px-2 py-1 font-display text-xl text-creme outline-none transition-colors duration-200 hover:border-linha focus:border-ouro/50 focus:bg-white/[0.04]"
+                className="min-w-0 flex-1 rounded-campo border border-transparent bg-transparent px-2 py-1 font-display text-xl text-creme outline-none transition-colors duration-200 hover:border-linha focus:border-laranja/50 focus:bg-white/[0.04]"
               />
 
               <span className="etiqueta shrink-0 rounded-full border border-linha px-2.5 py-1 tabular-nums text-tenue">
@@ -413,7 +413,7 @@ export function GestorCardapio({
               placeholder="Grelhados, Bebidas, Sobremesas…"
               className="w-full sm:w-[280px]"
             />
-            <Botao variante="ouro" tamanho="md" onClick={adicionarCategoria}>
+            <Botao variante="laranja" tamanho="md" onClick={adicionarCategoria}>
               Criar
             </Botao>
             <Botao variante="discreto" tamanho="md" onClick={() => setACriarCategoria(false)}>
@@ -611,7 +611,7 @@ function FolhaPrato({
 
         <div className="mt-7 flex flex-col gap-2.5">
           <Botao
-            variante="ouro"
+            variante="laranja"
             tamanho="lg"
             largo
             disabled={!valido || aEnviar}
@@ -655,7 +655,7 @@ export function ResumoCardapio({
         {Number.isFinite(limite) ? ` de ${limite}` : ''}
       </Distintivo>
       <Distintivo tom="linha">{categorias.length} categorias</Distintivo>
-      {esgotados > 0 ? <Distintivo tom="ouro">{esgotados} esgotados</Distintivo> : null}
+      {esgotados > 0 ? <Distintivo tom="laranja">{esgotados} esgotados</Distintivo> : null}
     </div>
   );
 }

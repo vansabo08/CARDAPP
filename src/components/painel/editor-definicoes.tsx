@@ -149,7 +149,7 @@ export function EditorDefinicoes({
 
       <div className="flex flex-wrap items-center gap-3 border-t border-linha pt-7">
         <Botao
-          variante="ouro"
+          variante="laranja"
           tamanho="md"
           onClick={guardar}
           aCarregar={estado === 'a-guardar'}
@@ -180,13 +180,13 @@ export function EditorDefinicoes({
                 key={plano}
                 className={`rounded-cartao border p-5 transition-[border-color,box-shadow] duration-normal ease-assinatura ${
                   actual
-                    ? 'border-ouro/45 bg-ouro/[0.04] shadow-elevacao-1-escura'
+                    ? 'border-laranja/45 bg-laranja/[0.04] shadow-elevacao-1-escura'
                     : 'border-linha bg-grafite-alto'
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <h3 className="font-display text-lg text-creme">{NOME_PLANO[plano]}</h3>
-                  {actual ? <Distintivo tom="ouro">Actual</Distintivo> : null}
+                  {actual ? <Distintivo tom="laranja">Actual</Distintivo> : null}
                 </div>
                 <p className="mt-3 font-sans text-sm font-bold text-creme">
                   {formatarKz(PRECO_PLANO[plano])}
@@ -195,7 +195,7 @@ export function EditorDefinicoes({
                 <ul className="mt-4 flex flex-col gap-2">
                   {INCLUI[plano].map((linha) => (
                     <li key={linha} className="flex items-start gap-2.5 font-sans text-xs text-tenue">
-                      <span className="mt-[7px] block h-[4px] w-[4px] shrink-0 rounded-full bg-ouro" />
+                      <span className="mt-[7px] block h-[4px] w-[4px] shrink-0 rounded-full bg-laranja" />
                       {linha}
                     </li>
                   ))}
@@ -211,7 +211,7 @@ export function EditorDefinicoes({
                 */}
                 {actual ? (
                   <div className="mt-5">
-                    <Botao asChild variante="ouro" tamanho="sm" largo>
+                    <Botao asChild variante="laranja" tamanho="sm" largo>
                       <Link href={ENDERECO_DE_PAGAR}>Pagar este plano</Link>
                     </Botao>
                   </div>

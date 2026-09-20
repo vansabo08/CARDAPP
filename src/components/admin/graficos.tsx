@@ -46,7 +46,7 @@ export function Numero({
   tom?: TomDeEstado;
 }) {
   return (
-    <div className="vidro rounded-cartao p-5">
+    <div className="superficie rounded-cartao p-5">
       <p className="etiqueta text-tenue">{rotulo}</p>
       <p
         className="mt-2 font-display text-3xl leading-none text-creme"
@@ -271,7 +271,7 @@ export function Cartao({
   className?: string;
 }) {
   return (
-    <section className={cn('vidro rounded-cartao p-6', className)}>
+    <section className={cn('superficie rounded-cartao p-6', className)}>
       <h2 className="font-display text-xl text-creme">{titulo}</h2>
       {descricao ? (
         <p className="mt-1 text-pretty font-sans text-xs leading-normal text-tenue">{descricao}</p>

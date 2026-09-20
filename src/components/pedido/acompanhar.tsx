@@ -77,7 +77,7 @@ export function Acompanhar({ inicial }: { inicial: PedidoPublico }) {
   return (
     <div className="mx-auto w-full max-w-[560px] px-5 py-10 md:py-14">
       <header className="text-center">
-        <span className="etiqueta text-ouro-fundo">{pedido.restaurante}</span>
+        <span className="etiqueta text-laranja">{pedido.restaurante}</span>
         <h1 className="mt-4 text-balance font-display text-3xl leading-none text-creme md:text-4xl">
           {ROTULO_CLIENTE[pedido.estado]}
         </h1>
@@ -102,7 +102,7 @@ export function Acompanhar({ inicial }: { inicial: PedidoPublico }) {
               dá de onde crescer quando o estado avançar.
             */}
             <div
-              className="h-full rounded-full bg-ouro transition-[width] duration-700 ease-calmo"
+              className="h-full rounded-full bg-laranja transition-[width] duration-700 ease-calmo"
               style={{ width: `${Math.max(6, Math.round(avanco * 100))}%` }}
             />
           </div>
@@ -135,7 +135,7 @@ export function Acompanhar({ inicial }: { inicial: PedidoPublico }) {
       {/* ---------------------------------------------------------- */}
       {/* O que foi pedido                                             */}
       {/* ---------------------------------------------------------- */}
-      <section className="vidro mt-10 rounded-cartao p-6">
+      <section className="superficie mt-10 rounded-cartao p-6">
         <h2 className="etiqueta text-tenue">O seu pedido</h2>
 
         <ul className="mt-5 flex flex-col gap-4">
@@ -160,7 +160,7 @@ export function Acompanhar({ inicial }: { inicial: PedidoPublico }) {
 
         <div className="mt-6 flex items-center justify-between border-t border-linha pt-5">
           <span className="font-sans text-sm text-tenue">Total</span>
-          <span className="font-display text-xl text-ouro">{formatarKz(pedido.total)}</span>
+          <span className="font-display text-xl text-laranja">{formatarKz(pedido.total)}</span>
         </div>
       </section>
 

@@ -73,7 +73,7 @@ export function Perguntas() {
       <div className="mx-auto max-w-conteudo px-5 py-24 md:px-8 md:py-28">
         <div className="grid gap-12 md:grid-cols-[minmax(0,340px)_1fr] md:gap-16">
           <Revelar>
-            <span className="etiqueta text-ouro-fundo">Perguntas</span>
+            <span className="etiqueta text-laranja">Perguntas</span>
             <h2 className="mt-5 text-balance font-display text-3xl leading-none text-creme md:text-4xl">
               O que costumam querer saber.
             </h2>
@@ -88,7 +88,7 @@ export function Perguntas() {
               {PERGUNTAS.map(({ pergunta, resposta }) => (
                 <details key={pergunta} className="group border-b border-linha">
                   <summary
-                    className="flex cursor-pointer list-none items-start justify-between gap-6 py-6 outline-none transition-colors duration-200 ease-calmo hover:text-creme focus-visible:ring-2 focus-visible:ring-ouro/60"
+                    className="flex cursor-pointer list-none items-start justify-between gap-6 py-6 outline-none transition-colors duration-200 ease-calmo hover:text-creme focus-visible:ring-2 focus-visible:ring-laranja/60"
                     // O marcador nativo some, e o sinal fica a cargo do traço.
                   >
                     <dt className="text-pretty font-display text-lg leading-tight text-creme md:text-xl">
@@ -96,7 +96,7 @@ export function Perguntas() {
                     </dt>
                     <span
                       aria-hidden
-                      className="relative mt-2 h-[9px] w-[9px] shrink-0 text-ouro"
+                      className="relative mt-2 h-[9px] w-[9px] shrink-0 text-laranja"
                     >
                       <span className="absolute left-0 top-1/2 h-[1.5px] w-full -translate-y-1/2 bg-current" />
                       <span className="absolute left-1/2 top-0 h-full w-[1.5px] -translate-x-1/2 bg-current transition-transform duration-300 ease-calmo group-open:scale-y-0" />

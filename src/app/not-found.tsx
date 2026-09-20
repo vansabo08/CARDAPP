@@ -12,7 +12,7 @@ export default function NaoEncontrado() {
       </header>
       <main className="flex flex-1 items-center px-5">
         <div className="mx-auto w-full max-w-[460px] animate-subir">
-          <p className="etiqueta text-ouro">404</p>
+          <p className="etiqueta text-laranja">404</p>
           <h1 className="mt-4 font-display text-3xl leading-tight text-creme">
             Este cardápio não existe.
           </h1>
@@ -21,7 +21,7 @@ export default function NaoEncontrado() {
             com quem o serve.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Botao asChild variante="ouro" tamanho="md">
+            <Botao asChild variante="laranja" tamanho="md">
               <Link href="/">Voltar ao início</Link>
             </Botao>
             <Botao asChild variante="contorno" tamanho="md">

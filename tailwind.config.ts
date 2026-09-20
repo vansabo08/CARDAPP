@@ -12,22 +12,26 @@ const config: Config = {
     extend: {
       colors: {
         grafite: {
-          DEFAULT: 'var(--grafite)',
-          alto: 'var(--grafite-alto)',
-          suave: 'var(--grafite-suave)',
-          carta: 'var(--grafite-carta)',
+          DEFAULT: 'rgb(var(--grafite-canais) / <alpha-value>)',
+          alto: 'rgb(var(--grafite-alto-canais) / <alpha-value>)',
+          suave: 'rgb(var(--grafite-suave-canais) / <alpha-value>)',
+          carta: 'rgb(var(--grafite-carta-canais) / <alpha-value>)',
         },
         creme: {
           // Com `<alpha-value>` os modificadores (`text-creme/70`) funcionam.
           DEFAULT: 'rgb(var(--creme-canais) / <alpha-value>)',
-          folha: 'var(--creme-folha)',
+          folha: 'rgb(var(--creme-folha-canais) / <alpha-value>)',
         },
-        ouro: {
-          DEFAULT: 'var(--ouro)',
-          claro: 'var(--ouro-claro)',
-          fundo: 'var(--ouro-fundo)',
+        // Em canais, como o creme: sem <alpha-value>, `bg-laranja/15` sai
+        // inválido e o browser deita-o fora sem avisar. Foi o que aconteceu
+        // a todas as transparências do dourado que aqui estava.
+        laranja: {
+          DEFAULT: 'rgb(var(--laranja-canais) / <alpha-value>)',
+          claro: 'rgb(var(--laranja-claro-canais) / <alpha-value>)',
+          escuro: 'rgb(var(--laranja-escuro-canais) / <alpha-value>)',
         },
-        verde: 'var(--verde)',
+        // Em canais pelo mesmo motivo do laranja: sem isto, bg-verde/15 não existia.
+        verde: 'rgb(var(--verde-canais) / <alpha-value>)',
         linha: 'var(--linha)',
         'linha-escura': 'var(--linha-escura)',
         tenue: 'var(--tenue)',
@@ -84,6 +88,12 @@ const config: Config = {
           '0 2px 4px rgba(0,0,0,0.45), 0 8px 20px rgba(0,0,0,0.55), inset 0 1px 0 rgba(250,247,242,0.09)',
         'elevacao-3-escura':
           '0 4px 8px rgba(0,0,0,0.50), 0 16px 40px rgba(0,0,0,0.65), inset 0 1px 0 rgba(250,247,242,0.12)',
+
+        /* O botão principal brilha por baixo, na cor dele — a luz de um
+           objecto laranja num fundo escuro não é preta. Em repouso é
+           curta; sob o cursor alarga, como se o botão subisse. */
+        'brilho-laranja': '0 1px 2px rgba(0,0,0,0.4), 0 10px 26px -12px rgba(255,91,36,0.7)',
+        'brilho-laranja-alto': '0 2px 4px rgba(0,0,0,0.4), 0 16px 34px -12px rgba(255,91,36,0.85)',
       },
       keyframes: {
         /* Um só padrão de entrada em toda a aplicação: 12px a subir. */

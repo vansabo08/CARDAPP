@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { Botao } from '@/components/ui/botao';
 import { Ajuda, Campo, Erro, Rotulo } from '@/components/ui/campo';
 import { Marca } from '@/components/marca';
-import { FundoVivo } from '@/components/marketing/fundo-vivo';
 import {
   CampoWhatsApp,
   CamposIdentidade,
@@ -93,7 +92,6 @@ export function Onboarding({ demonstracao }: { demonstracao: boolean }) {
 
   return (
     <div className="relative min-h-dvh">
-      <FundoVivo />
       <header className="border-b border-linha px-5 py-5 md:px-8">
         <Marca href="/painel" />
       </header>
@@ -106,13 +104,13 @@ export function Onboarding({ demonstracao }: { demonstracao: boolean }) {
               <span
                 className={cn(
                   'block h-[3px] rounded-full transition-colors duration-[240ms]',
-                  i <= passo ? 'bg-ouro' : 'bg-white/[0.09]',
+                  i <= passo ? 'bg-laranja' : 'bg-white/[0.09]',
                 )}
               />
               <span
                 className={cn(
                   'etiqueta hidden sm:block',
-                  i === passo ? 'text-ouro' : 'text-tenue',
+                  i === passo ? 'text-laranja' : 'text-tenue',
                 )}
               >
                 {nome}
@@ -175,7 +173,7 @@ export function Onboarding({ demonstracao }: { demonstracao: boolean }) {
                     className={cn(
                       'rounded-full border px-4 py-1.5 font-sans text-xs font-semibold transition-colors duration-200',
                       mesas === String(n)
-                        ? 'border-ouro bg-ouro/10 text-ouro'
+                        ? 'border-laranja bg-laranja/10 text-laranja'
                         : 'border-linha text-tenue hover:text-creme',
                     )}
                   >
@@ -217,7 +215,7 @@ export function Onboarding({ demonstracao }: { demonstracao: boolean }) {
               </div>
 
               {demonstracao ? (
-                <p className="mt-7 rounded-cartao border border-ouro/30 bg-ouro/[0.06] px-4 py-3 font-sans text-xs leading-normal text-ouro">
+                <p className="mt-7 rounded-cartao border border-laranja/30 bg-laranja/[0.06] px-4 py-3 font-sans text-xs leading-normal text-laranja">
                   Sem Supabase ligado nada fica gravado — mas pode percorrer o painel todo à mesma.
                 </p>
               ) : null}
@@ -237,7 +235,7 @@ export function Onboarding({ demonstracao }: { demonstracao: boolean }) {
           <div className="ml-auto">
             {passo < PASSOS.length - 1 ? (
               <Botao
-                variante="ouro"
+                variante="laranja"
                 tamanho="lg"
                 disabled={!podeAvancar}
                 onClick={() => setPasso((p) => p + 1)}
@@ -246,7 +244,7 @@ export function Onboarding({ demonstracao }: { demonstracao: boolean }) {
               </Botao>
             ) : (
               <Botao
-                variante="ouro"
+                variante="laranja"
                 tamanho="lg"
                 disabled={!podeAvancar}
                 aCarregar={ocupado}
@@ -304,7 +302,7 @@ function EditorCardapioInicial({
   return (
     <div className="flex flex-col gap-4">
       {cardapio.map((categoria, ci) => (
-        <div key={ci} className="vidro rounded-cartao">
+        <div key={ci} className="superficie rounded-cartao">
           <div className="border-b border-linha px-4 py-3">
             <input
               value={categoria.nome}
@@ -314,7 +312,7 @@ function EditorCardapioInicial({
                   cardapio.map((c, i) => (i === ci ? { ...c, nome: e.target.value } : c)),
                 )
               }
-              className="w-full border-none bg-transparent font-display text-lg text-creme outline-none focus:text-ouro"
+              className="w-full border-none bg-transparent font-display text-lg text-creme outline-none focus:text-laranja"
             />
           </div>
 

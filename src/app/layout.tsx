@@ -1,19 +1,23 @@
 import type { Metadata, Viewport } from 'next';
-import { Manrope, Playfair_Display } from 'next/font/google';
+import { Manrope, Poppins } from 'next/font/google';
 import { SITE_URL } from '@/lib/supabase/config';
 import './globals.css';
 
 /**
- * Regra fixa da casa: Playfair Display nos títulos, Manrope no resto.
+ * Regra da casa: Poppins nos títulos, Manrope no resto.
  *
- * Só 400 e 600 — nada de 700 para cima. Uma serifa de contraste alto
- * como esta engrossa muito depressa, e a partir do semibold as hastes
- * finas fecham e o título passa a ler-se como um aviso. E sem itálico em
- * lado nenhum, o que também poupa um ficheiro por família.
+ * Os títulos eram Playfair Display, uma serifa de contraste alto — ar de
+ * carta de restaurante, mas dentro de um painel de trabalho lia-se como
+ * enfeite. A referência escolhida pede uma letra forte e directa, e é
+ * isso que a Poppins é: geométrica, pesada o suficiente para mandar num
+ * ecrã escuro sem precisar de tamanho.
+ *
+ * Só 600 e 700. Tudo o que é título é semibold, e o 700 fica para números
+ * grandes. Sem itálico em lado nenhum, o que poupa um ficheiro por peso.
  */
-const display = Playfair_Display({
+const display = Poppins({
   subsets: ['latin'],
-  weight: ['400', '600'],
+  weight: ['600', '700'],
   style: 'normal',
   display: 'swap',
   variable: '--fonte-display',

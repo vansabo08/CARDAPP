@@ -20,7 +20,7 @@ export default async function PaginaDefinicoes() {
           descricao="Ainda não há restaurante nesta conta."
         />
         <div className="mt-8">
-          <Botao asChild variante="ouro" tamanho="lg">
+          <Botao asChild variante="laranja" tamanho="lg">
             <Link href="/comecar">Configurar o restaurante</Link>
           </Botao>
         </div>

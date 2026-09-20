@@ -94,7 +94,7 @@ export function Precos() {
           </h2>
 
           {/* selector de período */}
-          <div className="mt-9 inline-flex vidro-leve rounded-full p-1">
+          <div className="mt-9 inline-flex superficie-leve rounded-full p-1">
             <button
               type="button"
               onClick={() => setPeriodo('mensal')}
@@ -124,17 +124,17 @@ export function Precos() {
             <article
               className={cn(
                 'flex w-full flex-col rounded-[28px] p-7 transition-[transform,border-color] duration-300 ease-calmo md:p-8',
-                'vidro',
+                'superficie',
                 plano.destaque
                   ? 'border-creme/25 shadow-[0_34px_80px_-40px_rgba(0,0,0,0.95)] md:-my-3 md:py-11'
-                  : 'hover:border-creme/18',
+                  : 'hover:border-creme/20',
               )}
             >
               <div className="flex items-center gap-2.5">
                 <span
                   className={cn(
                     'block h-[7px] w-[7px] rounded-full',
-                    plano.destaque ? 'bg-ouro' : 'bg-creme/60',
+                    plano.destaque ? 'bg-laranja' : 'bg-creme/60',
                   )}
                 />
                 <h3 className="font-sans text-xl font-bold tracking-[-0.02em] text-creme">
@@ -160,7 +160,7 @@ export function Precos() {
                       plano.destaque ? 'text-creme/90' : 'text-creme/75',
                     )}
                   >
-                    <span className={plano.destaque ? 'text-ouro' : 'text-tenue'}>
+                    <span className={plano.destaque ? 'text-laranja' : 'text-tenue'}>
                       <Visto />
                     </span>
                     {linha}
@@ -175,7 +175,7 @@ export function Precos() {
                     'flex h-[54px] w-full items-center justify-center rounded-full font-sans text-sm font-semibold',
                     'transition-[background-color,transform] duration-200 ease-calmo active:scale-[0.985]',
                     plano.destaque
-                      ? 'bg-ouro text-grafite hover:bg-ouro-claro'
+                      ? 'bg-laranja text-grafite hover:bg-laranja-claro'
                       : 'bg-creme/85 text-grafite hover:bg-creme',
                   )}
                 >

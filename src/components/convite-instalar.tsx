@@ -153,7 +153,7 @@ export function ConviteInstalar() {
       role="dialog"
       aria-label="Instalar o Cardapp"
     >
-      <div className="vidro flex items-start gap-3 rounded-cartao p-3.5 shadow-elevacao-3-escura">
+      <div className="superficie flex items-start gap-3 rounded-cartao p-3.5 shadow-elevacao-3-escura">
         {/*
           O ícone que vai ficar no ecrã inicial — o mesmo, e não um
           parecido. Quem instala tem de reconhecer depois o que instalou.
@@ -181,12 +181,12 @@ export function ConviteInstalar() {
               type="button"
               onClick={instalar}
               className={cn(
-                'mt-3 inline-flex items-center gap-2 rounded-full bg-ouro px-4 py-2',
+                'mt-3 inline-flex items-center gap-2 rounded-full bg-laranja px-4 py-2',
                 'font-sans text-xs font-semibold text-grafite shadow-elevacao-1',
                 'transition-[background-color,transform,box-shadow] duration-rapida ease-assinatura',
-                'hover:-translate-y-px hover:bg-ouro-claro hover:shadow-elevacao-2',
+                'hover:-translate-y-px hover:bg-laranja-claro hover:shadow-elevacao-2',
                 'active:translate-y-0 active:scale-[0.97]',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ouro focus-visible:ring-offset-2 focus-visible:ring-offset-grafite',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-laranja focus-visible:ring-offset-2 focus-visible:ring-offset-grafite',
               )}
             >
               <Download className="h-3.5 w-3.5" />
@@ -202,7 +202,7 @@ export function ConviteInstalar() {
           className={cn(
             'shrink-0 rounded-full p-1.5 text-tenue',
             'transition-colors duration-rapida ease-assinatura hover:text-creme',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ouro',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-laranja',
           )}
         >
           <X className="h-4 w-4" />

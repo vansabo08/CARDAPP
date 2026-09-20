@@ -55,7 +55,7 @@ export default async function PaginaAdmin() {
 
   if (semServico) {
     return (
-      <div className="vidro rounded-cartao px-7 py-14 text-center">
+      <div className="superficie rounded-cartao px-7 py-14 text-center">
         <p className="font-display text-2xl text-creme">Falta a chave de serviço.</p>
         <p className="mx-auto mt-3 max-w-[52ch] font-sans text-sm leading-normal text-tenue">
           Este painel lê contas de todos os donos, coisa que a RLS não deixa ninguém fazer — e ainda

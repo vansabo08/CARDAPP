@@ -27,7 +27,7 @@ export default async function PaginaPedidos() {
           descricao="Configure o restaurante e as mesas, e os pedidos começam a cair aqui."
         />
         <div className="mt-8">
-          <Botao asChild variante="ouro" tamanho="lg">
+          <Botao asChild variante="laranja" tamanho="lg">
             <Link href="/comecar">Configurar o restaurante</Link>
           </Botao>
         </div>
@@ -60,7 +60,7 @@ export default async function PaginaPedidos() {
       />
 
       {soWhatsApp ? (
-        <div className="vidro mt-8 rounded-cartao p-6">
+        <div className="superficie mt-8 rounded-cartao p-6">
           <p className="font-display text-lg text-creme">
             Esta casa está a receber pedidos pelo WhatsApp.
           </p>

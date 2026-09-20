@@ -49,7 +49,7 @@ export function FilaDeComprovativos({ linhas }: { linhas: LinhaDeComprovativo[] 
   }
 
   return (
-    <section className="vidro rounded-cartao p-6">
+    <section className="superficie rounded-cartao p-6">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <h2 className="font-display text-xl text-creme">Comprovativos</h2>
         {aEsperar.length ? (
@@ -163,7 +163,7 @@ function Cartao({
             href={linha.ficheiro}
             target="_blank"
             rel="noreferrer"
-            className="mt-4 flex items-center justify-center rounded-cartao border border-linha px-5 py-8 font-sans text-sm text-creme transition-colors hover:border-ouro"
+            className="mt-4 flex items-center justify-center rounded-cartao border border-linha px-5 py-8 font-sans text-sm text-creme transition-colors hover:border-laranja"
           >
             Abrir o PDF do comprovativo ↗
           </a>

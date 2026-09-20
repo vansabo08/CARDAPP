@@ -44,7 +44,7 @@ export default async function PaginaPagar() {
         )}
       </p>
 
-      <div className="vidro mt-7 rounded-folha p-6 md:p-8">
+      <div className="superficie mt-7 rounded-folha p-6 md:p-8">
         <PagarEProvar restaurante={restaurante} />
       </div>
     </div>

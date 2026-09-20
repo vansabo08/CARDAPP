@@ -14,6 +14,16 @@
     --grafite-suave: #211f1c;
     --grafite-carta: #121110;
 
+    /*
+     * Os mesmos, em canais. Os véus sobre fotografia são todos grafite
+     * com transparência — e sem isto nenhum deles existia: as imagens
+     * apareciam à luz toda e o texto por cima lia-se como podia.
+     */
+    --grafite-canais: 15 14 13;
+    --grafite-alto-canais: 23 22 20;
+    --grafite-suave-canais: 33 31 28;
+    --grafite-carta-canais: 18 17 16;
+
     --creme: #faf7f2;
     --creme-folha: #fdfcfa;
 
@@ -28,19 +38,43 @@
      * do percurso do pedido, que apareciam todos acesos.
      */
     --creme-canais: 250 247 242;
+    --creme-folha-canais: 253 252 250;
 
-    --ouro: #d9b36b;
-    --ouro-claro: #efd6a4;
-    --ouro-fundo: #a8813e;
+    /*
+     * O laranja da marca.
+     *
+     * Era dourado champanhe. A referência escolhida é laranja vivo — a cor
+     * que mais abre o apetite, e a que num ecrã escuro se vê de longe sem
+     * precisar de tamanho.
+     *
+     * Contraste medido contra o grafite do fundo: 6,2 para 1 — passa o AA
+     * para texto de qualquer tamanho. O inverso também: texto grafite em
+     * cima do laranja dá os mesmos 6,2, e é por isso que os botões levam
+     * letra escura. Letra branca no laranja ficava em 3,1, que chumba em
+     * texto normal — é o que a referência faz, e não se copia.
+     *
+     * Vai também em canais soltos, como o creme: o dourado ia como cor
+     * inteira, e todas as transparências dele (`bg-ouro/15`,
+     * `border-ouro/30`...) saíam inválidas e o browser deitava-as fora sem
+     * avisar. Eram trinta sítios, incluindo o fundo do ícone activo da
+     * doca, que nunca chegou a aparecer.
+     */
+    --laranja: #ff5b24;
+    --laranja-claro: #ff7a4d;
+    --laranja-escuro: #d94412;
+    --laranja-canais: 255 91 36;
+    --laranja-claro-canais: 255 122 77;
+    --laranja-escuro-canais: 217 68 18;
 
     --verde: #0f9d58;
+    --verde-canais: 15 157 88;
 
     --linha: rgba(250, 247, 242, 0.1);
     --linha-escura: rgba(15, 14, 13, 0.08);
     --tenue: rgba(250, 247, 242, 0.55);
     --tenue-escuro: rgba(15, 14, 13, 0.64);
 
-    --fonte-display: 'Playfair Display', Georgia, serif;
+    --fonte-display: 'Poppins', system-ui, sans-serif;
     --fonte-sans: 'Manrope', system-ui, sans-serif;
 
     color-scheme: dark;
@@ -68,21 +102,23 @@
     color: var(--grafite);
   }
 
+  /* Poppins semibold: uma geométrica pesada precisa de se apertar um
+     pouco nos tamanhos grandes, senão as letras ficam a boiar. */
   h1,
   h2,
   h3 {
     font-family: var(--fonte-display);
-    font-weight: 400;
-    letter-spacing: -0.018em;
+    font-weight: 600;
+    letter-spacing: -0.025em;
   }
 
   ::selection {
-    background: var(--ouro);
+    background: var(--laranja);
     color: var(--grafite);
   }
 
   :focus-visible {
-    outline: 2px solid var(--ouro);
+    outline: 2px solid var(--laranja);
     outline-offset: 2px;
     border-radius: 6px;
   }
@@ -103,17 +139,27 @@
     scrollbar-width: none;
   }
 
-  /* Título de display em dourado, com o degradé subtil da referência. */
-  .ouro-display {
-    background-image: linear-gradient(
-      180deg,
-      var(--ouro-claro) 0%,
-      var(--ouro) 62%,
-      var(--ouro-fundo) 100%
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+  /*
+   * A letra de título tem sempre peso.
+   *
+   * O `font-display` também se usa fora de h1–h3 — números grandes,
+   * nomes de pratos, preços. Sem isto esses iam a 400, que a Poppins nem
+   * carrega, e o browser escolhia sozinho o peso mais perto.
+   */
+  .font-display {
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  /*
+   * Título em laranja, cheio.
+   *
+   * Era um degradé dourado, de três tons, a imitar metal. Numa letra
+   * geométrica e pesada o degradé lê-se como efeito de programa de
+   * desenho; o laranja inteiro é mais limpo e bate mais forte.
+   */
+  .laranja-display {
+    color: var(--laranja);
   }
 
   /* Véu que garante leitura do texto por cima de fotografia. */
@@ -137,8 +183,8 @@
     will-change: transform;
   }
 
-  .brasa-ouro {
-    background: radial-gradient(circle, rgba(217, 179, 107, 0.2) 0%, transparent 64%);
+  .brasa-laranja {
+    background: radial-gradient(circle, rgba(255, 91, 36, 0.16) 0%, transparent 64%);
     animation: derivar-a 46s ease-in-out infinite alternate;
   }
 
@@ -162,7 +208,7 @@
   .holofote {
     background: radial-gradient(
       520px circle at var(--rato-x, 70%) var(--rato-y, 26%),
-      rgba(217, 179, 107, 0.13) 0%,
+      rgba(255, 91, 36, 0.1) 0%,
       transparent 62%
     );
     transition: opacity 400ms ease-out;
@@ -178,70 +224,39 @@
   }
 
   /* ----------------------------------------------------------------
-     Vidro.
+     Superfícies.
 
-     O que faz uma superfície ler como vidro não é o desfoque — é o
-     brilho fino no rebordo de cima, onde a luz bate na aresta. Sem ele
-     fica só uma caixa translúcida.
+     Eram vidro: translúcidas, desfocadas, com um brilho na aresta de
+     cima. Por cima das brasas animadas do fundo, cada cartão mudava de
+     cor conforme o que passava por trás, e nada tinha um sítio certo —
+     era parte do ar "amador" de que houve queixa.
 
-     Três camadas: um degradé que clareia no canto superior esquerdo, o
-     desfoque com um toque de saturação (o vidro aviva o que está por
-     trás), e o `inset 0 1px 0` que desenha a aresta.
+     Passam a sólidas. Um cartão é um plano um pouco mais claro do que o
+     fundo, com uma aresta fina e uma sombra curta. A hierarquia vem da
+     luz, e não de efeitos: fundo, cartão, cartão elevado — três degraus
+     de cinzento quente, cada um reconhecível sozinho.
      ---------------------------------------------------------------- */
-  .vidro {
-    background-image: linear-gradient(
-      152deg,
-      rgba(250, 247, 242, 0.075) 0%,
-      rgba(250, 247, 242, 0.028) 44%,
-      rgba(250, 247, 242, 0.012) 100%
-    );
-    border: 1px solid rgba(250, 247, 242, 0.1);
-    -webkit-backdrop-filter: blur(20px) saturate(1.4);
-    backdrop-filter: blur(20px) saturate(1.4);
+  .superficie {
+    background-color: var(--grafite-alto);
+    border: 1px solid rgba(250, 247, 242, 0.07);
     box-shadow:
-      inset 0 1px 0 0 rgba(250, 247, 242, 0.11),
-      0 24px 50px -32px rgba(0, 0, 0, 0.85);
+      0 1px 0 0 rgba(250, 247, 242, 0.04) inset,
+      0 12px 32px -20px rgba(0, 0, 0, 0.9);
   }
 
-  /* Para superfícies que se repetem muitas vezes no mesmo ecrã: metade
-     do desfoque custa metade, e a esta escala não se nota. */
-  .vidro-leve {
-    background-image: linear-gradient(
-      152deg,
-      rgba(250, 247, 242, 0.055) 0%,
-      rgba(250, 247, 242, 0.02) 100%
-    );
-    border: 1px solid rgba(250, 247, 242, 0.09);
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-    box-shadow: inset 0 1px 0 0 rgba(250, 247, 242, 0.08);
+  /* Para o que se repete muitas vezes no mesmo ecrã: sem sombra, para a
+     lista não pesar. */
+  .superficie-leve {
+    background-color: rgba(250, 247, 242, 0.035);
+    border: 1px solid rgba(250, 247, 242, 0.06);
   }
 
-  /* Vidro sobre a folha clara do cardápio. */
-  .vidro-claro {
-    background-image: linear-gradient(
-      152deg,
-      rgba(255, 255, 255, 0.82) 0%,
-      rgba(255, 255, 255, 0.66) 100%
-    );
-    -webkit-backdrop-filter: blur(18px) saturate(1.3);
-    backdrop-filter: blur(18px) saturate(1.3);
-    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
-  }
-
-  /* Onde não há backdrop-filter (Firefox antigo, modos de poupança),
-     o translúcido ficaria ilegível: fecha-se a superfície. */
-  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    .vidro,
-    .vidro-leve {
-      background-color: var(--grafite-alto);
-      background-image: none;
-    }
-
-    .vidro-claro {
-      background-color: var(--creme-folha);
-      background-image: none;
-    }
+  /* Sobre a folha clara do cardápio. */
+  .superficie-clara {
+    background-color: #ffffff;
+    box-shadow:
+      0 1px 2px rgba(15, 14, 13, 0.06),
+      0 8px 24px -12px rgba(15, 14, 13, 0.18);
   }
 
   /* Grão fino: tira o aspecto plástico das superfícies muito escuras. */

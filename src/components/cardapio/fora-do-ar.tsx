@@ -34,7 +34,7 @@ export function ForaDoAr() {
 
           <p className="mt-8 font-sans text-xs text-tenue">
             Se este cardápio é seu,{' '}
-            <a href="/painel" className="text-ouro underline underline-offset-4">
+            <a href="/painel" className="text-laranja underline underline-offset-4">
               entre no painel
             </a>{' '}
             para o repor.

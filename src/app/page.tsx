@@ -75,7 +75,7 @@ export default function PaginaInicial() {
       */}
       <a
         href="#conteudo"
-        className="sr-only rounded-campo bg-ouro px-4 py-2 font-sans text-sm font-semibold text-grafite focus:not-sr-only focus:absolute focus:left-5 focus:top-5 focus:z-[60]"
+        className="sr-only rounded-campo bg-laranja px-4 py-2 font-sans text-sm font-semibold text-grafite focus:not-sr-only focus:absolute focus:left-5 focus:top-5 focus:z-[60]"
       >
         Saltar para o conteúdo
       </a>
@@ -83,7 +83,7 @@ export default function PaginaInicial() {
       {/* ---------------------------------------------------------- */}
       {/* Navegação                                                    */}
       {/* ---------------------------------------------------------- */}
-      <header className="vidro sticky top-0 z-50 rounded-none border-x-0 border-t-0 shadow-[inset_0_1px_0_0_rgba(250,247,242,0.11)]">
+      <header className="superficie sticky top-0 z-50 rounded-none border-x-0 border-t-0 shadow-[inset_0_1px_0_0_rgba(250,247,242,0.11)]">
         <nav className="mx-auto flex h-[68px] max-w-conteudo items-center justify-between px-5 md:px-8">
           <Marca />
           <div className="hidden items-center gap-9 md:flex">
@@ -107,7 +107,7 @@ export default function PaginaInicial() {
             <Botao asChild variante="discreto" tamanho="sm" className="hidden sm:inline-flex">
               <Link href="/entrar">Entrar</Link>
             </Botao>
-            <Botao asChild variante="ouro" tamanho="sm">
+            <Botao asChild variante="laranja" tamanho="sm">
               <Link href="/criar-conta">Criar cardápio</Link>
             </Botao>
           </div>
@@ -137,7 +137,7 @@ export default function PaginaInicial() {
                telemóvel, que é o que tem de estar nítido. */
             className="scale-105 object-cover object-center opacity-[0.32] blur-[2px]"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-grafite via-grafite/92 to-grafite/70" />
+          <div className="absolute inset-0 bg-gradient-to-r from-grafite via-grafite/90 to-grafite/70" />
           <div className="absolute inset-0 bg-gradient-to-b from-grafite/80 via-transparent to-grafite" />
           {/* mancha escura por trás do aparelho, para ele destacar */}
           <div
@@ -153,7 +153,7 @@ export default function PaginaInicial() {
           <div className="grid items-center gap-16 lg:grid-cols-[1fr_460px]">
             <div>
               <Revelar>
-                <span className="etiqueta text-ouro-fundo">Premium · Angola · Kwanza</span>
+                <span className="etiqueta text-laranja">Premium · Angola · Kwanza</span>
               </Revelar>
 
               {/*
@@ -165,7 +165,7 @@ export default function PaginaInicial() {
               */}
               <Revelar atraso={60}>
                 <h1 className="mt-6 max-w-[12ch] text-balance font-display text-4xl tracking-tight text-creme md:text-6xl">
-                  O cardápio que cabe numa <span className="ouro-display">mesa.</span>
+                  O cardápio que cabe numa <span className="laranja-display">mesa.</span>
                 </h1>
               </Revelar>
 
@@ -179,7 +179,7 @@ export default function PaginaInicial() {
 
               <Revelar atraso={180}>
                 <div className="mt-10 flex flex-wrap items-center gap-3">
-                  <Botao asChild variante="ouro" tamanho="lg">
+                  <Botao asChild variante="laranja" tamanho="lg">
                     <Link href="/criar-conta">Experimentar 7 dias</Link>
                   </Botao>
                   <Botao asChild variante="contorno" tamanho="lg">
@@ -231,7 +231,7 @@ export default function PaginaInicial() {
       {/* ---------------------------------------------------------- */}
       <section id="como-funciona" className="mx-auto max-w-conteudo px-5 py-24 md:px-8 md:py-32">
         <Revelar>
-          <span className="etiqueta text-ouro-fundo">Como funciona</span>
+          <span className="etiqueta text-laranja">Como funciona</span>
           <h2 className="mt-5 max-w-[16ch] text-balance font-display text-4xl leading-none text-creme md:text-5xl">
             Três passos. Nenhum deles é instalar uma aplicação.
           </h2>
@@ -249,7 +249,7 @@ export default function PaginaInicial() {
                 className="object-cover"
                 aria-hidden
               />
-              <div className="absolute inset-0 bg-grafite/62" />
+              <div className="absolute inset-0 bg-grafite/60" />
               <div className="relative px-6 py-14">
                 <CartaoMesa numero={7} />
               </div>
@@ -258,7 +258,7 @@ export default function PaginaInicial() {
 
           <Revelar atraso={80} className="flex flex-col">
             <PassoCabecalho {...PASSOS[1]} />
-            <div className="vidro mt-9 flex flex-1 items-center justify-center rounded-cartao px-6 py-11 transition-colors duration-300 hover:border-ouro/30">
+            <div className="superficie mt-9 flex flex-1 items-center justify-center rounded-cartao px-6 py-11 transition-colors duration-300 hover:border-laranja/30">
               <Telemovel largura={216} sombra={false}>
                 <EcraCardapio />
               </Telemovel>
@@ -267,7 +267,7 @@ export default function PaginaInicial() {
 
           <Revelar atraso={160} className="flex flex-col">
             <PassoCabecalho {...PASSOS[2]} />
-            <div className="vidro mt-9 flex flex-1 items-center justify-center rounded-cartao px-6 py-11 transition-colors duration-300 hover:border-ouro/30">
+            <div className="superficie mt-9 flex flex-1 items-center justify-center rounded-cartao px-6 py-11 transition-colors duration-300 hover:border-laranja/30">
               <Telemovel largura={216} sombra={false}>
                 <EcraPainel />
               </Telemovel>
@@ -300,7 +300,7 @@ export default function PaginaInicial() {
       <section id="caminhos" className="border-t border-linha">
         <div className="mx-auto max-w-conteudo px-5 py-24 md:px-8 md:py-32">
           <Revelar>
-            <span className="etiqueta text-ouro-fundo">Onde chegam os pedidos</span>
+            <span className="etiqueta text-laranja">Onde chegam os pedidos</span>
             {/*
               Parte no ponto final, que é onde o pensamento parte. Com um
               limite de largura em caracteres partia em "Dois caminhos. A /
@@ -318,7 +318,7 @@ export default function PaginaInicial() {
           <div className="mt-16 grid gap-6 md:grid-cols-2">
             {/* WhatsApp */}
             <Revelar className="flex">
-              <article className="vidro flex w-full flex-col rounded-cartao p-6 md:p-8">
+              <article className="superficie flex w-full flex-col rounded-cartao p-6 md:p-8">
                 <span className="etiqueta text-verde">No WhatsApp</span>
                 <h3 className="mt-4 text-balance font-display text-2xl leading-tight text-creme">
                   O número que a casa já usa todos os dias.
@@ -327,7 +327,7 @@ export default function PaginaInicial() {
                   A mensagem chega escrita de uma vez, com a mesa, as quantidades, as observações e o
                   total alinhado. Não há nada novo para aprender.
                 </p>
-                <div className="vidro-leve mt-6 overflow-x-auto rounded-cartao p-5">
+                <div className="superficie-leve mt-6 overflow-x-auto rounded-cartao p-5">
                   <pre className="whitespace-pre font-mono text-xs leading-relaxed text-creme/90">
                     {MENSAGEM_EXEMPLO}
                   </pre>
@@ -337,8 +337,8 @@ export default function PaginaInicial() {
 
             {/* Painel */}
             <Revelar atraso={80} className="flex">
-              <article className="vidro flex w-full flex-col rounded-cartao border-ouro/30 p-6 md:p-8">
-                <span className="etiqueta text-ouro">No painel do Cardapp</span>
+              <article className="superficie flex w-full flex-col rounded-cartao border-laranja/30 p-6 md:p-8">
+                <span className="etiqueta text-laranja">No painel do Cardapp</span>
                 <h3 className="mt-4 text-balance font-display text-2xl leading-tight text-creme">
                   Os pedidos numa lista que se mexe sozinha.
                 </h3>
@@ -350,7 +350,7 @@ export default function PaginaInicial() {
                 <ul className="mt-6 flex flex-col gap-5">
                   {CAMINHO_PAINEL.map((linha) => (
                     <li key={linha.titulo} className="flex gap-4">
-                      <span className="mt-2 block h-1.5 w-1.5 shrink-0 rounded-full bg-ouro" aria-hidden />
+                      <span className="mt-2 block h-1.5 w-1.5 shrink-0 rounded-full bg-laranja" aria-hidden />
                       <span>
                         <span className="block font-sans text-sm font-semibold text-creme">
                           {linha.titulo}
@@ -371,7 +371,7 @@ export default function PaginaInicial() {
       {/* ---------------------------------------------------------- */}
       {/* O cliente acompanha                                          */}
       {/* ---------------------------------------------------------- */}
-      <section className="vidro border-x-0 border-y/55 backdrop-blur-md">
+      <section className="superficie border-x-0 border-y border-linha backdrop-blur-md">
         <div className="mx-auto grid max-w-conteudo items-center gap-16 px-5 py-24 md:grid-cols-2 md:px-8 md:py-28">
           <Revelar className="flex justify-center md:order-2">
             <Telemovel largura={300} sombra={false}>
@@ -380,7 +380,7 @@ export default function PaginaInicial() {
           </Revelar>
 
           <Revelar atraso={80}>
-            <span className="etiqueta text-ouro-fundo">Depois de pedir</span>
+            <span className="etiqueta text-laranja">Depois de pedir</span>
             <h2 className="mt-5 text-balance font-display text-3xl leading-none text-creme md:text-4xl">
               <span className="block">O cliente sabe que o prato</span>{" "}
               <span className="block">já está a ser feito.</span>
@@ -415,14 +415,14 @@ export default function PaginaInicial() {
           className="object-cover"
           aria-hidden
         />
-        <div className="absolute inset-0 bg-grafite/88" />
+        <div className="absolute inset-0 bg-grafite/90" />
         <div className="relative mx-auto max-w-conteudo px-5 py-28 text-center md:px-8 md:py-36">
           <Revelar>
             <h2 className="mx-auto max-w-[18ch] text-balance font-display text-4xl leading-none text-creme md:text-5xl">
               O seu cardápio pode estar pronto ao almoço.
             </h2>
             <div className="mt-10">
-              <Botao asChild variante="ouro" tamanho="lg">
+              <Botao asChild variante="laranja" tamanho="lg">
                 <Link href="/criar-conta">Experimentar 7 dias</Link>
               </Botao>
             </div>
@@ -469,7 +469,7 @@ export default function PaginaInicial() {
 function PassoCabecalho({ numero, titulo, texto }: { numero: string; titulo: string; texto: string }) {
   return (
     <div>
-      <span className="font-display text-sm text-ouro">{numero}</span>
+      <span className="font-display text-sm text-laranja">{numero}</span>
       <h3 className="mt-3 text-balance font-display text-2xl leading-none text-creme">{titulo}</h3>
       <p className="mt-3 font-sans text-sm leading-normal text-tenue">{texto}</p>
     </div>

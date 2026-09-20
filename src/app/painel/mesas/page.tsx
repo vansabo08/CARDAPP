@@ -21,7 +21,7 @@ export default async function PaginaMesas() {
           descricao="Configure primeiro o restaurante — os QR precisam de um endereço para apontar."
         />
         <div className="mt-8">
-          <Botao asChild variante="ouro" tamanho="lg">
+          <Botao asChild variante="laranja" tamanho="lg">
             <Link href="/comecar">Configurar o restaurante</Link>
           </Botao>
         </div>

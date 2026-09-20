@@ -273,7 +273,16 @@ export function CardapioPublico({
               <p className="etiqueta" style={{ color: cor }}>
                 Cardápio
               </p>
-              <h1 className="ouro-display mt-2 font-display text-3xl leading-none tracking-[-0.02em] sm:text-4xl">
+              {/*
+                O nome da casa vai na cor da casa, e não no laranja do
+                Cardapp. Este ecrã é o cardápio de um restaurante: a
+                etiqueta e o distintivo da mesa já usavam a cor dele, e o
+                nome ficava da nossa — três cores em quatro centímetros.
+              */}
+              <h1
+                style={{ color: cor }}
+                className="mt-2 font-display text-3xl leading-none tracking-[-0.02em] sm:text-4xl"
+              >
                 {restaurante.nome}
               </h1>
             </div>
@@ -299,7 +308,7 @@ export function CardapioPublico({
       >
         <div
           ref={barra}
-          className="vidro-claro sticky top-0 z-30 rounded-t-folha"
+          className="superficie-clara sticky top-0 z-30 rounded-t-folha"
         >
           <div className="flex justify-center pt-3">
             <span className="block h-[4px] w-[38px] rounded-full bg-grafite/10" />
@@ -325,7 +334,7 @@ export function CardapioPublico({
                     'shrink-0 whitespace-nowrap rounded-full px-4 py-2 font-sans text-xs font-semibold transition-colors duration-200',
                     activaAgora
                       ? 'bg-grafite-carta text-creme'
-                      : 'border border-linha-escura text-tenue-escuro hover:border-grafite/22',
+                      : 'border border-linha-escura text-tenue-escuro hover:border-grafite/20',
                   )}
                 >
                   {categoria.nome}
@@ -410,7 +419,7 @@ export function CardapioPublico({
       <div
         className={cn(
           'fixed inset-x-0 bottom-0 z-40 px-4 pb-[max(16px,env(safe-area-inset-bottom))] pt-8',
-          'bg-gradient-to-t from-grafite via-grafite/92 to-transparent',
+          'bg-gradient-to-t from-grafite via-grafite/90 to-transparent',
           'transition-[opacity,transform] duration-[240ms] ease-out',
           temCarrinho ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-2 opacity-0',
         )}
@@ -419,9 +428,9 @@ export function CardapioPublico({
           <button
             type="button"
             onClick={() => setResumoAberto(true)}
-            className="vidro flex min-w-0 flex-1 items-center gap-3 rounded-full py-2.5 pl-2.5 pr-4 text-left transition-colors duration-200 hover:border-creme/25"
+            className="superficie flex min-w-0 flex-1 items-center gap-3 rounded-full py-2.5 pl-2.5 pr-4 text-left transition-colors duration-200 hover:border-creme/25"
           >
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ouro font-sans text-sm font-bold text-grafite">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-laranja font-sans text-sm font-bold text-grafite">
               {carrinho.quantidadeTotal}
             </span>
             <span className="min-w-0 flex-1">
@@ -634,7 +643,7 @@ function LinhaPrato({
           {quantidade > 0 ? (
             <span
               key={quantidade}
-              className="animate-marca absolute -right-1.5 -top-1.5 flex h-[24px] min-w-[24px] items-center justify-center rounded-full bg-ouro px-1.5 font-sans text-xs font-extrabold tabular-nums text-grafite ring-2 ring-creme-folha"
+              className="animate-marca absolute -right-1.5 -top-1.5 flex h-[24px] min-w-[24px] items-center justify-center rounded-full bg-laranja px-1.5 font-sans text-xs font-extrabold tabular-nums text-grafite ring-2 ring-creme-folha"
             >
               {quantidade}
             </span>
@@ -691,7 +700,7 @@ export function SeletorQuantidade({
         onClick={() => aoAlterar(-1)}
         aria-label={`Menos um ${rotulo}`}
         className={cn(
-          'flex items-center justify-center rounded-full border border-linha-escura leading-none transition-colors duration-200 hover:border-grafite/28',
+          'flex items-center justify-center rounded-full border border-linha-escura leading-none transition-colors duration-200 hover:border-grafite/30',
           tamanho,
         )}
       >
@@ -710,7 +719,7 @@ export function SeletorQuantidade({
         onClick={() => aoAlterar(1)}
         aria-label={`Mais um ${rotulo}`}
         className={cn(
-          'flex items-center justify-center rounded-full border border-linha-escura leading-none transition-colors duration-200 hover:border-grafite/28',
+          'flex items-center justify-center rounded-full border border-linha-escura leading-none transition-colors duration-200 hover:border-grafite/30',
           tamanho,
         )}
       >

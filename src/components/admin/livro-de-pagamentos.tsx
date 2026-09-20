@@ -63,7 +63,7 @@ export function LivroDePagamentos({
   }
 
   return (
-    <section className="vidro rounded-cartao p-6">
+    <section className="superficie rounded-cartao p-6">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <h2 className="font-display text-xl text-creme">Pagamentos</h2>
         {orfaos.length ? (
@@ -194,7 +194,7 @@ function Orfao({
           value={escolhida}
           onChange={(e) => setEscolhida(e.target.value)}
           disabled={ocupado}
-          className="min-w-0 flex-1 rounded-suave border border-linha bg-transparent px-3 py-2 font-sans text-sm text-creme outline-none transition-colors focus:border-ouro disabled:opacity-50"
+          className="min-w-0 flex-1 rounded-suave border border-linha bg-transparent px-3 py-2 font-sans text-sm text-creme outline-none transition-colors focus:border-laranja disabled:opacity-50"
         >
           <option value="">A que casa pertence?</option>
           {contas.map((c) => (
@@ -209,7 +209,7 @@ function Orfao({
           type="button"
           disabled={!escolhida || ocupado}
           onClick={() => aoAplicar(escolhida)}
-          className="rounded-suave bg-ouro px-4 py-2 font-sans text-sm text-grafite transition-opacity hover:opacity-90 disabled:opacity-40"
+          className="rounded-suave bg-laranja px-4 py-2 font-sans text-sm text-grafite transition-opacity hover:opacity-90 disabled:opacity-40"
         >
           {ocupado ? 'A aplicar…' : 'Aplicar'}
         </button>

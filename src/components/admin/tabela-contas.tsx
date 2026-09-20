@@ -187,7 +187,7 @@ Durante duas horas vê e escreve nos dados desta casa como se fosse ela. A entra
           <article
             key={conta.id}
             className={cn(
-              'vidro rounded-cartao p-5 transition-opacity duration-200',
+              'superficie rounded-cartao p-5 transition-opacity duration-200',
               ocupado === conta.id && 'opacity-60',
               !conta.activo && 'opacity-70',
             )}
@@ -280,7 +280,7 @@ Durante duas horas vê e escreve nos dados desta casa como se fosse ela. A entra
                 type="button"
                 disabled={ocupado === conta.id}
                 onClick={() => entrar(conta)}
-                className="inline-flex items-center gap-2 rounded-full border border-linha px-3.5 py-1.5 font-sans text-xs font-semibold text-tenue transition-colors duration-rapida ease-assinatura hover:border-ouro hover:text-ouro disabled:opacity-40"
+                className="inline-flex items-center gap-2 rounded-full border border-linha px-3.5 py-1.5 font-sans text-xs font-semibold text-tenue transition-colors duration-rapida ease-assinatura hover:border-laranja hover:text-laranja disabled:opacity-40"
               >
                 Entrar em auditoria
               </button>
@@ -295,7 +295,7 @@ Durante duas horas vê e escreve nos dados desta casa como se fosse ela. A entra
                     className={cn(
                       'rounded-full px-3.5 py-1.5 font-sans text-xs font-semibold transition-colors duration-200',
                       conta.plano === plano
-                        ? 'bg-ouro text-grafite'
+                        ? 'bg-laranja text-grafite'
                         : 'text-tenue hover:text-creme disabled:pointer-events-none',
                     )}
                   >
@@ -309,7 +309,7 @@ Durante duas horas vê e escreve nos dados desta casa como se fosse ela. A entra
       </div>
 
       {!filtradas.length ? (
-        <p className="vidro mt-6 rounded-cartao px-6 py-14 text-center font-sans text-sm text-tenue">
+        <p className="superficie mt-6 rounded-cartao px-6 py-14 text-center font-sans text-sm text-tenue">
           {lista.length ? 'Nada corresponde a essa procura.' : 'Ainda não há contas registadas.'}
         </p>
       ) : null}

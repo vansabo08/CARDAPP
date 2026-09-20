@@ -34,8 +34,8 @@ export function PortaFechada({
 
   return (
     <div className="mx-auto max-w-[560px] py-10 md:py-16">
-      <div className="vidro rounded-folha p-7 md:p-9">
-        <span className="etiqueta text-ouro-fundo">Conta suspensa</span>
+      <div className="superficie rounded-folha p-7 md:p-9">
+        <span className="etiqueta text-laranja">Conta suspensa</span>
 
         <h1 className="mt-5 text-balance font-display text-3xl leading-tight text-creme md:text-4xl">
           O tempo de experiência acabou.
@@ -72,7 +72,7 @@ export function PortaFechada({
                 Recebemos a prova da transferência e ainda não a confirmámos no banco. Isto demorou
                 mais do que devia — mande-nos uma mensagem e resolvemos já.
               </p>
-              <Botao asChild variante="ouro" tamanho="lg" className="mt-5">
+              <Botao asChild variante="laranja" tamanho="lg" className="mt-5">
                 <a
                   href={`https://wa.me/244930207076?text=${encodeURIComponent(
                     `Olá. Enviei o comprovativo do plano do Cardapp e a minha casa continua fechada. A casa é ${restaurante.nome} (${restaurante.slug}).`,

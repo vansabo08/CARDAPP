@@ -48,7 +48,7 @@ export function FundoVivo() {
 
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-grafite">
-      <div className="brasa brasa-ouro absolute -right-[18vw] -top-[26vw] h-[78vw] w-[78vw]" />
+      <div className="brasa brasa-laranja absolute -right-[18vw] -top-[26vw] h-[78vw] w-[78vw]" />
       <div className="brasa brasa-cobre absolute -left-[24vw] top-[38vh] h-[70vw] w-[70vw]" />
       <div className="brasa brasa-fria absolute bottom-[-30vw] right-[6vw] h-[62vw] w-[62vw]" />
 

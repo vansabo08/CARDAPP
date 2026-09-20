@@ -5,17 +5,18 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 /**
- * Doca de navegação, no espírito da do macOS: os ícones crescem à
- * passagem e os vizinhos acompanham com metade da força.
+ * A barra de separadores do painel, no telemóvel.
  *
- * Feita sem framer-motion de propósito. A biblioteca traz ~50 kB para
- * fazer o que três transições de CSS fazem — e o painel abre em
- * telemóveis modestos. A ampliação é calculada pela distância ao ícone
- * apontado e aplicada num `transform`, que o compositor trata sozinho.
+ * Era uma doca à moda do macOS: ícones soltos numa pastilha a flutuar,
+ * que cresciam à passagem do dedo, com o nome escondido num balão que só
+ * aparecia a pairar — e num ecrã de toque não se paira. Quem estava ao
+ * balcão tinha de adivinhar o que era cada ícone.
  *
- * Também não usa @radix-ui/react-tooltip: o rótulo é um `span`
- * posicionado, e o botão leva `aria-label` para quem navega por leitor
- * de ecrã.
+ * Passa a barra de separadores, como as das aplicações que as pessoas já
+ * usam: presa ao fundo, de lado a lado, com o nome escrito debaixo de
+ * cada ícone. O separador actual vai a laranja, ícone e nome, com uma
+ * pastilha por trás do ícone — não se confunde de relance, nem com a
+ * mão a tremer.
  */
 
 export type ItemDoca = {
@@ -26,76 +27,39 @@ export type ItemDoca = {
 };
 
 export function Doca({ itens, className }: { itens: ItemDoca[]; className?: string }) {
-  const [apontado, setApontado] = React.useState<number | null>(null);
-
   return (
-    <nav
-      aria-label="Navegação"
-      className={cn('pointer-events-none flex w-full justify-center', className)}
-    >
-      <div
-        onPointerLeave={() => setApontado(null)}
-        className={cn(
-          'vidro pointer-events-auto flex items-end gap-1 rounded-full px-2.5 py-2',
-        )}
-      >
-        {itens.map((item, i) => {
-          // O vizinho imediato cresce metade; o resto fica quieto.
-          const distancia = apontado === null ? 9 : Math.abs(apontado - i);
-          const escala = distancia === 0 ? 1.28 : distancia === 1 ? 1.12 : 1;
-          const subida = distancia === 0 ? -8 : distancia === 1 ? -3 : 0;
-
+    <nav aria-label="Navegação" className={cn('w-full', className)}>
+      <ul className="mx-auto flex max-w-md items-stretch justify-around px-2">
+        {itens.map((item) => {
           const Icone = item.icone;
 
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              aria-label={item.rotulo}
-              aria-current={item.activo ? 'page' : undefined}
-              onPointerEnter={() => setApontado(i)}
-              onFocus={() => setApontado(i)}
-              className="group relative flex flex-col items-center outline-none"
-            >
-              {/* rótulo */}
-              <span
-                aria-hidden
+            <li key={item.href} className="flex-1">
+              <Link
+                href={item.href}
+                aria-current={item.activo ? 'page' : undefined}
                 className={cn(
-                  'pointer-events-none absolute -top-9 whitespace-nowrap rounded-full border border-linha',
-                  'bg-grafite px-2.5 py-1 font-sans text-xs font-semibold text-creme',
-                  'opacity-0 transition-opacity duration-200 ease-calmo',
-                  'group-hover:opacity-100 group-focus-visible:opacity-100',
+                  'group flex flex-col items-center gap-1 rounded-campo py-2 outline-none',
+                  'transition-colors duration-200',
+                  'focus-visible:ring-2 focus-visible:ring-laranja',
+                  item.activo ? 'text-laranja' : 'text-creme/50 hover:text-creme',
                 )}
               >
-                {item.rotulo}
-              </span>
-
-              <span
-                style={{ transform: `translateY(${subida}px) scale(${escala})` }}
-                className={cn(
-                  'flex h-11 w-11 items-center justify-center rounded-[15px]',
-                  'transition-[transform,background-color,color] duration-[220ms] ease-calmo',
-                  'group-active:scale-95',
-                  item.activo
-                    ? 'bg-ouro/15 text-ouro'
-                    : 'text-tenue group-hover:bg-white/[0.06] group-hover:text-creme',
-                )}
-              >
-                <Icone className="h-[21px] w-[21px]" strokeWidth={1.6} />
-              </span>
-
-              {/* ponto de página actual */}
-              <span
-                aria-hidden
-                className={cn(
-                  'mt-1 block h-[4px] w-[4px] rounded-full transition-colors duration-200',
-                  item.activo ? 'bg-ouro' : 'bg-transparent',
-                )}
-              />
-            </Link>
+                <span
+                  className={cn(
+                    'flex h-8 w-14 items-center justify-center rounded-full transition-colors duration-200',
+                    'group-active:scale-95',
+                    item.activo ? 'bg-laranja/15' : 'group-hover:bg-white/[0.05]',
+                  )}
+                >
+                  <Icone className="h-5 w-5" strokeWidth={item.activo ? 2.2 : 1.8} />
+                </span>
+                <span className="font-sans text-xs font-semibold">{item.rotulo}</span>
+              </Link>
+            </li>
           );
         })}
-      </div>
+      </ul>
     </nav>
   );
 }

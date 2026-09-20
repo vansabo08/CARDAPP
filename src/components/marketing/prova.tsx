@@ -50,7 +50,7 @@ export async function Prova() {
       <div className="mx-auto max-w-conteudo px-5 py-24 md:px-8 md:py-28">
         <div className="grid items-center gap-14 md:grid-cols-[1fr_minmax(0,300px)] md:gap-16">
           <Revelar>
-            <span className="etiqueta text-ouro-fundo">Prova</span>
+            <span className="etiqueta text-laranja">Prova</span>
 
             <h2 className="mt-5 max-w-[20ch] text-balance font-display text-3xl leading-none text-creme md:text-4xl">
               Não lhe mostramos elogios que ainda não recebemos.

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Image from 'next/image';
+import { RESTAURANTE_DEMO } from '@/data/demo';
 import { formatarKz } from '@/lib/format';
 import {
   ESTADOS,
@@ -19,6 +20,9 @@ import { Logotipo } from '@/components/logotipo';
  * trata de os encolher — por isso os tamanhos aqui são os mesmos que
  * o cliente vê no cardápio a sério.
  */
+
+/** A casa de exemplo escolheu esta cor; o cardápio dela usa-a em tudo. */
+const COR_DA_CASA = RESTAURANTE_DEMO.cor_marca;
 
 const DESTAQUES = [
   { nome: 'Muamba de Galinha', desc: 'Óleo de palma e quiabo', preco: 4500, foto: '/pratos/muamba-galinha.webp' },
@@ -52,12 +56,25 @@ export function EcraCardapio() {
         <div className="absolute inset-x-0 bottom-0 px-5 pb-8">
           <div className="flex items-end gap-3">
             <div className="min-w-0 flex-1">
-              <p className="etiqueta text-ouro">Cardápio</p>
-              <p className="ouro-display mt-2 font-display text-3xl leading-none tracking-[-0.02em]">
+              {/*
+                A cor é a da casa de exemplo, e não o laranja do Cardapp:
+                é assim que o cardápio a sério aparece a quem lê o QR, e
+                uma maqueta que mostra outra coisa promete o que não é.
+              */}
+              <p className="etiqueta" style={{ color: COR_DA_CASA }}>
+                Cardápio
+              </p>
+              <p
+                style={{ color: COR_DA_CASA }}
+                className="mt-2 font-display text-3xl leading-none tracking-[-0.02em]"
+              >
                 Tia Bela
               </p>
             </div>
-            <span className="etiqueta shrink-0 rounded-full bg-ouro px-3.5 py-2 text-grafite">
+            <span
+              style={{ backgroundColor: COR_DA_CASA }}
+              className="etiqueta shrink-0 rounded-full px-3.5 py-2 text-grafite"
+            >
               Mesa 07
             </span>
           </div>
@@ -145,10 +162,10 @@ export function EcraCardapio() {
       </div>
 
       {/* carrinho */}
-      <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-grafite via-grafite/92 to-transparent px-4 pb-6 pt-8">
+      <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-grafite via-grafite/90 to-transparent px-4 pb-6 pt-8">
         <div className="flex items-center gap-2.5">
           <div className="flex min-w-0 flex-1 items-center gap-3 rounded-full border border-linha bg-grafite-alto py-2.5 pl-2.5 pr-4">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ouro font-sans text-sm font-bold text-grafite">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-laranja font-sans text-sm font-bold text-grafite">
               6
             </span>
             <span className="min-w-0 flex-1">
@@ -302,7 +319,7 @@ const PEDIDOS_DO_PAINEL: {
 ];
 
 const TOM_DO_PAINEL = {
-  novo: 'border-ouro/45 bg-ouro/[0.07]',
+  novo: 'border-laranja/45 bg-laranja/[0.07]',
   preparar: 'border-linha bg-white/[0.03]',
   pronto: 'border-verde/40 bg-verde/[0.06]',
 } as const;
@@ -331,7 +348,7 @@ export function EcraPainel() {
                   há {p.minutos} min · {ROTULO_PAINEL[p.estado]}
                 </p>
               </div>
-              <p className="font-display text-xl text-ouro">{formatarKz(p.total)}</p>
+              <p className="font-display text-xl text-laranja">{formatarKz(p.total)}</p>
             </div>
 
             <ul className="mt-3 flex flex-col gap-1 border-t border-linha pt-3">
@@ -344,8 +361,8 @@ export function EcraPainel() {
             </ul>
 
             {p.nota ? (
-              <p className="mt-3 rounded-campo border border-ouro/40 bg-ouro/[0.06] px-3 py-2 font-sans text-sm leading-snug text-creme">
-                <span className="etiqueta mr-2 text-ouro">Nota</span>
+              <p className="mt-3 rounded-campo border border-laranja/40 bg-laranja/[0.06] px-3 py-2 font-sans text-sm leading-snug text-creme">
+                <span className="etiqueta mr-2 text-laranja">Nota</span>
                 {p.nota}
               </p>
             ) : null}
@@ -356,14 +373,14 @@ export function EcraPainel() {
                   O som não se desenha. Esta linha diz o que se estaria a
                   ouvir, para quem olha para um ecrã mudo numa página.
                 */}
-                <p className="mb-2 flex items-center gap-2 font-sans text-xs text-ouro">
+                <p className="mb-2 flex items-center gap-2 font-sans text-xs text-laranja">
                   <span className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ouro opacity-70" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-ouro" />
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-laranja opacity-70" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-laranja" />
                   </span>
                   O alarme volta a tocar até alguém carregar
                 </p>
-                <span className="flex h-12 w-full items-center justify-center rounded-full bg-ouro font-sans text-base font-semibold text-grafite">
+                <span className="flex h-12 w-full items-center justify-center rounded-full bg-laranja font-sans text-base font-semibold text-grafite">
                   Recebido — calar o alarme
                 </span>
               </div>
@@ -393,7 +410,7 @@ export function EcraAcompanhar() {
   return (
     <div className="relative h-full w-full bg-grafite px-6 pt-20">
       <header className="text-center">
-        <span className="etiqueta text-ouro-fundo">Tia Bela</span>
+        <span className="etiqueta text-laranja">Tia Bela</span>
         <p className="mt-4 text-balance font-display text-3xl leading-none text-creme">
           {ROTULO_CLIENTE[estado]}
         </p>
@@ -403,7 +420,7 @@ export function EcraAcompanhar() {
 
       <div className="mt-10">
         <div className="h-1 w-full overflow-hidden rounded-full bg-white/[0.08]">
-          <div className="h-full rounded-full bg-ouro" style={{ width: `${Math.round(avanco * 100)}%` }} />
+          <div className="h-full rounded-full bg-laranja" style={{ width: `${Math.round(avanco * 100)}%` }} />
         </div>
         <ol className="mt-3 flex justify-between">
           {ESTADOS.map((e) => (
@@ -420,7 +437,7 @@ export function EcraAcompanhar() {
         </ol>
       </div>
 
-      <div className="vidro mt-10 rounded-cartao p-5">
+      <div className="superficie mt-10 rounded-cartao p-5">
         <p className="etiqueta text-tenue">O seu pedido</p>
         <ul className="mt-4 flex flex-col gap-3">
           {[
@@ -443,7 +460,7 @@ export function EcraAcompanhar() {
         </ul>
         <div className="mt-5 flex items-center justify-between border-t border-linha pt-4">
           <span className="font-sans text-sm text-tenue">Total</span>
-          <span className="font-display text-xl text-ouro">{formatarKz(16300)}</span>
+          <span className="font-display text-xl text-laranja">{formatarKz(16300)}</span>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Marca } from '@/components/marca';
@@ -12,29 +13,45 @@ type Modo = 'entrar' | 'criar';
 
 const TEXTOS: Record<
   Modo,
-  { titulo: string; sub: string; accao: string; alternativa: React.ReactNode }
+  {
+    acima: string;
+    titulo: React.ReactNode;
+    sub: string;
+    accao: string;
+    alternativa: React.ReactNode;
+  }
 > = {
   entrar: {
-    titulo: 'Bem-vindo de volta',
+    acima: 'Área da casa',
+    titulo: (
+      <>
+        Bem-vindo ao <span className="text-laranja">Cardapp</span>
+      </>
+    ),
     sub: 'Entre para gerir o cardápio, as mesas e os pedidos do dia.',
     accao: 'Entrar',
     alternativa: (
       <>
         Ainda não tem conta?{' '}
-        <Link href="/criar-conta" className="font-semibold text-ouro hover:text-ouro-claro">
+        <Link href="/criar-conta" className="font-semibold text-laranja hover:text-laranja-claro">
           Experimentar 7 dias
         </Link>
       </>
     ),
   },
   criar: {
-    titulo: 'O seu cardápio começa aqui',
+    acima: 'Sete dias com tudo aberto',
+    titulo: (
+      <>
+        O seu cardápio <span className="text-laranja">começa aqui</span>
+      </>
+    ),
     sub: 'Crie a conta e em quatro passos tem as mesas prontas a receber pedidos.',
     accao: 'Criar conta',
     alternativa: (
       <>
         Já tem conta?{' '}
-        <Link href="/entrar" className="font-semibold text-ouro hover:text-ouro-claro">
+        <Link href="/entrar" className="font-semibold text-laranja hover:text-laranja-claro">
           Entrar
         </Link>
       </>
@@ -43,19 +60,39 @@ const TEXTOS: Record<
 };
 
 /**
- * Cartão de vidro sobre uma fotografia desfocada.
+ * As fotografias do lado da comida.
  *
- * O fundo é uma fotografia de mufete do Wikimedia Commons (Jrobal0,
- * CC BY-SA 4.0), redimensionada e convertida para WebP. A licença obriga
- * a creditar, e o crédito está no rodapé do ecrã — discreto, mas lá.
- * Escolhi comida angolana em vez de uma fotografia de banco de imagens
- * porque é o nicho da aplicação, e desfocada dá os âmbares que combinam
- * com o ouro da marca.
+ * São do Unsplash (licença comercial, atribuição não exigida) e já
+ * estavam no projecto, no cardápio de exemplo. Quatro, em mosaico, como
+ * na referência: comida a entrar pelo canto do ecrã diz, sem uma
+ * palavra, de que negócio é isto.
  *
- * A referência trazia um botão de Google e um "remember me". Ficaram de
- * fora: não há OAuth de Google ligado neste projecto, e um botão que não
- * faz nada é pior do que botão nenhum; a sessão do Supabase já persiste
- * sozinha, por isso a caixa seria decorativa.
+ * Saiu a fotografia que aqui estava, desfocada por trás de tudo: era do
+ * Wikimedia, com licença que obriga a creditar, e o crédito ocupava um
+ * rodapé no ecrã de entrada. O ficheiro foi apagado com ela.
+ */
+const FOTOS = [
+  '/pratos/muamba-galinha.webp',
+  '/pratos/mufete.webp',
+  '/pratos/kitaba.webp',
+  '/pratos/espetada.webp',
+];
+
+/**
+ * O ecrã de entrada.
+ *
+ * Era um cartão de vidro a flutuar sobre uma fotografia desfocada, com o
+ * título numa serifa. Lia-se como a página de um hotel, e não como a
+ * ferramenta de trabalho de uma cozinha.
+ *
+ * Segue agora a referência escolhida: a comida de um lado, o formulário
+ * do outro, o nome da casa em laranja. No telemóvel a comida fica em
+ * cima, como uma faixa, e o formulário em baixo, onde o polegar chega.
+ *
+ * O que a referência tem e aqui não faz sentido: entrar com Facebook ou
+ * Instagram, que este projecto não liga a lado nenhum, e "esqueci-me da
+ * palavra-passe", que ainda não tem ecrã para onde ir. Um botão que não
+ * faz nada é pior do que botão nenhum.
  */
 export function FormularioAuth({ modo }: { modo: Modo }) {
   const router = useRouter();
@@ -113,48 +150,80 @@ export function FormularioAuth({ modo }: { modo: Modo }) {
   }
 
   return (
-    <div className="relative min-h-dvh w-full overflow-hidden">
+    <div className="flex min-h-dvh flex-col lg:flex-row">
       {/* ------------------------------------------------------------ */}
-      {/* Fundo                                                         */}
+      {/* A comida                                                      */}
       {/* ------------------------------------------------------------ */}
-      {/*
-        A imagem vai em <div> com background-image e não em <Image>: está
-        desfocada a 8px e escurecida, por isso a nitidez não conta para
-        nada e não vale a pena o custo do optimizador. O `scale-110` evita
-        que o desfoque deixe as margens transparentes.
-      */}
-      <div
-        aria-hidden
-        className="absolute inset-0 scale-110 bg-cover bg-center"
-        style={{ backgroundImage: "url('/pratos/entrada.webp')", filter: 'blur(8px)' }}
-      />
-      <div aria-hidden className="absolute inset-0 bg-grafite/55" />
-      <div
-        aria-hidden
-        className="absolute inset-0 bg-gradient-to-b from-grafite/70 via-grafite/30 to-grafite"
-      />
+      <aside className="relative h-[32vh] min-h-[210px] shrink-0 overflow-hidden lg:h-auto lg:min-h-dvh lg:w-[44%]">
+        <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-1">
+          {FOTOS.map((foto) => (
+            <span key={foto} className="relative block overflow-hidden">
+              <Image
+                src={foto}
+                alt=""
+                fill
+                sizes="(max-width: 1024px) 50vw, 22vw"
+                className="object-cover"
+                priority
+              />
+            </span>
+          ))}
+        </div>
 
-      <div className="relative flex min-h-dvh flex-col">
-        <header className="px-5 py-6 md:px-8">
+        {/*
+          O véu derrete a fotografia na página: em baixo no telemóvel, à
+          direita no computador. Sem ele fica uma costura entre a imagem e
+          o formulário, e é isso que faz um ecrã parecer montado à pressa.
+        */}
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-b from-grafite/40 via-grafite/25 to-grafite lg:bg-gradient-to-r lg:from-grafite/50 lg:via-grafite/20 lg:to-grafite"
+        />
+
+        {/*
+          Um segundo véu, só no topo. A marca ficava por cima de qualquer
+          fotografia que calhasse ali, e numa clara — um prato de peixe
+          com luz — deixava de se ler. Este escurece a faixa onde ela
+          assenta, e não a imagem toda.
+        */}
+        <div
+          aria-hidden
+          className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-grafite/85 to-transparent"
+        />
+
+        {/*
+          No computador, a fotografia acabava a direito contra o preto do
+          formulário — um corte de tesoura a meio do ecrã. Estes 160 px
+          derretem-na, e as duas metades passam a ser a mesma página.
+        */}
+        <div
+          aria-hidden
+          className="absolute inset-y-0 right-0 hidden w-40 bg-gradient-to-r from-transparent to-grafite lg:block"
+        />
+
+        <div className="absolute left-5 top-5 md:left-8 md:top-8">
           <Marca />
-        </header>
+        </div>
+      </aside>
 
-        <main className="flex flex-1 items-center justify-center px-5 pb-10">
-          <form
-            onSubmit={submeter}
-            className={cn(
-              'w-full max-w-[420px] animate-subir rounded-folha px-6 pb-8 pt-9 sm:px-8 sm:pb-9 sm:pt-10',
-              'border border-creme/25 bg-creme/[0.08]',
-              'shadow-[0_20px_60px_rgba(0,0,0,0.45)] backdrop-blur-2xl backdrop-saturate-150',
-            )}
-          >
-            <h1 className="font-display text-4xl leading-none tracking-tight text-creme">
-              {texto.titulo}
-            </h1>
-            <p className="mt-4 font-sans text-base leading-snug text-creme/70">{texto.sub}</p>
+      {/* ------------------------------------------------------------ */}
+      {/* O formulário                                                  */}
+      {/* ------------------------------------------------------------ */}
+      <main className="flex flex-1 items-center justify-center px-5 pb-10 pt-8 md:px-8 lg:py-16">
+        <form onSubmit={submeter} className="w-full max-w-[400px] animate-subir">
+          <p className="font-sans text-sm font-semibold text-tenue">{texto.acima}</p>
 
-            <div className="mt-8 space-y-4">
-              <label className="sr-only" htmlFor="email">
+          <h1 className="mt-2 text-balance font-display text-3xl leading-tight text-creme md:text-4xl">
+            {texto.titulo}
+          </h1>
+
+          <p className="mt-3 text-pretty font-sans text-base leading-relaxed text-tenue">
+            {texto.sub}
+          </p>
+
+          <div className="mt-9 flex flex-col gap-6">
+            <div>
+              <label htmlFor="email" className="block font-sans text-sm font-semibold text-creme/85">
                 Email
               </label>
               <input
@@ -168,8 +237,13 @@ export function FormularioAuth({ modo }: { modo: Modo }) {
                 placeholder="nome@restaurante.ao"
                 className={campo}
               />
+            </div>
 
-              <label className="sr-only" htmlFor="palavra">
+            <div>
+              <label
+                htmlFor="palavra"
+                className="block font-sans text-sm font-semibold text-creme/85"
+              >
                 Palavra-passe
               </label>
               <div className="relative">
@@ -180,86 +254,65 @@ export function FormularioAuth({ modo }: { modo: Modo }) {
                   autoComplete={modo === 'criar' ? 'new-password' : 'current-password'}
                   value={palavra}
                   onChange={(e) => setPalavra(e.target.value)}
-                  placeholder={modo === 'criar' ? 'Palavra-passe (8+ caracteres)' : 'Palavra-passe'}
-                  className={cn(campo, 'pr-14')}
+                  placeholder={modo === 'criar' ? 'Pelo menos 8 caracteres' : '••••••••'}
+                  className={cn(campo, 'pr-10')}
                 />
                 <button
                   type="button"
                   onClick={() => setVerPalavra((v) => !v)}
                   aria-label={verPalavra ? 'Ocultar palavra-passe' : 'Mostrar palavra-passe'}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-creme/70 transition-colors hover:text-creme"
+                  className="absolute bottom-3 right-0 text-creme/50 transition-colors hover:text-creme"
                 >
                   {verPalavra ? <OlhoFechado /> : <Olho />}
                 </button>
               </div>
             </div>
+          </div>
 
-            {erro ? (
-              <p role="alert" className="mt-4 font-sans text-sm text-[#ff9b8f]">
-                {erro}
-              </p>
-            ) : null}
-            {aviso ? <p className="mt-4 font-sans text-sm text-ouro">{aviso}</p> : null}
+          {erro ? (
+            <p role="alert" className="mt-5 font-sans text-sm text-[#ff8a78]">
+              {erro}
+            </p>
+          ) : null}
+          {aviso ? <p className="mt-5 font-sans text-sm text-laranja">{aviso}</p> : null}
 
-            {/*
-              Passa a usar o Botao da casa em vez de um <button> à parte:
-              é o único sítio que tinha estados próprios, e ficava de fora
-              do sistema — sem rodopio, sem visto, sem abanão.
-            */}
-            <Botao
-              type="submit"
-              variante="ouro"
-              tamanho="lg"
-              largo
-              aCarregar={ocupado}
-              estado={sinal}
-              className="mt-6 h-[60px] text-base"
-            >
-              {texto.accao}
-            </Botao>
+          <Botao
+            type="submit"
+            variante="laranja"
+            tamanho="lg"
+            largo
+            aCarregar={ocupado}
+            estado={sinal}
+            className="mt-8 h-[56px]"
+          >
+            {texto.accao}
+          </Botao>
 
-            {modo === 'criar' ? (
-              <p className="mt-4 text-center font-sans text-sm text-creme/70">
-                Sete dias com tudo aberto. Sem cartão de crédito.
-              </p>
-            ) : null}
+          {modo === 'criar' ? (
+            <p className="mt-4 text-center font-sans text-sm text-tenue">
+              Sem cartão de crédito. Paga só se decidir ficar.
+            </p>
+          ) : null}
 
-            <p className="mt-5 text-center font-sans text-sm text-creme/85">{texto.alternativa}</p>
-          </form>
-        </main>
-
-        {/* A licenca da fotografia obriga a creditar. Fica discreto, mas fica. */}
-        <footer className="px-5 pb-6 text-center md:px-8">
-          <p className="font-sans text-xs text-creme/40">
-            Fotografia:{' '}
-            <a
-              href="https://commons.wikimedia.org/wiki/File:Mufete_completo.JPG"
-              target="_blank"
-              rel="noreferrer"
-              className="underline underline-offset-2 hover:text-creme/70"
-            >
-              Mufete completo
-            </a>
-            , Jrobal0,{' '}
-            <a
-              href="https://creativecommons.org/licenses/by-sa/4.0"
-              target="_blank"
-              rel="noreferrer"
-              className="underline underline-offset-2 hover:text-creme/70"
-            >
-              CC BY-SA 4.0
-            </a>
-          </p>
-        </footer>
-      </div>
+          <p className="mt-6 text-center font-sans text-sm text-creme/85">{texto.alternativa}</p>
+        </form>
+      </main>
     </div>
   );
 }
 
+/**
+ * Campo de linha, como na referência: o nome por cima e uma linha por
+ * baixo, que acende a laranja quando se escreve nela.
+ *
+ * Aqui, e não nos campos do painel: este ecrã tem dois campos e espaço de
+ * sobra à volta. Uma página de definições com dez campos precisa do
+ * rectângulo cheio, para se ver onde acaba um e começa o outro.
+ */
 const campo = cn(
-  'h-[58px] w-full rounded-cartao border border-creme/35 bg-transparent px-5',
-  'font-sans text-base text-creme placeholder:text-creme/60',
-  'outline-none transition-colors duration-200 focus:border-creme/80',
+  'h-12 w-full border-0 border-b border-creme/20 bg-transparent px-0',
+  'font-sans text-base text-creme placeholder:text-creme/35',
+  'outline-none transition-colors duration-200 focus:border-laranja',
 );
 
 /* ------------------------------------------------------------------ */

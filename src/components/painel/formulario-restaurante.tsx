@@ -66,7 +66,7 @@ export function EscolhaDoModo({
             key={modo.id}
             className={`flex cursor-pointer gap-3.5 rounded-cartao border p-4 transition-[border-color,background-color,box-shadow,transform] duration-normal ease-assinatura ${
               escolhido
-                ? 'border-ouro/55 bg-ouro/[0.06] shadow-elevacao-1-escura'
+                ? 'border-laranja/55 bg-laranja/[0.06] shadow-elevacao-1-escura'
                 : 'border-linha hover:-translate-y-px hover:border-creme/25 hover:shadow-elevacao-1-escura'
             }`}
           >
@@ -198,7 +198,7 @@ export function CamposIdentidade({
 
       <div>
         <Rotulo htmlFor="slug">Endereço do cardápio</Rotulo>
-        <div className="flex items-center gap-0 rounded-campo border border-linha px-3.5 focus-within:border-ouro">
+        <div className="flex items-center gap-0 rounded-campo border border-linha px-3.5 focus-within:border-laranja">
           <span className="shrink-0 font-sans text-sm text-tenue">
             {SITE_URL.replace(/^https?:\/\//, '')}/
           </span>
@@ -336,7 +336,7 @@ export function CampoWhatsApp({
   return (
     <div>
       <Rotulo htmlFor="whatsapp">Número de WhatsApp</Rotulo>
-      <div className="flex items-center gap-0 rounded-campo border border-linha px-3.5 focus-within:border-ouro">
+      <div className="flex items-center gap-0 rounded-campo border border-linha px-3.5 focus-within:border-laranja">
         <span className="shrink-0 font-sans text-sm text-tenue">+244</span>
         <input
           id="whatsapp"

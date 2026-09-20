@@ -4,7 +4,6 @@ import { AvisoDemonstracao } from '@/components/aviso-demonstracao';
 import { AvisoDoPlano } from '@/components/painel/aviso-do-plano';
 import { PortaFechada } from '@/components/painel/porta-fechada';
 import { estadoDaConta, painelAberto } from '@/lib/planos';
-import { FundoVivo } from '@/components/marketing/fundo-vivo';
 import { ConviteInstalar } from '@/components/convite-instalar';
 import { SinoDePedidos } from '@/components/painel/sino-de-pedidos';
 import { BatidaDePresenca } from '@/components/painel/batida-de-presenca';
@@ -44,7 +43,6 @@ export default async function LayoutPainel({ children }: { children: React.React
 
   return (
     <div className="relative min-h-dvh">
-      <FundoVivo />
       {emAuditoria && restaurante ? <FaixaDeAuditoria nome={restaurante.nome} /> : null}
       <AvisoDemonstracao />
       {restaurante ? (

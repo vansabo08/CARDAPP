@@ -60,12 +60,12 @@ export function AvisoDoPlano({
   return (
     <div
       className={`border-b ${
-        urgente ? 'border-ouro/30 bg-ouro/[0.07]' : 'border-linha bg-transparent'
+        urgente ? 'border-laranja/30 bg-laranja/[0.07]' : 'border-linha bg-transparent'
       }`}
     >
       <div className="mx-auto flex max-w-[880px] flex-wrap items-center justify-between gap-3 px-5 py-3 md:px-10">
         <div className="min-w-0">
-          <p className={`font-sans text-sm font-semibold ${urgente ? 'text-ouro' : 'text-creme'}`}>
+          <p className={`font-sans text-sm font-semibold ${urgente ? 'text-laranja' : 'text-creme'}`}>
             {avisoDoPrazo(estado, dias)}
           </p>
           <p className="mt-0.5 text-pretty font-sans text-xs leading-normal text-tenue">
@@ -83,7 +83,7 @@ export function AvisoDoPlano({
           </p>
         </div>
 
-        <Botao asChild variante={urgente ? 'ouro' : 'contorno'} tamanho="sm">
+        <Botao asChild variante={urgente ? 'laranja' : 'contorno'} tamanho="sm">
           <Link href="/painel/pagar">Renovar por {formatarKz(plano.preco)}</Link>
         </Botao>
       </div>

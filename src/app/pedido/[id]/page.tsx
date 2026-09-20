@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Marca } from '@/components/marca';
-import { FundoVivo } from '@/components/marketing/fundo-vivo';
 import { Acompanhar } from '@/components/pedido/acompanhar';
 import { obterPedidoPublico } from '@/lib/dados';
 
@@ -33,7 +32,6 @@ export default async function PaginaDoPedido({
 
   return (
     <div className="relative flex min-h-dvh flex-col">
-      <FundoVivo />
 
       <header className="px-5 py-6 md:px-8">
         <Marca />

@@ -93,7 +93,7 @@ export function PagarEProvar({ restaurante }: { restaurante: Restaurante }) {
           </p>
 
           <Botao
-            variante="ouro"
+            variante="laranja"
             tamanho="lg"
             className="mt-6 w-full sm:w-auto"
             onClick={() => setPasso(2)}
@@ -121,7 +121,7 @@ export function PagarEProvar({ restaurante }: { restaurante: Restaurante }) {
 
           <label
             htmlFor="comprovativo"
-            className="mt-4 flex cursor-pointer flex-col items-center justify-center rounded-cartao border border-dashed border-linha px-5 py-8 text-center transition-colors hover:border-ouro"
+            className="mt-4 flex cursor-pointer flex-col items-center justify-center rounded-cartao border border-dashed border-linha px-5 py-8 text-center transition-colors hover:border-laranja"
           >
             <span className="font-sans text-sm text-creme">
               {ficheiro ? ficheiro.name : 'Escolher o ficheiro'}
@@ -150,7 +150,7 @@ export function PagarEProvar({ restaurante }: { restaurante: Restaurante }) {
           ) : null}
 
           <Botao
-            variante="ouro"
+            variante="laranja"
             tamanho="lg"
             className="mt-5 w-full sm:w-auto"
             disabled={!ficheiro || aEnviar}
@@ -205,7 +205,7 @@ function Credencial({ rotulo, valor, nota }: { rotulo: string; valor: string; no
       <button
         type="button"
         onClick={copiar}
-        className="shrink-0 rounded-full border border-linha px-3 py-1.5 font-sans text-xs text-creme transition-colors hover:border-ouro hover:text-ouro"
+        className="shrink-0 rounded-full border border-linha px-3 py-1.5 font-sans text-xs text-creme transition-colors hover:border-laranja hover:text-laranja"
       >
         {copiado ? 'Copiado' : 'Copiar'}
       </button>

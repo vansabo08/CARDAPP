@@ -25,14 +25,15 @@ const botaoVariantes = cva(
     'hover:-translate-y-px active:translate-y-0 active:scale-[0.97] active:duration-[120ms]',
     // Acessibilidade, não enfeite: quem navega por teclado tem de ver
     // onde está.
-    'outline-none focus-visible:ring-2 focus-visible:ring-ouro focus-visible:ring-offset-2 focus-visible:ring-offset-grafite',
+    'outline-none focus-visible:ring-2 focus-visible:ring-laranja focus-visible:ring-offset-2 focus-visible:ring-offset-grafite',
     'disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
     'disabled:hover:translate-y-0 disabled:shadow-none',
   ),
   {
     variants: {
       variante: {
-        ouro: 'bg-ouro text-grafite shadow-elevacao-1 hover:bg-ouro-claro hover:shadow-elevacao-2 active:shadow-elevacao-1',
+        laranja:
+          'bg-laranja text-grafite shadow-brilho-laranja hover:bg-laranja-claro hover:shadow-brilho-laranja-alto active:bg-laranja-escuro active:shadow-brilho-laranja',
         creme:
           'bg-creme text-grafite shadow-elevacao-1 hover:bg-white hover:shadow-elevacao-2 active:shadow-elevacao-1',
         grafite:
@@ -40,7 +41,7 @@ const botaoVariantes = cva(
         contorno:
           'border border-linha bg-transparent text-creme hover:border-creme/30 hover:bg-creme/[0.05] hover:shadow-elevacao-1-escura',
         'contorno-escuro':
-          'border border-linha-escura bg-transparent text-grafite hover:border-grafite/22 hover:bg-grafite/[0.04] hover:shadow-elevacao-1',
+          'border border-linha-escura bg-transparent text-grafite hover:border-grafite/20 hover:bg-grafite/[0.04] hover:shadow-elevacao-1',
         verde:
           'bg-verde text-white shadow-elevacao-1 hover:bg-[#12ad61] hover:shadow-elevacao-2 active:shadow-elevacao-1',
         // Os discretos não têm corpo, por isso não têm sombra nem sobem:
@@ -52,13 +53,13 @@ const botaoVariantes = cva(
       tamanho: {
         sm: 'h-9 px-4 text-xs',
         md: 'h-11 px-5 text-sm',
-        lg: 'h-[54px] px-8 text-sm',
+        lg: 'h-[54px] px-8 text-base',
         icone: 'h-11 w-11 p-0',
         'icone-sm': 'h-8 w-8 p-0',
       },
       largo: { true: 'w-full', false: '' },
     },
-    defaultVariants: { variante: 'ouro', tamanho: 'md', largo: false },
+    defaultVariants: { variante: 'laranja', tamanho: 'md', largo: false },
   },
 );
 

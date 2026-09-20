@@ -26,7 +26,7 @@ import type { EstadoPedido, Pedido } from '@/lib/tipos';
 
 /** Cor de cada estado na lista. O novo salta à vista; o resto acalma. */
 const TOM: Record<EstadoPedido, string> = {
-  novo: 'border-ouro/45 bg-ouro/[0.07]',
+  novo: 'border-laranja/45 bg-laranja/[0.07]',
   preparar: 'border-linha bg-white/[0.03]',
   pronto: 'border-verde/40 bg-verde/[0.06]',
   caminho: 'border-linha bg-white/[0.03]',
@@ -47,6 +47,22 @@ export function PedidosAoVivo({
   const [pedidos, setPedidos] = React.useState(iniciais);
   const [ligado, setLigado] = React.useState(false);
   const [somLigado, setSomLigado] = React.useState(false);
+
+  /*
+   * Se este aparelho toca som só se sabe depois de a página montar.
+   *
+   * Perguntava-se durante o desenho. No servidor não há `window`, a
+   * resposta era "não", e desenhava-se "Este aparelho não toca som"; no
+   * browser a resposta era "sim" e desenhava-se o botão de ligar. O React
+   * encontrava duas páginas diferentes e deitava a do servidor fora — e
+   * a pergunta criava o motor de áudio só por desenhar o ecrã.
+   *
+   * Até montar assume-se que toca: é o caso de quase todos os aparelhos,
+   * e o contrário mostrava um aviso falso a toda a gente durante um
+   * instante.
+   */
+  const [suportado, setSuportado] = React.useState(true);
+  React.useEffect(() => setSuportado(somSuportado()), []);
 
   // O relógio dos "há 5 minutos" não se actualiza sozinho.
   const [, forcarRelogio] = React.useReducer((n: number) => n + 1, 0);
@@ -172,65 +188,76 @@ export function PedidosAoVivo({
       {/* ------------------------------------------------------------ */}
       {/* Barra de estado                                               */}
       {/* ------------------------------------------------------------ */}
-      <div className="mt-8 flex flex-wrap items-center gap-3">
-        <span
-          className={cn(
-            'inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 font-sans text-xs',
-            ligado ? 'border-verde/40 text-verde' : 'border-linha text-tenue',
-          )}
-        >
-          <span
-            className={cn(
-              'h-1.5 w-1.5 rounded-full',
-              ligado ? 'animate-pulse bg-verde' : 'bg-tenue',
-            )}
-          />
-          {ligado ? 'A receber em tempo real' : 'A ligar…'}
-        </span>
-
-        {somSuportado() ? (
-          somLigado ? (
-            <span className="inline-flex items-center gap-2 rounded-full border border-verde/40 px-3.5 py-1.5 font-sans text-xs text-verde">
-              <Bell className="h-3.5 w-3.5" />
-              O som está ligado
+      {/*
+        Um cartão só, e não três pastilhas soltas. A ligação e o som são a
+        mesma pergunta — "se cair um pedido, eu vou saber?" — e a resposta
+        lê-se de uma vez: à esquerda se está a receber, à direita se toca.
+      */}
+      <div className="superficie mt-6 rounded-cartao px-4 py-3.5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="flex items-center gap-2.5 font-sans text-sm font-semibold text-creme">
+            <span className="relative flex h-2.5 w-2.5">
+              {ligado ? (
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-verde opacity-60" />
+              ) : null}
+              <span
+                className={cn(
+                  'relative inline-flex h-2.5 w-2.5 rounded-full',
+                  ligado ? 'bg-verde' : 'bg-creme/30',
+                )}
+              />
             </span>
-          ) : (
-            <button
-              type="button"
-              onClick={ligarSom}
-              className="inline-flex items-center gap-2 rounded-full border border-ouro/50 bg-ouro/[0.08] px-3.5 py-1.5 font-sans text-xs font-semibold text-ouro transition-colors duration-200 hover:bg-ouro/[0.14]"
-            >
-              <Volume2 className="h-3.5 w-3.5" />
-              Ligar o som dos pedidos
-            </button>
-          )
-        ) : (
-          <span className="inline-flex items-center gap-2 rounded-full border border-linha px-3.5 py-1.5 font-sans text-xs text-tenue">
-            <BellOff className="h-3.5 w-3.5" />
-            Este aparelho não toca som
-          </span>
-        )}
-        <button
-          type="button"
-          onClick={testarSom}
-          className="inline-flex items-center gap-2 rounded-full border border-linha px-3.5 py-1.5 font-sans text-xs text-tenue transition-colors duration-rapida ease-assinatura hover:text-creme"
-        >
-          Tocar para testar
-        </button>
-      </div>
+            {ligado ? 'A receber em tempo real' : 'A ligar…'}
+          </p>
 
-      {!somLigado && somSuportado() ? (
-        <p className="mt-3 max-w-[60ch] font-sans text-xs leading-normal text-tenue">
-          O browser só deixa tocar som depois de alguém carregar uma vez. Ligue aqui no início do
-          serviço e o aparelho avisa sempre que cair um pedido.
-        </p>
-      ) : null}
+          <div className="flex items-center gap-2">
+            {!suportado ? (
+              <span className="inline-flex items-center gap-1.5 font-sans text-xs text-tenue">
+                <BellOff className="h-3.5 w-3.5" />
+                Este aparelho não toca som
+              </span>
+            ) : somLigado ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-verde/15 px-3 py-1.5 font-sans text-xs font-semibold text-verde">
+                <Bell className="h-3.5 w-3.5" />
+                Som ligado
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={ligarSom}
+                className="inline-flex items-center gap-1.5 rounded-full bg-laranja px-3.5 py-1.5 font-sans text-xs font-semibold text-grafite shadow-brilho-laranja transition-colors duration-200 hover:bg-laranja-claro"
+              >
+                <Volume2 className="h-3.5 w-3.5" />
+                Ligar o som
+              </button>
+            )}
+
+            {suportado ? (
+              <button
+                type="button"
+                onClick={testarSom}
+                aria-label="Tocar o sino para testar"
+                className="inline-flex items-center gap-1.5 rounded-full border border-linha px-3 py-1.5 font-sans text-xs font-semibold text-creme/70 transition-colors duration-200 hover:border-creme/30 hover:text-creme"
+              >
+                Testar
+              </button>
+            ) : null}
+          </div>
+        </div>
+
+        {!somLigado && suportado ? (
+          <p className="mt-3 border-t border-linha pt-3 font-sans text-xs leading-normal text-tenue">
+            O browser só deixa tocar som depois de alguém carregar uma vez. Ligue no início do
+            serviço e o aparelho avisa sempre que cair um pedido.
+          </p>
+        ) : null}
+      </div>
 
       {/* ------------------------------------------------------------ */}
       {/* A fila                                                        */}
       {/* ------------------------------------------------------------ */}
       {porEstado.abertos.length === 0 && porEstado.fechados.length === 0 ? (
-        <div className="vidro mt-10 rounded-cartao px-7 py-14 text-center">
+        <div className="superficie mt-10 rounded-cartao px-7 py-14 text-center">
           <p className="font-display text-xl text-creme">Nenhum pedido por agora.</p>
           <p className="mx-auto mt-3 max-w-[42ch] font-sans text-sm leading-normal text-tenue">
             Deixe este ecrã aberto. Assim que alguém enviar um pedido, ele cai aqui e o aparelho
@@ -352,7 +379,7 @@ function CartaoPedido({
             {hAQuantoTempo(pedido.created_at)} · {ROTULO_PAINEL[pedido.estado]}
           </p>
         </div>
-        <p className="font-display text-xl text-ouro">{formatarKz(pedido.total)}</p>
+        <p className="font-display text-xl text-laranja">{formatarKz(pedido.total)}</p>
       </div>
 
       <ul className="mt-4 flex flex-col gap-1.5 border-t border-linha pt-4">
@@ -372,8 +399,8 @@ function CartaoPedido({
         uma alergia que não foi lida.
       */}
       {pedido.observacao ? (
-        <p className="mt-4 rounded-campo border border-ouro/40 bg-ouro/[0.06] px-3.5 py-2.5 font-sans text-sm leading-snug text-creme">
-          <span className="etiqueta mr-2 text-ouro">Nota</span>
+        <p className="mt-4 rounded-campo border border-laranja/40 bg-laranja/[0.06] px-3.5 py-2.5 font-sans text-sm leading-snug text-creme">
+          <span className="etiqueta mr-2 text-laranja">Nota</span>
           {pedido.observacao}
         </p>
       ) : null}
@@ -392,7 +419,7 @@ function CartaoPedido({
       */}
       {porConfirmar ? (
         <div className="mt-5">
-          <Botao variante="ouro" tamanho="md" largo onClick={confirmar} disabled={aGuardar}>
+          <Botao variante="laranja" tamanho="md" largo onClick={confirmar} disabled={aGuardar}>
             Recebido — calar o alarme
           </Botao>
         </div>
@@ -403,7 +430,7 @@ function CartaoPedido({
           {/* O passo seguinte fica em destaque; os outros ficam à mão de
               quem serve à mesa e salta o "a caminho". */}
           <Botao
-            variante="ouro"
+            variante="laranja"
             tamanho="sm"
             onClick={() => avancar(avancos[0])}
             disabled={aGuardar}
