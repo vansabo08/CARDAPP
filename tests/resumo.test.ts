@@ -149,7 +149,7 @@ describe('email do resumo', () => {
     const texto = textoResumo(dados);
     expect(texto).toContain('Tia Bela');
     expect(texto).toContain('1. Muamba de Galinha');
-    expect(texto.endsWith('— enviado via Cardapp')).toBe(true);
+    expect(texto.endsWith('— enviado via CardApp')).toBe(true);
   });
 
   it('a versão em texto também trata o dia vazio', () => {

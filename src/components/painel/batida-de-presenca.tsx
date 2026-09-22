@@ -4,7 +4,7 @@ import * as React from 'react';
 import { clienteNavegador } from '@/lib/supabase/cliente';
 
 /**
- * Diz à base que esta casa está a usar o Cardapp agora.
+ * Diz à base que esta casa está a usar o CardApp agora.
  *
  * Serve duas perguntas do painel de administração: quem está a usar isto
  * neste momento, e há quanto tempo uma casa deixou de aparecer. A

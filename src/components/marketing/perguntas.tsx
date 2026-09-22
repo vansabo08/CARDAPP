@@ -19,7 +19,7 @@ const PERGUNTAS: { pergunta: string; resposta: string }[] = [
   {
     pergunta: 'Os pedidos chegam ao meu WhatsApp normal?',
     resposta:
-      'Se quiser, chegam. É o mesmo número que já usa, e a mensagem vem escrita de uma vez, com a mesa, os pratos, as observações e o total em Kwanzas. Se preferir, recebe-os no painel do Cardapp, com alarme e com o estado de cada pedido. Escolhe nas definições e muda quando quiser.',
+      'Se quiser, chegam. É o mesmo número que já usa, e a mensagem vem escrita de uma vez, com a mesa, os pratos, as observações e o total em Kwanzas. Se preferir, recebe-os no painel do CardApp, com alarme e com o estado de cada pedido. Escolhe nas definições e muda quando quiser.',
   },
   {
     pergunta: 'E se ninguém ouvir o pedido a chegar?',
@@ -39,7 +39,7 @@ const PERGUNTAS: { pergunta: string; resposta: string }[] = [
   {
     pergunta: 'Tenho de imprimir alguma coisa?',
     resposta:
-      'Só os cartões das mesas. O Cardapp gera um PDF A4 com seis cartões por página, já com o QR de cada mesa. Imprime, corta e põe na mesa.',
+      'Só os cartões das mesas. O CardApp gera um PDF A4 com seis cartões por página, já com o QR de cada mesa. Imprime, corta e põe na mesa.',
   },
   {
     pergunta: 'Posso mudar um preço a meio do serviço?',

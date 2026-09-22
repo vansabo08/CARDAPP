@@ -81,7 +81,7 @@ describe('buildWhatsAppMessage', () => {
       'TOTAL ....................... 16.300 Kz',
       'Pagamento: na mesa',
       '',
-      '— enviado via Cardapp',
+      '— enviado via CardApp',
     ].join('\n');
 
     expect(buildWhatsAppMessage(pedidoExemplo)).toBe(esperado);
@@ -176,7 +176,7 @@ describe('buildWhatsAppMessage', () => {
   });
 
   it('assina sempre no fim', () => {
-    expect(buildWhatsAppMessage(pedidoExemplo).endsWith('— enviado via Cardapp')).toBe(true);
+    expect(buildWhatsAppMessage(pedidoExemplo).endsWith('— enviado via CardApp')).toBe(true);
   });
 });
 
@@ -202,5 +202,41 @@ describe('numeros de WhatsApp angolanos', () => {
     expect(whatsAppValido('+244 923 456 789')).toBe(true);
     expect(whatsAppValido('12345')).toBe(false);
     expect(whatsAppValido('244123456789')).toBe(false);
+  });
+});
+
+describe('as opções de um prato na mensagem', () => {
+  const comOpcoes: PedidoParaMensagem = {
+    restaurante: 'Tia Bela',
+    mesa: 3,
+    data: new Date('2026-09-21T12:00:00Z'),
+    itens: [
+      {
+        nome: 'Muamba',
+        qtd: 1,
+        preco: 6500,
+        obs: 'sem cebola',
+        opcoes: [
+          { grupo: 'Tamanho', nome: 'Grande', preco: 6000, tipo: 'variante' },
+          { grupo: 'Extras', nome: 'Queijo', preco: 500, tipo: 'extra' },
+          { grupo: 'Extras', nome: 'Picante', preco: 0, tipo: 'extra' },
+        ],
+      },
+    ],
+  };
+
+  it('vêm por baixo do prato, antes da observação', () => {
+    const linhas = buildWhatsAppMessage(comOpcoes).split('\n');
+    const prato = linhas.findIndex((l) => l.includes('1x Muamba'));
+    expect(linhas.slice(prato + 1, prato + 5)).toEqual([
+      '   · Grande',
+      `   + Queijo (+${formatarKz(500)})`,
+      '   + Picante',
+      '   ↳ sem cebola',
+    ]);
+  });
+
+  it('um prato sem opções fica exactamente como sempre esteve', () => {
+    expect(buildWhatsAppMessage(pedidoExemplo)).not.toContain('   · ');
   });
 });

@@ -1,4 +1,4 @@
-# Cardapp
+# CardApp
 
 Cardápio digital para restaurantes em Angola. O restaurante carrega o cardápio,
 o sistema gera um QR por mesa, o cliente lê o código, escolhe sem fazer login e
@@ -138,7 +138,7 @@ Tia Bela · 19:42
 TOTAL ....................... 16.300 Kz
 Pagamento: na mesa
 
-— enviado via Cardapp
+— enviado via CardApp
 ```
 
 O pedido é gravado em `orders` com `fetch(..., { keepalive: true })` sem esperar

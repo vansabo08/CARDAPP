@@ -189,7 +189,7 @@ export function Precos() {
 
       <Revelar atraso={220}>
         <p className="mt-10 text-center font-sans text-xs text-tenue">
-          Activação assistida por um consultor Cardapp — Multicaixa Express em breve.
+          Activação assistida por um consultor CardApp — Multicaixa Express em breve.
         </p>
       </Revelar>
     </section>

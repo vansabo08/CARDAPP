@@ -13,8 +13,17 @@ import { cn } from '@/lib/utils';
  */
 const BASE_ESCURA =
   'border border-transparent bg-white/[0.05] text-creme placeholder:text-creme/35 hover:bg-white/[0.07] focus:border-laranja focus:bg-white/[0.07]';
+/*
+ * No fundo claro — o cardapio do cliente —, o campo tem de se ver.
+ *
+ * Era branco, com uma aresta a 8% de preto, numa folha branca: um
+ * rectangulo que so se encontrava sabendo que estava la. O cliente nao
+ * dava com o sitio da observacao. Agora tem um fundo quente que o
+ * separa da folha e uma aresta a 45%, que e o que chega aos 3:1 que um
+ * limite de campo precisa para se distinguir.
+ */
 const BASE_CLARA =
-  'border border-linha-escura bg-white text-grafite placeholder:text-tenue-escuro focus:border-laranja';
+  'border border-grafite/45 bg-grafite/[0.04] text-grafite placeholder:text-grafite/55 hover:border-grafite/65 focus:border-laranja focus:bg-white focus:ring-2 focus:ring-laranja/20';
 
 export type CampoProps = React.InputHTMLAttributes<HTMLInputElement> & { claro?: boolean };
 

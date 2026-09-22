@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { Botao } from '@/components/ui/botao';
 import { CabecalhoPagina } from '@/components/painel/navegacao';
 import { PedidosAoVivo } from '@/components/painel/pedidos-ao-vivo';
-import { obterMesas, obterPedidosDeHoje, obterRestauranteDoDono } from '@/lib/dados';
+import { obterMesas, obterPapelNoPainel, obterPedidosDeHoje, obterRestauranteDoDono } from '@/lib/dados';
 
 export const metadata: Metadata = { title: 'Pedidos' };
 
@@ -35,27 +35,37 @@ export default async function PaginaPedidos() {
     );
   }
 
-  const [pedidos, mesas] = await Promise.all([
+  const [pedidos, mesas, papel] = await Promise.all([
     obterPedidosDeHoje(restaurante.id),
     obterMesas(restaurante.id),
+    obterPapelNoPainel(),
   ]);
+  const cozinha = papel === 'cozinha';
 
   // O Realtime entrega a linha de `orders` crua, sem o número da mesa.
   // Vai daqui o dicionário, para o ecrã não ter de perguntar a cada
   // pedido que cai.
   const numeroPorMesa = Object.fromEntries(mesas.map((m) => [m.id, m.numero]));
 
-  const soWhatsApp = restaurante.modo_pedido === 'whatsapp';
+  // A forma de receber é decisão do dono; à cozinha e à sala não serve.
+  const soWhatsApp =
+    restaurante.modo_pedido === 'whatsapp' && (papel === 'dono' || papel === 'gerente');
 
   return (
     <div>
       <CabecalhoPagina
-        titulo="Pedidos"
-        descricao={`O que caiu no ${restaurante.nome} desde a meia-noite.`}
+        titulo={cozinha ? 'A preparar' : 'Pedidos'}
+        descricao={
+          cozinha
+            ? 'O que está por fazer, pela ordem em que chegou.'
+            : `O que caiu no ${restaurante.nome} desde a meia-noite.`
+        }
         accao={
-          <Botao asChild variante="contorno" tamanho="md">
-            <Link href="/painel/definicoes">Como recebo pedidos</Link>
-          </Botao>
+          papel === 'dono' ? (
+            <Botao asChild variante="contorno" tamanho="md">
+              <Link href="/painel/definicoes">Como recebo pedidos</Link>
+            </Botao>
+          ) : undefined
         }
       />
 
@@ -75,6 +85,7 @@ export default async function PaginaPedidos() {
         restauranteId={restaurante.id}
         mesas={numeroPorMesa}
         iniciais={pedidos}
+        soAPreparar={cozinha}
       />
     </div>
   );

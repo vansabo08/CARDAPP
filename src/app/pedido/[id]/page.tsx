@@ -5,7 +5,7 @@ import { Acompanhar } from '@/components/pedido/acompanhar';
 import { obterPedidoPublico } from '@/lib/dados';
 
 /**
- * O ecrã que o cliente recebe depois de enviar o pedido pelo Cardapp.
+ * O ecrã que o cliente recebe depois de enviar o pedido pelo CardApp.
  *
  * O endereço traz o id do pedido, que é um uuid v4 — quem não fez o
  * pedido não chega aqui por tentativa. Fica fora dos motores de busca na

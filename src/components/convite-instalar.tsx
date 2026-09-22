@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { abertoComoApp, eIphone, eSafari } from '@/lib/aparelho';
 
 /**
- * O convite para instalar o Cardapp no ecrã inicial.
+ * O convite para instalar o CardApp no ecrã inicial.
  *
  * Android e iOS não se instalam da mesma maneira, e não há forma de os
  * tratar igual:
@@ -131,7 +131,7 @@ export function ConviteInstalar() {
           : 'animate-descer',
       )}
       role="dialog"
-      aria-label="Instalar o Cardapp"
+      aria-label="Instalar o CardApp"
     >
       <div className="superficie flex items-start gap-3 rounded-cartao p-3.5 shadow-elevacao-3-escura">
         {/*
@@ -141,7 +141,7 @@ export function ConviteInstalar() {
         <Logotipo tamanho={40} className="mt-0.5" />
 
         <div className="min-w-0 flex-1">
-          <p className="font-sans text-sm font-semibold text-creme">Instalar o Cardapp</p>
+          <p className="font-sans text-sm font-semibold text-creme">Instalar o CardApp</p>
 
           {modo === 'android' ? (
             <p className="mt-1 text-pretty font-sans text-xs leading-normal text-tenue">

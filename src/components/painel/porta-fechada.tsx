@@ -75,7 +75,7 @@ export function PortaFechada({
               <Botao asChild variante="laranja" tamanho="lg" className="mt-5">
                 <a
                   href={`https://wa.me/244930207076?text=${encodeURIComponent(
-                    `Olá. Enviei o comprovativo do plano do Cardapp e a minha casa continua fechada. A casa é ${restaurante.nome} (${restaurante.slug}).`,
+                    `Olá. Enviei o comprovativo do plano do CardApp e a minha casa continua fechada. A casa é ${restaurante.nome} (${restaurante.slug}).`,
                   )}`}
                   target="_blank"
                   rel="noreferrer"

@@ -35,7 +35,7 @@ const PASSOS = [
     numero: '03',
     titulo: 'O pedido chega à cozinha',
     texto:
-      'No WhatsApp ou no painel do Cardapp, como a casa escolher. No painel, um alarme toca até alguém carregar em Recebido.',
+      'No WhatsApp ou no painel do CardApp, como a casa escolher. No painel, um alarme toca até alguém carregar em Recebido.',
   },
 ];
 
@@ -172,7 +172,7 @@ export default function PaginaInicial() {
               <Revelar atraso={120}>
                 <p className="mt-8 max-w-[44ch] text-pretty font-sans text-lg leading-relaxed text-tenue">
                   O cliente lê o QR da mesa e pede sem instalar nada. O pedido chega à cozinha já
-                  escrito, no WhatsApp ou no painel do Cardapp, e ele acompanha no telemóvel até o
+                  escrito, no WhatsApp ou no painel do CardApp, e ele acompanha no telemóvel até o
                   prato chegar.
                 </p>
               </Revelar>
@@ -294,7 +294,7 @@ export default function PaginaInicial() {
       {/*
         Isto era "A mensagem", e mostrava só o WhatsApp — do tempo em que
         era o único caminho. Uma casa que lesse a página até aqui ficava a
-        pensar que o Cardapp era um gerador de mensagens, e não sabia que
+        pensar que o CardApp era um gerador de mensagens, e não sabia que
         podia receber os pedidos num painel com alarme.
       */}
       <section id="caminhos" className="border-t border-linha">
@@ -338,7 +338,7 @@ export default function PaginaInicial() {
             {/* Painel */}
             <Revelar atraso={80} className="flex">
               <article className="superficie flex w-full flex-col rounded-cartao border-laranja/30 p-6 md:p-8">
-                <span className="etiqueta text-laranja">No painel do Cardapp</span>
+                <span className="etiqueta text-laranja">No painel do CardApp</span>
                 <h3 className="mt-4 text-balance font-display text-2xl leading-tight text-creme">
                   Os pedidos numa lista que se mexe sozinha.
                 </h3>

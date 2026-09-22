@@ -13,7 +13,7 @@ const CHAVE = process.env.RESEND_API_KEY ?? '';
  * Remetente. Sem domínio verificado, o Resend só deixa usar
  * onboarding@resend.dev — e só para o email da própria conta.
  */
-export const REMETENTE = process.env.RESEND_REMETENTE ?? 'Cardapp <onboarding@resend.dev>';
+export const REMETENTE = process.env.RESEND_REMETENTE ?? 'CardApp <onboarding@resend.dev>';
 
 export function resendConfigurado() {
   return CHAVE.startsWith('re_');

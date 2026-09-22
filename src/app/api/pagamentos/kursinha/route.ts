@@ -209,7 +209,7 @@ async function processar(bruto: unknown) {
   let nota = evento.motivo ?? null;
 
   if (tipo === 'pago' && !restauranteId) {
-    // Alguém pagou com um email que não tem conta no Cardapp. Não é um
+    // Alguém pagou com um email que não tem conta no CardApp. Não é um
     // erro do fornecedor nem nosso: é uma pessoa que comprou antes de
     // criar a conta, ou que usou outro email. Fica registado para se
     // poder resolver à mão, e não se abre nada a ninguém.

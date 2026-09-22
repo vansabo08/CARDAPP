@@ -34,7 +34,7 @@ export const MODOS: { id: ModoPedido; titulo: string; texto: string }[] = [
   },
   {
     id: 'app',
-    titulo: 'Dentro do Cardapp',
+    titulo: 'Dentro do CardApp',
     texto:
       'O pedido cai no painel, o aparelho toca, e o cliente fica com uma página que mostra o estado a mudar. Exige alguém de olho no painel durante o serviço.',
   },

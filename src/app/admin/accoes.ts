@@ -186,7 +186,7 @@ export async function marcarPago(id: string, meses = 1): Promise<Resultado> {
  * Cola um pagamento órfão à conta a que ele pertence.
  *
  * Um pagamento fica órfão quando entra com um email que não tem conta no
- * Cardapp — pagou-se com o email do costume e registou-se com outro, que
+ * CardApp — pagou-se com o email do costume e registou-se com outro, que
  * é a avaria mais humana que este sistema tem. O webhook faz o que deve:
  * grava, não abre nada a ninguém, e escreve porquê. Faltava a outra
  * metade, que é alguém poder dizer "este pagamento é desta casa".

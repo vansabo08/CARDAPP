@@ -5,7 +5,8 @@ import { CabecalhoPagina } from '@/components/painel/navegacao';
 import { obterPedidosDeHoje, obterRestauranteDoDono } from '@/lib/dados';
 import { formatarKz, numeroMesa } from '@/lib/format';
 import { resumoDoDia } from '@/lib/resumo';
-import { LIMITES_PLANO, NOME_PLANO, type Pedido, type Plano } from '@/lib/tipos';
+import { NOME_PLANO, type Pedido, type Plano } from '@/lib/tipos';
+import { temFuncionalidade } from '@/lib/funcionalidades';
 
 export const metadata: Metadata = { title: 'Resumo' };
 
@@ -30,7 +31,7 @@ export default async function PaginaResumo() {
     );
   }
 
-  const podeVerEstatisticas = LIMITES_PLANO[restaurante.plano].estatisticas;
+  const podeVerEstatisticas = temFuncionalidade(restaurante, 'estatisticas');
   const pedidos = podeVerEstatisticas ? await obterPedidosDeHoje(restaurante.id) : [];
 
   return (

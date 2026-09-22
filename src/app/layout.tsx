@@ -32,12 +32,12 @@ const sans = Manrope({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Cardapp — o cardápio que cabe numa mesa',
-    template: '%s · Cardapp',
+    default: 'CardApp — o cardápio que cabe numa mesa',
+    template: '%s · CardApp',
   },
   description:
     'Cardápio digital para restaurantes em Angola. O cliente lê o QR da mesa, escolhe e o pedido chega ao WhatsApp já formatado.',
-  applicationName: 'Cardapp',
+  applicationName: 'CardApp',
   manifest: '/manifest.webmanifest',
   icons: {
     icon: [
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    title: 'Cardapp',
+    title: 'CardApp',
     statusBarStyle: 'black-translucent',
   },
   // A distribuição vai ser quase toda por WhatsApp: o cartão de partilha
@@ -57,14 +57,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'pt_AO',
-    siteName: 'Cardapp',
-    title: 'Cardapp — o cardápio que cabe numa mesa',
+    siteName: 'CardApp',
+    title: 'CardApp — o cardápio que cabe numa mesa',
     description:
       'O cliente lê o QR da mesa, escolhe, e o pedido chega ao WhatsApp do restaurante já escrito.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Cardapp — o cardápio que cabe numa mesa',
+    title: 'CardApp — o cardápio que cabe numa mesa',
     description:
       'O cliente lê o QR da mesa, escolhe, e o pedido chega ao WhatsApp do restaurante já escrito.',
   },

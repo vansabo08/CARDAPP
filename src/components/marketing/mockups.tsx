@@ -57,7 +57,7 @@ export function EcraCardapio() {
           <div className="flex items-end gap-3">
             <div className="min-w-0 flex-1">
               {/*
-                A cor é a da casa de exemplo, e não o laranja do Cardapp:
+                A cor é a da casa de exemplo, e não o laranja do CardApp:
                 é assim que o cardápio a sério aparece a quem lê o QR, e
                 uma maqueta que mostra outra coisa promete o que não é.
               */}

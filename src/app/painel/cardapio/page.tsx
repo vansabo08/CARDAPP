@@ -3,7 +3,14 @@ import Link from 'next/link';
 import { Botao } from '@/components/ui/botao';
 import { CabecalhoPagina } from '@/components/painel/navegacao';
 import { GestorCardapio, ResumoCardapio } from '@/components/painel/gestor-cardapio';
-import { emModoDemonstracao, obterCardapio, obterRestauranteDoDono } from '@/lib/dados';
+import {
+  emModoDemonstracao,
+  obterCardapio,
+  obterMenus,
+  obterPapelNoPainel,
+  obterRestauranteDoDono,
+} from '@/lib/dados';
+import { temFuncionalidade } from '@/lib/funcionalidades';
 
 export const metadata: Metadata = { title: 'Cardápio' };
 
@@ -28,7 +35,11 @@ export default async function PaginaCardapio() {
     );
   }
 
-  const categorias = await obterCardapio(restaurante.id);
+  const [categorias, menus, papel] = await Promise.all([
+    obterCardapio(restaurante.id, { doPainel: true }),
+    temFuncionalidade(restaurante, 'menus_horario') ? obterMenus(restaurante.id) : Promise.resolve([]),
+    obterPapelNoPainel(),
+  ]);
 
   return (
     <div>
@@ -42,6 +53,9 @@ export default async function PaginaCardapio() {
         categoriasIniciais={categorias}
         plano={restaurante.plano}
         demonstracao={emModoDemonstracao()}
+        menusIniciais={menus}
+        esgotadoModo={restaurante.esgotado_modo ?? 'mostrar'}
+        eDono={papel === 'dono'}
       />
     </div>
   );

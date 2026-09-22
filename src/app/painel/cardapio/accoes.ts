@@ -131,6 +131,17 @@ export type DadosPrato = {
   preco: number;
   foto_url: string | null;
   disponivel: boolean;
+  /*
+   * Os do Plano Sala. Sem eles (undefined) a gravação não lhes toca —
+   * o editor de uma casa Mesa não os manda, e não pode apagar nada.
+   * Se vierem de uma casa Mesa, a base apaga-os na mesma.
+   */
+  preco_promocional?: number | null;
+  promo_inicio?: string | null;
+  promo_fim?: string | null;
+  prato_do_dia?: boolean;
+  nome_en?: string | null;
+  descricao_en?: string | null;
 };
 
 export async function criarPrato(categoryId: string, dados: DadosPrato): Promise<Resultado> {
@@ -209,11 +220,42 @@ export async function reordenarPratos(ids: string[]): Promise<Resultado> {
 }
 
 function limpar(dados: DadosPrato) {
-  return {
+  const base = {
     nome: dados.nome.trim().slice(0, 80),
     descricao: dados.descricao?.trim().slice(0, 160) || null,
     preco: Math.max(0, Math.round(Number(dados.preco) * 100) / 100),
     foto_url: dados.foto_url || null,
     disponivel: Boolean(dados.disponivel),
   };
+
+  const extra: Record<string, unknown> = {};
+
+  if (dados.preco_promocional !== undefined) {
+    /*
+     * Uma promoção que não desconta não é promoção — e a base recusa-a
+     * (preço promocional tem de ser menor do que o normal). Em vez de a
+     * gravação falhar inteira por causa disso, a promoção cai e o resto
+     * do prato grava-se.
+     */
+    const promo = Number(dados.preco_promocional);
+    const valida = dados.preco_promocional != null && Number.isFinite(promo) && promo >= 0 && promo < base.preco;
+    const inicio = dataOuNulo(dados.promo_inicio);
+    let fim = dataOuNulo(dados.promo_fim);
+    if (inicio && fim && fim <= inicio) fim = null;
+
+    extra.preco_promocional = valida ? Math.round(promo * 100) / 100 : null;
+    extra.promo_inicio = valida ? inicio : null;
+    extra.promo_fim = valida ? fim : null;
+  }
+  if (dados.prato_do_dia !== undefined) extra.prato_do_dia = Boolean(dados.prato_do_dia);
+  if (dados.nome_en !== undefined) extra.nome_en = dados.nome_en?.trim().slice(0, 80) || null;
+  if (dados.descricao_en !== undefined) extra.descricao_en = dados.descricao_en?.trim().slice(0, 200) || null;
+
+  return { ...base, ...extra };
+}
+
+function dataOuNulo(valor: string | null | undefined) {
+  if (!valor) return null;
+  const data = new Date(valor);
+  return Number.isNaN(data.getTime()) ? null : data.toISOString();
 }

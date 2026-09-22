@@ -64,8 +64,8 @@ function avisoPorWhatsApp(conta: ContaAdmin) {
     estado === 'expirada'
       ? `O cardápio do ${conta.nome} saiu do ar.`
       : estado === 'cortesia'
-        ? `O prazo do Cardapp do ${conta.nome} acabou — o cardápio ainda serve, mas por pouco tempo.`
-        : `O Cardapp do ${conta.nome} está a chegar ao fim.`;
+        ? `O prazo do CardApp do ${conta.nome} acabou — o cardápio ainda serve, mas por pouco tempo.`
+        : `O CardApp do ${conta.nome} está a chegar ao fim.`;
 
   const recado = [
     abertura,

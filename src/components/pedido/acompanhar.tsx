@@ -13,6 +13,7 @@ import {
   estadoValido,
   progresso,
 } from '@/lib/pedidos';
+import { descreverOpcoes } from '@/lib/whatsapp';
 import { cn } from '@/lib/utils';
 import type { PedidoPublico } from '@/lib/tipos';
 
@@ -145,6 +146,11 @@ export function Acompanhar({ inicial }: { inicial: PedidoPublico }) {
                 <span className="block font-display text-base leading-snug text-creme">
                   {item.qtd}x {item.nome}
                 </span>
+                {descreverOpcoes(item).map((texto) => (
+                  <span key={texto} className="mt-0.5 block font-sans text-xs leading-snug text-tenue">
+                    {texto}
+                  </span>
+                ))}
                 {item.obs ? (
                   <span className="mt-0.5 block font-sans text-xs leading-snug text-tenue">
                     {item.obs}

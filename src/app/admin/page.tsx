@@ -120,7 +120,7 @@ export default async function PaginaAdmin() {
     <div>
       <div className="border-b border-linha pb-7">
         <h1 className="font-display text-3xl leading-tight text-creme md:text-4xl">
-          O Cardapp por dentro
+          O CardApp por dentro
         </h1>
         <p className="mt-2 max-w-[58ch] font-sans text-sm leading-normal text-tenue">
           Todas as casas, o que pagam, quem está a trabalhar agora e quem deixou de aparecer.

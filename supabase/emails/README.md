@@ -29,7 +29,7 @@ spam. Vale a pena trocar já.
 | Username | `resend` |
 | Password | a chave de API do Resend (`re_…`) |
 | Sender email | `onboarding@resend.dev` |
-| Sender name | `Cardapp` |
+| Sender name | `CardApp` |
 
 > Sem domínio verificado, o Resend só entrega para o email da **sua própria
 > conta Resend**. Serve para testar. Para enviar a clientes a sério é preciso
@@ -45,8 +45,8 @@ Em **Rate Limits**, o limite de emails por hora pode subir depois disto.
 
 | Template | Ficheiro | Assunto |
 | --- | --- | --- |
-| Confirm signup | `confirmar-registo.html` | Confirme o seu email — Cardapp |
-| Reset password | `repor-palavra-passe.html` | Repor a palavra-passe — Cardapp |
+| Confirm signup | `confirmar-registo.html` | Confirme o seu email — CardApp |
+| Reset password | `repor-palavra-passe.html` | Repor a palavra-passe — CardApp |
 
 As variáveis `{{ .ConfirmationURL }}` são do Supabase — não lhes toque.
 

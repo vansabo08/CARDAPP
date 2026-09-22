@@ -7,7 +7,7 @@ import { dataPorExtenso, type ResumoDoDia } from '../resumo';
  * HTML de email é outro ofício: tabelas, estilos em linha e nada de
  * variáveis CSS. O fundo é creme e não grafite — o escuro é bonito no
  * ecrã mas trai-nos no Outlook e nalguns clientes em modo claro.
- * O dourado e a serifa ficam, para não deixar de ser o Cardapp.
+ * O dourado e a serifa ficam, para não deixar de ser o CardApp.
  */
 
 const OURO = '#A8813E';
@@ -149,7 +149,7 @@ export function htmlResumo({ nomeRestaurante, data, resumo, ligacaoPainel }: Dad
         <tr>
           <td style="background:${GRAFITE};border-radius:18px;padding:26px 24px;">
             <div style="font:400 19px/1 ${SERIFA};color:${CREME};letter-spacing:-0.3px;">
-              Cardapp<span style="color:${OURO};">.</span>
+              CardApp<span style="color:${OURO};">.</span>
             </div>
             <div style="margin-top:20px;font:600 11px/1 ${SANS};letter-spacing:1.6px;text-transform:uppercase;color:${OURO};">
               ${escapar(dataPorExtenso(data))}
@@ -178,7 +178,7 @@ export function htmlResumo({ nomeRestaurante, data, resumo, ligacaoPainel }: Dad
         <tr><td height="30"></td></tr>
         <tr>
           <td align="center" style="border-top:1px solid ${LINHA};padding-top:20px;font:400 12px/1.6 ${SANS};color:${TENUE};">
-            Recebe isto porque tem o plano Sala no Cardapp.<br>
+            Recebe isto porque tem o plano Sala no CardApp.<br>
             Luanda, Angola
           </td>
         </tr>
@@ -219,7 +219,7 @@ export function textoResumo({ nomeRestaurante, data, resumo, ligacaoPainel }: Da
   linhas.push('');
   linhas.push(`Painel: ${ligacaoPainel}`);
   linhas.push('');
-  linhas.push('— enviado via Cardapp');
+  linhas.push('— enviado via CardApp');
 
   return linhas.join('\n');
 }

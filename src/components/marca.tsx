@@ -29,7 +29,7 @@ export function Marca({
 
   const conteudo = (
     <span className={cn('inline-flex items-center gap-2.5', className)}>
-      <Logotipo tamanho={lado} alt={soSimbolo ? 'Cardapp' : ''} />
+      <Logotipo tamanho={lado} alt={soSimbolo ? 'CardApp' : ''} />
       {!soSimbolo ? (
         <span
           className={cn(
@@ -37,7 +37,7 @@ export function Marca({
             tamanho === 'sm' ? 'text-base' : 'text-xl',
           )}
         >
-          Cardapp
+          CardApp
         </span>
       ) : null}
     </span>
@@ -63,7 +63,7 @@ export function AssinaturaCardapp({ claro = false }: { claro?: boolean }) {
     >
       feito com
       <Logotipo tamanho={14} />
-      <span className="font-display text-xs normal-case tracking-normal">Cardapp</span>
+      <span className="font-display text-xs normal-case tracking-normal">CardApp</span>
     </a>
   );
 }

@@ -7,11 +7,19 @@ import { estadoDaConta, painelAberto } from '@/lib/planos';
 import { ConviteInstalar } from '@/components/convite-instalar';
 import { AvisoDoIcone } from '@/components/aviso-do-icone';
 import { SinoDePedidos } from '@/components/painel/sino-de-pedidos';
+import { AlertasDaSala } from '@/components/painel/alertas-da-sala';
+import { temFuncionalidade } from '@/lib/funcionalidades';
+import { podeEntrar } from '@/lib/papeis';
 import { BatidaDePresenca } from '@/components/painel/batida-de-presenca';
 import { SinoDeComprovativos } from '@/components/painel/sino-de-comprovativos';
 import { FaixaDeAuditoria } from '@/components/painel/faixa-de-auditoria';
 import { casaEmAuditoria } from '@/lib/auditoria';
-import { comprovativoAEspera, emModoDemonstracao, obterRestauranteDoDono } from '@/lib/dados';
+import {
+  comprovativoAEspera,
+  emModoDemonstracao,
+  obterPapelNoPainel,
+  obterRestauranteDoDono,
+} from '@/lib/dados';
 import { eAdministrador } from '@/lib/admin';
 import { utilizadorActual } from '@/lib/supabase/servidor';
 
@@ -23,10 +31,11 @@ export default async function LayoutPainel({ children }: { children: React.React
     if (!utilizador) redirect('/entrar');
   }
 
-  const [restaurante, administrador, emAuditoria] = await Promise.all([
+  const [restaurante, administrador, emAuditoria, papel] = await Promise.all([
     obterRestauranteDoDono(),
     eAdministrador(),
     casaEmAuditoria(),
+    obterPapelNoPainel(),
   ]);
 
   const fechado =
@@ -46,7 +55,8 @@ export default async function LayoutPainel({ children }: { children: React.React
     <div className="relative min-h-dvh">
       {emAuditoria && restaurante ? <FaixaDeAuditoria nome={restaurante.nome} /> : null}
       <AvisoDemonstracao />
-      {restaurante ? (
+      {/* O prazo e o pagamento são assunto do dono; à equipa só baralhavam. */}
+      {restaurante && papel === 'dono' ? (
         <AvisoDoPlano restaurante={restaurante} aEsperarConfirmacao={aEsperarConfirmacao} />
       ) : null}
       {administrador && !emAuditoria ? <SinoDeComprovativos /> : null}
@@ -58,6 +68,7 @@ export default async function LayoutPainel({ children }: { children: React.React
           plano={restaurante?.plano ?? 'mesa'}
           demonstracao={demonstracao}
           administrador={administrador}
+          papel={papel}
         />
         <main className="min-w-0 flex-1 px-5 pb-32 pt-8 md:px-10 md:py-12 md:pb-12">
           <div className="mx-auto max-w-[880px]">
@@ -79,11 +90,17 @@ export default async function LayoutPainel({ children }: { children: React.React
         </main>
       </div>
 
-      <DocaPainel />
+      <DocaPainel papel={papel} />
       <ConviteInstalar />
       <AvisoDoIcone />
       {restaurante ? <SinoDePedidos restauranteId={restaurante.id} /> : null}
       {restaurante ? <BatidaDePresenca /> : null}
+      {restaurante &&
+      !demonstracao &&
+      temFuncionalidade(restaurante, 'chamar_empregado') &&
+      podeEntrar(papel, 'salao') ? (
+        <AlertasDaSala restauranteId={restaurante.id} />
+      ) : null}
     </div>
   );
 }

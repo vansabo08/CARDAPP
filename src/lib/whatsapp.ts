@@ -24,6 +24,23 @@ export function alinhar(rotulo: string, valor: string, largura = LARGURA_LINHA) 
   return `${rotulo} ${pontos} ${valor}`;
 }
 
+/**
+ * As opções de uma linha, uma por linha de texto.
+ *
+ * O tamanho vai sozinho ("· Grande"): o preço dele já está no preço do
+ * prato. Um extra leva "+" e o que acrescenta ("+ Queijo (+500 Kz)"),
+ * para quem confere a conta perceber de onde vem a diferença.
+ *
+ * Serve a mensagem de WhatsApp e os ecrãs do painel — é a mesma leitura.
+ */
+export function descreverOpcoes(item: Pick<ItemPedido, 'opcoes'>): string[] {
+  return (item.opcoes ?? []).map((opcao) =>
+    opcao.tipo === 'variante'
+      ? `· ${opcao.nome}`
+      : `+ ${opcao.nome}${opcao.preco > 0 ? ` (+${formatarKz(opcao.preco)})` : ''}`,
+  );
+}
+
 export function totalDoPedido(itens: ItemPedido[]) {
   return itens.reduce((soma, item) => soma + item.preco * item.qtd, 0);
 }
@@ -51,6 +68,10 @@ export function buildWhatsAppMessage(pedido: PedidoParaMensagem): string {
     const valor = formatarKz(item.preco * item.qtd);
     linhas.push(`${MARCADOR} ${alinhar(rotulo, valor)}`);
 
+    // As opções vêm antes da observação: primeiro o que é o prato
+    // (Grande, com queijo), depois o que se pede à cozinha (sem cebola).
+    for (const linha of descreverOpcoes(item)) linhas.push(`   ${linha}`);
+
     const obs = item.obs?.trim();
     if (obs) linhas.push(`   ${SETA_OBS} ${obs}`);
   }
@@ -72,7 +93,7 @@ export function buildWhatsAppMessage(pedido: PedidoParaMensagem): string {
   linhas.push(alinhar('TOTAL', formatarKz(total)));
   linhas.push(`Pagamento: ${pagamento}`);
   linhas.push('');
-  linhas.push('— enviado via Cardapp');
+  linhas.push('— enviado via CardApp');
 
   return linhas.join('\n');
 }

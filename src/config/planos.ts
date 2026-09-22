@@ -11,7 +11,7 @@
  * A Kursinha só vende pagamento único — não tem assinatura nem evento de
  * renovação. Por isso o ciclo é simples e manual: cada compra aprovada
  * acrescenta 30 dias, e quem quiser continuar volta a comprar. O
- * Cardapp encarrega-se de avisar antes que acabe.
+ * CardApp encarrega-se de avisar antes que acabe.
  */
 
 export type Plano = 'mesa' | 'sala';
@@ -60,3 +60,60 @@ export const DIAS_DE_CORTESIA = 3;
 
 /** A quantos dias do fim se começa a avisar. */
 export const AVISAR_A = [7, 3, 1] as const;
+
+/* ------------------------------------------------------------------ */
+/* O que cada plano abre                                               */
+/* ------------------------------------------------------------------ */
+
+/**
+ * As funcionalidades que dependem do plano.
+ *
+ * O que não está nesta lista é de toda a gente: o cardápio, o QR das
+ * mesas, os pedidos, o interruptor de "hoje há". O Plano Mesa não perde
+ * nada do que já tinha; o Sala acrescenta.
+ */
+export type Funcionalidade =
+  | 'estatisticas'
+  | 'sem_marca'
+  | 'chamar_empregado'
+  | 'salao'
+  | 'equipa'
+  | 'relatorios'
+  | 'esgotado_ao_vivo'
+  | 'opcoes'
+  | 'menus_horario'
+  | 'promocoes'
+  | 'avaliacoes'
+  | 'multi_idioma';
+
+const TUDO_O_QUE_E_SALA: readonly Funcionalidade[] = [
+  'estatisticas',
+  'sem_marca',
+  'chamar_empregado',
+  'salao',
+  'equipa',
+  'relatorios',
+  'esgotado_ao_vivo',
+  'opcoes',
+  'menus_horario',
+  'promocoes',
+  'avaliacoes',
+  'multi_idioma',
+];
+
+export const FUNCIONALIDADES_DO_PLANO: Record<Plano, readonly Funcionalidade[]> = {
+  mesa: [],
+  sala: TUDO_O_QUE_E_SALA,
+};
+
+/**
+ * Quantas pessoas, além do dono, cabem na equipa de cada plano.
+ *
+ * Configurável sem mexer no código: `LIMITE_MEMBROS_SALA` no ambiente
+ * muda o do Sala. O Mesa não tem equipa — é o dono sozinho.
+ */
+export function limiteDeMembros(plano: Plano): number {
+  if (plano !== 'sala') return 0;
+  const doAmbiente = Number.parseInt(process.env.LIMITE_MEMBROS_SALA ?? '', 10);
+  return Number.isFinite(doAmbiente) && doAmbiente >= 0 ? doAmbiente : 8;
+}

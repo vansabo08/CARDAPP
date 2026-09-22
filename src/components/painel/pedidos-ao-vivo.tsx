@@ -19,6 +19,7 @@ import {
   somSuportado,
   tocarSino,
 } from '@/lib/som';
+import { descreverOpcoes } from '@/lib/whatsapp';
 import { cn } from '@/lib/utils';
 import { confirmarPedido, mudarEstado } from '@/app/painel/pedidos/accoes';
 import { avisarQueFoiVisto } from '@/lib/sinal-do-pedido';
@@ -38,11 +39,18 @@ export function PedidosAoVivo({
   restauranteId,
   mesas,
   iniciais,
+  soAPreparar = false,
 }: {
   restauranteId: string;
   /** table_id → número da mesa, para o Realtime não ter de perguntar. */
   mesas: Record<string, number>;
   iniciais: Pedido[];
+  /**
+   * Para a cozinha: só o que ainda está para fazer. O que já saiu, foi
+   * entregue ou foi cancelado não é trabalho da cozinha, e numa lista
+   * comprida empurrava o próximo prato para fora do ecrã.
+   */
+  soAPreparar?: boolean;
 }) {
   const [pedidos, setPedidos] = React.useState(iniciais);
   const [ligado, setLigado] = React.useState(false);
@@ -178,10 +186,14 @@ export function PedidosAoVivo({
   }
 
   const porEstado = React.useMemo(() => {
+    if (soAPreparar) {
+      const abertos = pedidos.filter((p) => p.estado === 'novo' || p.estado === 'preparar');
+      return { abertos, fechados: [] as Pedido[] };
+    }
     const abertos = pedidos.filter((p) => !eEstadoFinal(p.estado));
     const fechados = pedidos.filter((p) => eEstadoFinal(p.estado));
     return { abertos, fechados };
-  }, [pedidos]);
+  }, [pedidos, soAPreparar]);
 
   return (
     <div>
@@ -386,7 +398,12 @@ function CartaoPedido({
         {pedido.itens.map((item, i) => (
           <li key={`${item.nome}-${i}`} className="font-sans text-sm leading-snug text-creme/90">
             {item.qtd}x {item.nome}
-            {item.obs ? <span className="text-tenue"> — {item.obs}</span> : null}
+            {descreverOpcoes(item).map((texto) => (
+              <span key={texto} className="block pl-5 text-xs text-creme/70">
+                {texto}
+              </span>
+            ))}
+            {item.obs ? <span className="block pl-5 text-xs text-tenue">↳ {item.obs}</span> : null}
           </li>
         ))}
       </ul>

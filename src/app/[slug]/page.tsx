@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { CardapioPublico } from '@/components/cardapio/cardapio-publico';
 import { AvisoDemonstracao } from '@/components/aviso-demonstracao';
-import { obterCardapio, obterMesaPorNumero, obterRestaurantePorSlug } from '@/lib/dados';
-import { LIMITES_PLANO } from '@/lib/tipos';
+import { obterCardapio, obterMenus, obterMesaPorNumero, obterRestaurantePorSlug } from '@/lib/dados';
+import { temFuncionalidade } from '@/lib/funcionalidades';
 import { cardapioNoAr, estadoDaConta } from '@/lib/planos';
 import { ForaDoAr } from '@/components/cardapio/fora-do-ar';
 
@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       type: 'website',
       locale: 'pt_AO',
-      siteName: 'Cardapp',
+      siteName: 'CardApp',
       title: titulo,
       description: descricao,
       url: `/${restaurante.slug}`,
@@ -71,20 +71,23 @@ export default async function PaginaCardapio({ params, searchParams }: Props) {
 
   const numero = lerNumeroDaMesa(mesaBruta);
 
-  const [categorias, mesa] = await Promise.all([
+  const [categorias, mesa, menus] = await Promise.all([
     obterCardapio(restaurante.id),
     numero != null ? obterMesaPorNumero(restaurante.id, numero) : Promise.resolve(null),
+    temFuncionalidade(restaurante, 'menus_horario') ? obterMenus(restaurante.id) : Promise.resolve([]),
   ]);
 
   return (
     <>
       <AvisoDemonstracao />
       <CardapioPublico
-      restaurante={restaurante}
-      categorias={categorias}
-      mesa={mesa?.numero ?? numero}
-      tableId={mesa?.id ?? null}
-        marcaVisivel={LIMITES_PLANO[restaurante.plano]?.marca ?? true}
+        restaurante={restaurante}
+        categorias={categorias}
+        menus={menus}
+        agoraDoServidor={Date.now()}
+        mesa={mesa?.numero ?? numero}
+        tableId={mesa?.id ?? null}
+        marcaVisivel={!temFuncionalidade(restaurante, 'sem_marca')}
       />
     </>
   );

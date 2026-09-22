@@ -6,8 +6,8 @@ import type { MetadataRoute } from 'next';
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Cardapp',
-    short_name: 'Cardapp',
+    name: 'CardApp',
+    short_name: 'CardApp',
     description:
       'Cardápio digital para restaurantes em Angola. O cliente lê o QR da mesa e o pedido chega ao WhatsApp.',
     lang: 'pt-AO',

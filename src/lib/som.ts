@@ -388,7 +388,7 @@ export function avisarDoPedido(mesa: number | null, total: string) {
   if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return false;
 
   try {
-    new Notification('Pedido novo no Cardapp', {
+    new Notification('Pedido novo no CardApp', {
       body: mesa != null ? `Mesa ${mesa} — ${total}` : `Sem mesa — ${total}`,
       icon: '/icone-192.png',
       badge: '/icone-192.png',
@@ -414,7 +414,7 @@ export function avisarDoComprovativo(quantos: number) {
   if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return false;
 
   try {
-    new Notification('Comprovativo novo no Cardapp', {
+    new Notification('Comprovativo novo no CardApp', {
       body:
         quantos === 1
           ? 'Uma casa transferiu e espera confirmação.'
@@ -427,5 +427,88 @@ export function avisarDoComprovativo(quantos: number) {
     return true;
   } catch {
     return false;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* A chamada da mesa                                                   */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Um "dim-dom" suave, para quando uma mesa chama o empregado ou pede a
+ * conta.
+ *
+ * Não é o sino dos pedidos, de propósito. O sino é para a cozinha, tem de
+ * atravessar o exaustor e insiste até alguém confirmar. A chamada é para
+ * a sala, onde há clientes a jantar: duas notas descendentes, redondas,
+ * a menos de metade do volume do sino, e uma vez só. O aviso que fica é
+ * o visual — o cartão a pulsar até alguém carregar em "Atendido".
+ *
+ * Duas notas de uma quinta (mi e lá), porque é o intervalo das
+ * campainhas de porta: toda a gente o lê como "está alguém a chamar"
+ * sem ter de o aprender.
+ */
+export async function tocarChamada() {
+  const ctx = obterContexto();
+  if (!ctx) return false;
+
+  if (ctx.state !== 'running') {
+    try {
+      await ctx.resume();
+    } catch {
+      return false;
+    }
+  }
+  if (ctx.state !== 'running') return false;
+
+  const saida = ctx.createGain();
+  saida.gain.value = 0.22;
+  saida.connect(ctx.destination);
+
+  const inicio = ctx.currentTime + 0.01;
+  const notas: [frequencia: number, quando: number][] = [
+    [1318.5, 0],
+    [880, 0.28],
+  ];
+
+  let porAcabar = notas.length;
+  for (const [frequencia, quando] of notas) {
+    const oscilador = ctx.createOscillator();
+    const envolvente = ctx.createGain();
+    oscilador.type = 'sine';
+    oscilador.frequency.value = frequencia;
+
+    const t = inicio + quando;
+    envolvente.gain.setValueAtTime(0, t);
+    envolvente.gain.linearRampToValueAtTime(1, t + 0.012);
+    envolvente.gain.setTargetAtTime(0, t + 0.012, 0.32);
+
+    oscilador.connect(envolvente);
+    envolvente.connect(saida);
+    oscilador.start(t);
+    oscilador.stop(t + 1.8);
+    oscilador.onended = () => {
+      envolvente.disconnect();
+      porAcabar -= 1;
+      if (porAcabar === 0) saida.disconnect();
+    };
+  }
+
+  return true;
+}
+
+/** A notificação do sistema, para quando o painel está noutro separador. */
+export function avisarDaChamada(mesa: number, tipo: 'empregado' | 'conta') {
+  if (typeof window === 'undefined' || !('Notification' in window)) return;
+  if (Notification.permission !== 'granted' || document.visibilityState === 'visible') return;
+
+  try {
+    new Notification(tipo === 'conta' ? `Mesa ${mesa} pediu a conta` : `Mesa ${mesa} chama o empregado`, {
+      body: 'Toque para abrir o salão.',
+      tag: `cardapp-chamada-${mesa}-${tipo}`,
+      icon: '/icone-192.png?v=2',
+    });
+  } catch {
+    /* alguns browsers móveis só deixam notificar pelo service worker */
   }
 }

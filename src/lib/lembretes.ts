@@ -15,7 +15,7 @@ import {
  * Os avisos de renovação.
  *
  * A Kursinha só vende pagamento único: não há débito automático nem
- * aviso de renovação do lado dela. Se o Cardapp não lembrar, ninguém
+ * aviso de renovação do lado dela. Se o CardApp não lembrar, ninguém
  * lembra, e a casa descobre que o prazo acabou quando um cliente lhe
  * disser que o QR não abre. É o pior sítio possível para descobrir.
  */
@@ -86,10 +86,10 @@ export function textoDoLembrete(casa: CasaParaAvisar) {
   const preco = formatarKz(plano.preco);
 
   const abertura: Record<TipoLembrete, string> = {
-    faltam_7: `Faltam sete dias para o Cardapp do ${casa.nome} chegar ao fim.`,
-    faltam_3: `Faltam três dias para o Cardapp do ${casa.nome} chegar ao fim.`,
-    falta_1: `Amanhã acaba o Cardapp do ${casa.nome}.`,
-    expira_hoje: `Hoje acaba o Cardapp do ${casa.nome}.`,
+    faltam_7: `Faltam sete dias para o CardApp do ${casa.nome} chegar ao fim.`,
+    faltam_3: `Faltam três dias para o CardApp do ${casa.nome} chegar ao fim.`,
+    falta_1: `Amanhã acaba o CardApp do ${casa.nome}.`,
+    expira_hoje: `Hoje acaba o CardApp do ${casa.nome}.`,
     fim_cortesia: `O cardápio do ${casa.nome} saiu do ar.`,
   };
 

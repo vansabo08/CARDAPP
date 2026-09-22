@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 /**
- * O logótipo oficial do Cardapp: faca e garfo brancos, cruzados, num
+ * O logótipo oficial do CardApp: faca e garfo brancos, cruzados, num
  * disco preto.
  *
  * É a imagem que a casa escolheu, tal como veio — recortada à volta do
@@ -22,7 +22,7 @@ export function Logotipo({
 }: {
   tamanho: number;
   className?: string;
-  /** Vazio quando o nome "Cardapp" já vai escrito ao lado. */
+  /** Vazio quando o nome "CardApp" já vai escrito ao lado. */
   alt?: string;
 }) {
   return (
@@ -33,7 +33,7 @@ export function Logotipo({
       alt={alt}
       // A marca está no topo de todos os ecrãs. Carregada "à preguiça",
       // como o next/image faz por omissão, aparecia um espaço vazio ao
-      // lado de "Cardapp" até o browser decidir ir buscá-la.
+      // lado de "CardApp" até o browser decidir ir buscá-la.
       loading="eager"
       className={cn('shrink-0 rounded-full', className)}
     />

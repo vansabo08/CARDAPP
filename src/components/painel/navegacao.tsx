@@ -10,21 +10,86 @@ import { NOME_PLANO, type Plano } from '@/lib/tipos';
 import { cn } from '@/lib/utils';
 import { Doca, type ItemDoca } from '@/components/ui/doca';
 import {
+  Armchair,
   BookOpen,
   ChevronDown,
   LayoutGrid,
+  Lock,
   QrCode,
   ReceiptText,
   SlidersHorizontal,
+  Sparkles,
+  UsersRound,
 } from 'lucide-react';
+import { podeEntrar, NOME_PAPEL, type Area, type Papel } from '@/lib/papeis';
+import { temFuncionalidade, type Funcionalidade } from '@/lib/funcionalidades';
 
-const LIGACOES = [
-  { href: '/painel', rotulo: 'Resumo', icone: LayoutGrid },
-  { href: '/painel/pedidos', rotulo: 'Pedidos', icone: ReceiptText },
-  { href: '/painel/cardapio', rotulo: 'Cardápio', icone: BookOpen },
-  { href: '/painel/mesas', rotulo: 'Mesas', icone: QrCode },
-  { href: '/painel/definicoes', rotulo: 'Definições', icone: SlidersHorizontal },
+type Ligacao = {
+  href: string;
+  rotulo: string;
+  icone: typeof LayoutGrid;
+  area: Area;
+  /** Do Plano Sala: no Mesa aparece com cadeado e abre o cartão de upgrade. */
+  sala?: Funcionalidade;
+  /** Fora da barra de baixo do telemóvel, que só leva cinco. */
+  soNoMenu?: boolean;
+};
+
+const LIGACOES: readonly Ligacao[] = [
+  { href: '/painel', rotulo: 'Resumo', icone: LayoutGrid, area: 'resumo' },
+  { href: '/painel/pedidos', rotulo: 'Pedidos', icone: ReceiptText, area: 'pedidos' },
+  { href: '/painel/salao', rotulo: 'Salão', icone: Armchair, area: 'salao', sala: 'salao' },
+  { href: '/painel/cardapio', rotulo: 'Cardápio', icone: BookOpen, area: 'cardapio' },
+  // Os QR imprimem-se uma vez; o salão abre-se todos os dias. Na barra
+  // de baixo do telemóvel fica o salão, e as mesas passam para o menu.
+  { href: '/painel/mesas', rotulo: 'Mesas e QR', icone: QrCode, area: 'mesas', soNoMenu: true },
+  {
+    href: '/painel/equipa',
+    rotulo: 'Equipa',
+    icone: UsersRound,
+    area: 'equipa',
+    sala: 'equipa',
+    soNoMenu: true,
+  },
+  { href: '/painel/definicoes', rotulo: 'Definições', icone: SlidersHorizontal, area: 'definicoes' },
 ];
+
+/** As ligações que este papel pode abrir, pela ordem do menu. */
+function ligacoesDe(papel: Papel) {
+  return LIGACOES.filter((l) => podeEntrar(papel, l.area));
+}
+
+/**
+ * O selo das casas do Plano Sala.
+ *
+ * Pequeno e quente: é para quem paga o plano de cima sentir que o tem,
+ * não para gritar. Fica ao lado do nome da casa, no sítio onde antes se
+ * lia "Plano Sala" na mesma letra cinzenta do Mesa.
+ */
+export function SeloSala({ className }: { className?: string }) {
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center gap-1 rounded-full border border-laranja/40 bg-laranja/10 px-2 py-0.5',
+        'font-sans text-xs font-semibold text-laranja',
+        className,
+      )}
+    >
+      <Sparkles className="h-3 w-3" aria-hidden />
+      Sala
+    </span>
+  );
+}
+
+/** O plano da casa e, para quem não é o dono, o papel de quem está ligado. */
+function PlanoEPapel({ plano, papel }: { plano: Plano; papel: Papel }) {
+  return (
+    <>
+      {plano === 'sala' ? <SeloSala /> : <span>Plano {NOME_PLANO[plano]}</span>}
+      {papel !== 'dono' ? <span>· {NOME_PAPEL[papel]}</span> : null}
+    </>
+  );
+}
 
 function estaActiva(href: string, caminho: string) {
   return href === '/painel' ? caminho === '/painel' : caminho.startsWith(href);
@@ -36,13 +101,17 @@ export function NavegacaoPainel({
   plano,
   demonstracao,
   administrador = false,
+  papel = 'dono',
 }: {
   nomeRestaurante: string | null;
   slug: string | null;
   plano: Plano;
   demonstracao: boolean;
   administrador?: boolean;
+  papel?: Papel;
 }) {
+  const ligacoes = ligacoesDe(papel);
+  const soNoMenu = ligacoes.filter((l) => l.soNoMenu);
   const caminho = usePathname();
   const router = useRouter();
   const [menuAberto, setMenuAberto] = React.useState(false);
@@ -110,11 +179,25 @@ export function NavegacaoPainel({
             {nomeRestaurante ? (
               <p className="truncate px-3.5 pb-2 font-display text-base text-creme">
                 {nomeRestaurante}
-                <span className="mt-0.5 block font-sans text-xs text-tenue">
-                  Plano {NOME_PLANO[plano]}
+                <span className="mt-1 flex items-center gap-2 font-sans text-xs text-tenue">
+                  <PlanoEPapel plano={plano} papel={papel} />
                 </span>
               </p>
             ) : null}
+
+            {soNoMenu.map((ligacao) => (
+              <Link
+                key={ligacao.href}
+                href={ligacao.href}
+                className="flex items-center gap-2.5 rounded-full px-3.5 py-2.5 font-sans text-sm font-semibold text-creme transition-colors duration-200 hover:text-laranja"
+              >
+                <ligacao.icone className="h-4 w-4 text-tenue" aria-hidden />
+                {ligacao.rotulo}
+                {ligacao.sala && !temFuncionalidade({ plano }, ligacao.sala) ? (
+                  <Lock className="h-3.5 w-3.5 text-tenue" aria-label="Plano Sala" />
+                ) : null}
+              </Link>
+            ))}
 
             {slug ? (
               <a
@@ -156,23 +239,32 @@ export function NavegacaoPainel({
         {nomeRestaurante ? (
           <div className="hidden px-6 pb-6 md:block">
             <p className="truncate font-display text-lg text-creme">{nomeRestaurante}</p>
-            <p className="mt-1 font-sans text-xs text-tenue">Plano {NOME_PLANO[plano]}</p>
+            <p className="mt-1.5 flex items-center gap-2 font-sans text-xs text-tenue">
+              <PlanoEPapel plano={plano} papel={papel} />
+            </p>
           </div>
         ) : null}
 
         <nav className="barra-esconde hidden gap-1 overflow-x-auto px-4 pb-3 md:flex md:flex-col md:px-3 md:pb-0">
-          {LIGACOES.map((ligacao) => {
+          {ligacoes.map((ligacao) => {
             const activa = estaActiva(ligacao.href, caminho);
+            const fechada = ligacao.sala ? !temFuncionalidade({ plano }, ligacao.sala) : false;
             return (
               <Link
                 key={ligacao.href}
                 href={ligacao.href}
+                aria-current={activa ? 'page' : undefined}
                 className={cn(
-                  'shrink-0 rounded-full px-3.5 py-2 font-sans text-sm font-semibold transition-colors duration-200 md:py-2.5',
+                  'flex shrink-0 items-center gap-3 rounded-full px-3.5 py-2 font-sans text-sm font-semibold transition-colors duration-200 md:py-2.5',
                   activa ? 'bg-white/[0.07] text-creme' : 'text-tenue hover:text-creme',
                 )}
               >
-                {ligacao.rotulo}
+                <ligacao.icone
+                  className={cn('h-4 w-4 shrink-0', activa ? 'text-laranja' : 'text-current')}
+                  aria-hidden
+                />
+                <span className="flex-1">{ligacao.rotulo}</span>
+                {fechada ? <Lock className="h-3.5 w-3.5 text-tenue" aria-label="Plano Sala" /> : null}
               </Link>
             );
           })}
@@ -222,10 +314,12 @@ export function NavegacaoPainel({
  * No computador continua a barra lateral, que carrega o contexto todo
  * (nome da casa, plano, sair).
  */
-export function DocaPainel() {
+export function DocaPainel({ papel = 'dono' }: { papel?: Papel }) {
   const caminho = usePathname();
 
-  const itens: ItemDoca[] = LIGACOES.map((ligacao) => ({
+  const itens: ItemDoca[] = ligacoesDe(papel)
+    .filter((ligacao) => !ligacao.soNoMenu)
+    .map((ligacao) => ({
     href: ligacao.href,
     rotulo: ligacao.rotulo,
     icone: ligacao.icone,

@@ -87,14 +87,14 @@ export function AvisoDoIcone() {
           : 'animate-descer',
       )}
       role="dialog"
-      aria-label="O ícone do Cardapp mudou"
+      aria-label="O ícone do CardApp mudou"
     >
       <div className="superficie flex items-start gap-3 rounded-cartao p-3.5 shadow-elevacao-3-escura">
         {/* O ícone novo, ao lado do texto que fala dele. */}
         <Logotipo tamanho={40} className="mt-0.5" />
 
         <div className="min-w-0 flex-1">
-          <p className="font-sans text-sm font-semibold text-creme">O ícone do Cardapp mudou</p>
+          <p className="font-sans text-sm font-semibold text-creme">O ícone do CardApp mudou</p>
 
           {noIphone ? (
             <p className="mt-1 text-pretty font-sans text-xs leading-normal text-tenue">

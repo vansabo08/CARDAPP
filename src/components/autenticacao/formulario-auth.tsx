@@ -25,7 +25,7 @@ const TEXTOS: Record<
     acima: 'Área da casa',
     titulo: (
       <>
-        Bem-vindo ao <span className="text-laranja">Cardapp</span>
+        Bem-vindo ao <span className="text-laranja">CardApp</span>
       </>
     ),
     sub: 'Entre para gerir o cardápio, as mesas e os pedidos do dia.',

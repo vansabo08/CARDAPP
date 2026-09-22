@@ -40,11 +40,11 @@ export const INCLUI: Record<Plano, string[]> = {
     'Pedidos pelo WhatsApp ou dentro da aplicação',
     'Cliente acompanha o estado do pedido',
     'Cartões de mesa em PDF, e cada QR à parte',
-    'Marca Cardapp visível no cardápio',
+    'Marca CardApp visível no cardápio',
   ],
   sala: [
     'Tudo o que o plano Mesa tem',
-    'Sem a marca Cardapp — o cardápio é só da casa',
+    'Sem a marca CardApp — o cardápio é só da casa',
     'Fotografia de capa e cor da marca',
     'Estatísticas do dia: total, média e pratos mais pedidos',
     'Resumo do dia por email, todas as manhãs',
@@ -212,10 +212,10 @@ export function lembreteDevido(
 }
 
 export const ASSUNTO_LEMBRETE: Record<TipoLembrete, string> = {
-  faltam_7: 'Faltam 7 dias do seu Cardapp',
-  faltam_3: 'Faltam 3 dias do seu Cardapp',
-  falta_1: 'Amanhã acaba o seu Cardapp',
-  expira_hoje: 'O seu Cardapp acaba hoje',
+  faltam_7: 'Faltam 7 dias do seu CardApp',
+  faltam_3: 'Faltam 3 dias do seu CardApp',
+  falta_1: 'Amanhã acaba o seu CardApp',
+  expira_hoje: 'O seu CardApp acaba hoje',
   fim_cortesia: 'O seu cardápio saiu do ar',
 };
 

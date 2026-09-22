@@ -1,0 +1,73 @@
+<!-- ================================================================
+     Supabase > Authentication > Emails > Invite user
+     Cole isto no campo "Message body". O assunto sugerido:
+       Foi convidado para a equipa — CardApp
+
+     O link aponta para /auth/confirmar com o token_hash, e não para o
+     {{ .ConfirmationURL }} de origem: assim a sessão fica em cookies,
+     que é onde o painel a procura. (O link de origem também funciona —
+     a página /convite sabe lê-lo —, mas este é mais robusto.)
+     ================================================================ -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#FAF7F2;">
+  <tr>
+    <td align="center" style="padding:28px 16px 44px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:480px;">
+
+        <tr>
+          <td style="background:#0F0E0D;border-radius:18px;padding:26px 24px;">
+            <div style="font:400 19px/1 Georgia,'Times New Roman',serif;color:#FAF7F2;letter-spacing:-0.3px;">
+              CardApp<span style="color:#FF5B24;">.</span>
+            </div>
+            <div style="margin-top:22px;font:400 26px/1.18 Georgia,'Times New Roman',serif;color:#FAF7F2;">
+              Tem um lugar na equipa.
+            </div>
+          </td>
+        </tr>
+
+        <tr><td height="24"></td></tr>
+
+        <tr>
+          <td style="font:400 16px/1.65 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#3A3733;">
+            Foi convidado para o painel de um restaurante no CardApp. Carregue no
+            botão, escolha a sua palavra-passe, e fica a ver os pedidos e as mesas
+            que lhe tocam.
+          </td>
+        </tr>
+
+        <tr><td height="26"></td></tr>
+
+        <tr>
+          <td align="center">
+            <a href="{{ .SiteURL }}/auth/confirmar?token_hash={{ .TokenHash }}&type=invite&next=/convite"
+               style="display:inline-block;background:#FF5B24;color:#0F0E0D;text-decoration:none;
+                      font:600 15px/1 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+                      padding:16px 32px;border-radius:999px;">
+              Aceitar o convite
+            </a>
+          </td>
+        </tr>
+
+        <tr><td height="26"></td></tr>
+
+        <tr>
+          <td style="font:400 13px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#6B6660;">
+            Se o botão não abrir, copie este endereço para o navegador:<br>
+            <span style="color:#D94412;word-break:break-all;">{{ .SiteURL }}/auth/confirmar?token_hash={{ .TokenHash }}&type=invite&next=/convite</span>
+          </td>
+        </tr>
+
+        <tr><td height="26"></td></tr>
+
+        <tr>
+          <td style="border-top:1px solid #E4DED4;padding-top:20px;
+                     font:400 12px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#6B6660;">
+            Não esperava este convite? Ignore esta mensagem — sem aceitar, não
+            entra em nada.<br><br>
+            CardApp · Luanda, Angola
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>

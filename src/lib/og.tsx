@@ -6,7 +6,7 @@ import sharp from 'sharp';
 /**
  * A chapa das imagens de partilha.
  *
- * Isto conta mais do que parece: a distribuição do Cardapp vai ser toda
+ * Isto conta mais do que parece: a distribuição do CardApp vai ser toda
  * por WhatsApp, e o que a pessoa vê antes de tocar no link é este
  * rectângulo. Preto da marca à esquerda com a palavra em serifa, e a
  * fotografia à direita a cortar ao meio.
@@ -88,7 +88,7 @@ export async function imagemDePartilha({
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={simboloUrl} width={32} height={32} alt="" />
-            <span style={{ fontSize: 34, color: CREME, letterSpacing: -0.5 }}>Cardapp</span>
+            <span style={{ fontSize: 34, color: CREME, letterSpacing: -0.5 }}>CardApp</span>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column' }}>

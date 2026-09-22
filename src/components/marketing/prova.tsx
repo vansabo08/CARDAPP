@@ -16,7 +16,7 @@ import { SITE_URL } from '@/lib/supabase/config';
  * produto a funcionar. O código aqui ao lado é real, é gerado pelo mesmo
  * módulo que imprime os cartões das mesas, e abre o cardápio de exemplo
  * exactamente como abriria numa mesa. Em cinco segundos o visitante
- * deixa de ler sobre o Cardapp e passa a usá-lo.
+ * deixa de ler sobre o CardApp e passa a usá-lo.
  *
  * Quando houver depoimentos verdadeiros, com autorização, entram por
  * baixo desta secção — não no lugar dela.
@@ -57,7 +57,7 @@ export async function Prova() {
             </h2>
 
             <p className="mt-6 max-w-[52ch] text-pretty font-sans text-base leading-relaxed text-tenue">
-              O Cardapp é novo e ainda está a juntar as primeiras casas. Em vez de testemunhos,
+              O CardApp é novo e ainda está a juntar as primeiras casas. Em vez de testemunhos,
               fica aqui o produto a trabalhar
               {qr
                 ? ': leia este código com a câmara do telemóvel, como faria sentado a uma mesa, e veja o cardápio abrir e o pedido sair já escrito para o WhatsApp.'
@@ -66,7 +66,7 @@ export async function Prova() {
 
             {qr ? (
               <p className="mt-4 max-w-[52ch] text-pretty font-sans text-sm leading-relaxed text-tenue">
-                É o mesmo cartão que o Cardapp imprime para as suas mesas, gerado pelo mesmo código.
+                É o mesmo cartão que o CardApp imprime para as suas mesas, gerado pelo mesmo código.
               </p>
             ) : null}
 
@@ -90,7 +90,7 @@ export async function Prova() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={qr}
-                  alt={`Código QR que abre o cardápio de exemplo do Cardapp em ${enderecoDemo}`}
+                  alt={`Código QR que abre o cardápio de exemplo do CardApp em ${enderecoDemo}`}
                   width={512}
                   height={512}
                   className="mt-4 h-auto w-full rounded-[6px]"

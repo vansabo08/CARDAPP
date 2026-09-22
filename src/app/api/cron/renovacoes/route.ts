@@ -11,7 +11,7 @@ import {
  * Os avisos de renovação, uma vez por dia.
  *
  * A Kursinha vende pagamento único e não avisa ninguém de nada. Se o
- * Cardapp não lembrar, a casa descobre que o prazo acabou quando um
+ * CardApp não lembrar, a casa descobre que o prazo acabou quando um
  * cliente lhe disser que o QR não abre — que é o pior sítio possível
  * para descobrir.
  *

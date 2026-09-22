@@ -5,7 +5,8 @@ import { SITE_URL } from '@/lib/supabase/config';
 import { enviarEmail, resendConfigurado } from '@/lib/email/resend';
 import { assuntoResumo, htmlResumo, textoResumo } from '@/lib/email/molde-resumo';
 import { janelaDoDiaEmLuanda, resumoDoDia } from '@/lib/resumo';
-import { LIMITES_PLANO, type Pedido, type Plano } from '@/lib/tipos';
+import { type Pedido, type Plano } from '@/lib/tipos';
+import { temFuncionalidade } from '@/lib/funcionalidades';
 
 /**
  * O email da manhã: o resumo de ontem para cada restaurante no plano Sala.
@@ -79,7 +80,7 @@ async function correr(pedido: Request) {
   }
 
   const elegiveis = ((restaurantes ?? []) as RestauranteLinha[]).filter(
-    (r) => LIMITES_PLANO[r.plano]?.estatisticas,
+    (r) => temFuncionalidade(r, 'relatorios'),
   );
 
   const relatorio: { restaurante: string; estado: string; detalhe?: string }[] = [];

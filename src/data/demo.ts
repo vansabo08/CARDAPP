@@ -29,23 +29,25 @@ export const CARDAPIO_DEMO: CategoriaComPratos[] = [
   {
     id: 'c1',
     restaurant_id: 'demo',
-    nome: 'Entradas',
+    nome: 'Entradas', nome_en: 'Starters',
     ordem: 0,
     itens: [
       {
         id: 'i1',
         category_id: 'c1',
-        nome: 'Kitaba',
+        nome: 'Kitaba', nome_en: 'Kitaba',
         descricao: 'Pasta de amendoim torrado com piripiri da casa',
         preco: 1800,
         foto_url: '/pratos/kitaba.webp',
         disponivel: true,
         ordem: 0,
+        // Em promoção, sem data de fim: mostra o preço riscado e o selo.
+        preco_promocional: 1500,
       },
       {
         id: 'i2',
         category_id: 'c1',
-        nome: 'Rissóis de Camarão',
+        nome: 'Rissóis de Camarão', nome_en: 'Shrimp Rissoles',
         descricao: 'Seis unidades, fritos na hora',
         preco: 2500,
         foto_url: '/pratos/rissois.webp',
@@ -55,7 +57,7 @@ export const CARDAPIO_DEMO: CategoriaComPratos[] = [
       {
         id: 'i3',
         category_id: 'c1',
-        nome: 'Salada de Feijão Frade',
+        nome: 'Salada de Feijão Frade', nome_en: 'Black-eyed Bean Salad',
         descricao: 'Cebola roxa, coentros e azeite',
         preco: 2200,
         foto_url: '/pratos/feijao-frade.webp',
@@ -67,23 +69,52 @@ export const CARDAPIO_DEMO: CategoriaComPratos[] = [
   {
     id: 'c2',
     restaurant_id: 'demo',
-    nome: 'Pratos Principais',
+    nome: 'Pratos Principais', nome_en: 'Main Courses',
     ordem: 1,
     itens: [
       {
         id: 'i4',
         category_id: 'c2',
-        nome: 'Muamba de Galinha',
+        nome: 'Muamba de Galinha', nome_en: 'Chicken Muamba',
         descricao: 'Galinha do campo, óleo de palma, quiabo e funge',
         preco: 4500,
         foto_url: '/pratos/muamba-galinha.webp',
         disponivel: true,
         ordem: 0,
+        // Tamanhos e extras, para a demonstração mostrar a folha de opções.
+        grupos: [
+          {
+            id: 'demo-tamanho',
+            nome: 'Tamanho', nome_en: 'Size',
+            tipo: 'variante',
+            minimo: 1,
+            maximo: 1,
+            ordem: 0,
+            opcoes: [
+              { id: 'demo-meia', nome: 'Meia dose', nome_en: 'Half portion', preco: 3000, disponivel: true, ordem: 0 },
+              { id: 'demo-dose', nome: 'Dose', nome_en: 'Full portion', preco: 4500, disponivel: true, ordem: 1 },
+              { id: 'demo-familia', nome: 'Para partilhar', nome_en: 'To share', preco: 8500, disponivel: true, ordem: 2 },
+            ],
+          },
+          {
+            id: 'demo-extras',
+            nome: 'Extras', nome_en: 'Extras',
+            tipo: 'extra',
+            minimo: 0,
+            maximo: 2,
+            ordem: 1,
+            opcoes: [
+              { id: 'demo-funge', nome: 'Mais funge', nome_en: 'Extra funge', preco: 800, disponivel: true, ordem: 0 },
+              { id: 'demo-ovo', nome: 'Ovo cozido', nome_en: 'Boiled egg', preco: 300, disponivel: true, ordem: 1 },
+              { id: 'demo-gindungo', nome: 'Gindungo à parte', nome_en: 'Chilli on the side', preco: 0, disponivel: true, ordem: 2 },
+            ],
+          },
+        ],
       },
       {
         id: 'i5',
         category_id: 'c2',
-        nome: 'Calulu de Peixe',
+        nome: 'Calulu de Peixe', nome_en: 'Fish Calulu',
         descricao: 'Peixe seco e fresco com folhas de batata-doce',
         preco: 5500,
         foto_url: '/pratos/calulu.webp',
@@ -93,7 +124,7 @@ export const CARDAPIO_DEMO: CategoriaComPratos[] = [
       {
         id: 'i6',
         category_id: 'c2',
-        nome: 'Funge de Bombó',
+        nome: 'Funge de Bombó', nome_en: 'Cassava Funge',
         descricao: 'Acompanhamento tradicional de mandioca',
         preco: 1500,
         foto_url: '/pratos/funge.webp',
@@ -103,7 +134,7 @@ export const CARDAPIO_DEMO: CategoriaComPratos[] = [
       {
         id: 'i7',
         category_id: 'c2',
-        nome: 'Moamba de Ginguba',
+        nome: 'Moamba de Ginguba', nome_en: 'Peanut Moamba',
         descricao: 'Frango estufado em creme de amendoim, com arroz',
         preco: 4800,
         foto_url: '/pratos/moamba-ginguba.webp',
@@ -115,23 +146,24 @@ export const CARDAPIO_DEMO: CategoriaComPratos[] = [
   {
     id: 'c3',
     restaurant_id: 'demo',
-    nome: 'Grelhados',
+    nome: 'Grelhados', nome_en: 'From the Grill',
     ordem: 2,
     itens: [
       {
         id: 'i8',
         category_id: 'c3',
-        nome: 'Mufete',
+        nome: 'Mufete', nome_en: 'Mufete',
         descricao: 'Carapau grelhado, feijão de óleo de palma, banana pão',
         preco: 7500,
         foto_url: '/pratos/mufete.webp',
         disponivel: true,
         ordem: 0,
+        prato_do_dia: true,
       },
       {
         id: 'i9',
         category_id: 'c3',
-        nome: 'Garoupa Grelhada',
+        nome: 'Garoupa Grelhada', nome_en: 'Grilled Grouper',
         descricao: 'Peixe do dia com batata-doce assada',
         preco: 9500,
         foto_url: '/pratos/garoupa.webp',
@@ -141,7 +173,7 @@ export const CARDAPIO_DEMO: CategoriaComPratos[] = [
       {
         id: 'i10',
         category_id: 'c3',
-        nome: 'Espetada de Vaca',
+        nome: 'Espetada de Vaca', nome_en: 'Beef Skewer',
         descricao: 'Lombo marinado, cebola e pimento',
         preco: 6800,
         foto_url: '/pratos/espetada.webp',
@@ -153,7 +185,7 @@ export const CARDAPIO_DEMO: CategoriaComPratos[] = [
   {
     id: 'c4',
     restaurant_id: 'demo',
-    nome: 'Bebidas',
+    nome: 'Bebidas', nome_en: 'Drinks',
     ordem: 3,
     itens: [
       {
@@ -179,7 +211,7 @@ export const CARDAPIO_DEMO: CategoriaComPratos[] = [
       {
         id: 'i13',
         category_id: 'c4',
-        nome: 'Sumo de Múcua',
+        nome: 'Sumo de Múcua', nome_en: 'Baobab Juice',
         descricao: 'Fruta do imbondeiro, natural',
         preco: 1200,
         foto_url: '/pratos/mucua.webp',
@@ -189,7 +221,7 @@ export const CARDAPIO_DEMO: CategoriaComPratos[] = [
       {
         id: 'i14',
         category_id: 'c4',
-        nome: 'Água 50cl',
+        nome: 'Água 50cl', nome_en: 'Water 50cl',
         descricao: null,
         preco: 400,
         foto_url: '/pratos/agua.webp',
@@ -201,13 +233,13 @@ export const CARDAPIO_DEMO: CategoriaComPratos[] = [
   {
     id: 'c5',
     restaurant_id: 'demo',
-    nome: 'Sobremesas',
+    nome: 'Sobremesas', nome_en: 'Desserts',
     ordem: 4,
     itens: [
       {
         id: 'i15',
         category_id: 'c5',
-        nome: 'Cocada Amarela',
+        nome: 'Cocada Amarela', nome_en: 'Cocada Amarela',
         descricao: 'Coco, gema e canela',
         preco: 1600,
         foto_url: '/pratos/cocada.webp',
@@ -217,7 +249,7 @@ export const CARDAPIO_DEMO: CategoriaComPratos[] = [
       {
         id: 'i16',
         category_id: 'c5',
-        nome: 'Doce de Múcua',
+        nome: 'Doce de Múcua', nome_en: 'Baobab Sweet',
         descricao: 'Servido frio',
         preco: 1400,
         foto_url: '/pratos/doce-mucua.webp',

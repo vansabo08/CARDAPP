@@ -31,7 +31,12 @@ export function FolhaInferior({
           className={cn(
             'fixed inset-x-0 bottom-0 z-50 mx-auto flex max-h-[88dvh] w-full max-w-[560px] flex-col overflow-hidden rounded-t-[20px] outline-none',
             'data-[state=open]:animate-folha',
-            'superficie-clara text-grafite',
+            // O fundo segue o conteudo. Era sempre branco, e o editor de pratos
+            // do painel, que e escrito para fundo escuro, ficava com letra
+            // branca em fundo branco: via-se a folha e mais nada.
+            claro
+              ? 'superficie-clara text-grafite'
+              : 'border-t border-white/[0.08] bg-grafite-alto text-creme shadow-[0_-24px_48px_-24px_rgba(0,0,0,0.8)]',
             className,
           )}
         >
