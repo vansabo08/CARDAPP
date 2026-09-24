@@ -36,7 +36,7 @@ export function FolhaInferior({
             // branca em fundo branco: via-se a folha e mais nada.
             claro
               ? 'superficie-clara text-grafite'
-              : 'border-t border-white/[0.08] bg-grafite-alto text-creme shadow-[0_-24px_48px_-24px_rgba(0,0,0,0.8)]',
+              : 'border-t border-black/[0.08] bg-grafite-alto text-creme shadow-[0_-24px_48px_-24px_rgba(0,0,0,0.8)]',
             className,
           )}
         >

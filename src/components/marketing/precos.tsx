@@ -175,8 +175,8 @@ export function Precos() {
                     'flex h-[54px] w-full items-center justify-center rounded-full font-sans text-sm font-semibold',
                     'transition-[background-color,transform] duration-200 ease-calmo active:scale-[0.985]',
                     plano.destaque
-                      ? 'bg-laranja text-grafite hover:bg-laranja-claro'
-                      : 'bg-creme/85 text-grafite hover:bg-creme',
+                      ? 'bg-laranja text-creme hover:bg-laranja-claro'
+                      : 'bg-creme/85 text-creme hover:bg-creme',
                   )}
                 >
                   {plano.cta}

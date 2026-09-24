@@ -132,7 +132,7 @@ export function ChamarDaMesa({
           aria-label={aberto ? t('fechar') : t('chamarOuConta')}
           className={cn(
             'relative flex h-12 w-12 items-center justify-center rounded-full shadow-elevacao-2',
-            'border border-white/10 bg-grafite-carta text-creme',
+            'border border-black/10 bg-grafite-carta text-creme',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-laranja focus-visible:ring-offset-2',
           )}
         >
@@ -182,7 +182,7 @@ export function ChamarDaMesa({
                     aria-label={avisado ? `${t(rotulo)}: ${t('avisado')}` : t(rotulo)}
                     className={cn(
                       'flex h-11 items-center gap-2 rounded-full pl-3.5 pr-4 font-sans text-sm font-semibold shadow-elevacao-2',
-                      'border border-white/10 bg-grafite-carta text-creme',
+                      'border border-black/10 bg-grafite-carta text-creme',
                       'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-laranja',
                       avisado && 'border-verde/40 text-creme/80',
                     )}

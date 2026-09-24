@@ -133,10 +133,10 @@ export function HorariosDaCasa({
             return (
               <li
                 key={menu.id}
-                className="flex items-center gap-3 rounded-campo border border-white/[0.07] bg-white/[0.02] px-3.5 py-2.5"
+                className="flex items-center gap-3 rounded-campo border border-black/[0.07] bg-black/[0.02] px-3.5 py-2.5"
               >
                 <span
-                  className={cn('h-2 w-2 shrink-0 rounded-full', aServir ? 'bg-verde' : 'bg-white/20')}
+                  className={cn('h-2 w-2 shrink-0 rounded-full', aServir ? 'bg-verde' : 'bg-black/20')}
                   aria-hidden
                 />
                 <span className="min-w-0 flex-1">
@@ -161,7 +161,7 @@ export function HorariosDaCasa({
                     })
                   }
                   aria-label={`Editar ${menu.nome}`}
-                  className="flex h-10 w-10 items-center justify-center rounded-full text-tenue hover:bg-white/[0.06] hover:text-creme"
+                  className="flex h-10 w-10 items-center justify-center rounded-full text-tenue hover:bg-black/[0.06] hover:text-creme"
                 >
                   <Pencil className="h-4 w-4" aria-hidden />
                 </button>
@@ -170,7 +170,7 @@ export function HorariosDaCasa({
                   onClick={() => apagar(menu.id)}
                   disabled={ocupado || demonstracao}
                   aria-label={`Apagar ${menu.nome}`}
-                  className="flex h-10 w-10 items-center justify-center rounded-full text-tenue hover:bg-white/[0.06] hover:text-creme disabled:opacity-40"
+                  className="flex h-10 w-10 items-center justify-center rounded-full text-tenue hover:bg-black/[0.06] hover:text-creme disabled:opacity-40"
                 >
                   <Trash2 className="h-4 w-4" aria-hidden />
                 </button>
@@ -235,7 +235,7 @@ export function HorariosDaCasa({
                       key={dia.n}
                       className={cn(
                         'flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border font-sans text-sm font-semibold transition-colors',
-                        marcado ? 'border-laranja bg-laranja text-grafite' : 'border-white/15 text-tenue hover:border-white/35',
+                        marcado ? 'border-laranja bg-laranja text-creme' : 'border-black/15 text-tenue hover:border-black/35',
                         'focus-within:ring-2 focus-within:ring-laranja/50',
                       )}
                     >
@@ -300,7 +300,7 @@ export function HorariosDaCasa({
               key={valor}
               className={cn(
                 'flex min-h-[56px] cursor-pointer items-start gap-3 rounded-campo border px-3.5 py-3 transition-colors',
-                modo === valor ? 'border-laranja bg-laranja/10' : 'border-white/10 hover:border-white/25',
+                modo === valor ? 'border-laranja bg-laranja/10' : 'border-black/10 hover:border-black/25',
                 !podeMudarEsgotado && 'cursor-not-allowed opacity-60',
                 'focus-within:ring-2 focus-within:ring-laranja/40',
               )}
@@ -317,7 +317,7 @@ export function HorariosDaCasa({
                 aria-hidden
                 className={cn(
                   'mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2',
-                  modo === valor ? 'border-laranja' : 'border-white/30',
+                  modo === valor ? 'border-laranja' : 'border-black/30',
                 )}
               >
                 {modo === valor ? <span className="h-1.5 w-1.5 rounded-full bg-laranja" /> : null}

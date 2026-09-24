@@ -295,7 +295,7 @@ Durante duas horas vê e escreve nos dados desta casa como se fosse ela. A entra
                     className={cn(
                       'rounded-full px-3.5 py-1.5 font-sans text-xs font-semibold transition-colors duration-200',
                       conta.plano === plano
-                        ? 'bg-laranja text-grafite'
+                        ? 'bg-laranja text-creme'
                         : 'text-tenue hover:text-creme disabled:pointer-events-none',
                     )}
                   >

@@ -104,7 +104,7 @@ export function Onboarding({ demonstracao }: { demonstracao: boolean }) {
               <span
                 className={cn(
                   'block h-[3px] rounded-full transition-colors duration-[240ms]',
-                  i <= passo ? 'bg-laranja' : 'bg-white/[0.09]',
+                  i <= passo ? 'bg-laranja' : 'bg-black/[0.09]',
                 )}
               />
               <span

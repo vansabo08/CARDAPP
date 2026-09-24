@@ -30,6 +30,7 @@ export type Area =
   | 'salao'
   | 'mesas'
   | 'cardapio'
+  | 'estatisticas'
   | 'relatorios'
   | 'avaliacoes'
   | 'equipa'
@@ -43,13 +44,24 @@ const AREAS_DO_PAPEL: Record<Papel, readonly Area[]> = {
     'salao',
     'mesas',
     'cardapio',
+    'estatisticas',
     'relatorios',
     'avaliacoes',
     'equipa',
     'definicoes',
     'pagar',
   ],
-  gerente: ['resumo', 'pedidos', 'salao', 'mesas', 'cardapio', 'relatorios', 'avaliacoes', 'equipa'],
+  gerente: [
+    'resumo',
+    'pedidos',
+    'salao',
+    'mesas',
+    'cardapio',
+    'estatisticas',
+    'relatorios',
+    'avaliacoes',
+    'equipa',
+  ],
   empregado: ['pedidos', 'salao'],
   cozinha: ['pedidos'],
 };
@@ -77,6 +89,7 @@ const ROTAS: readonly [prefixo: string, area: Area][] = [
   ['/painel/salao', 'salao'],
   ['/painel/mesas', 'mesas'],
   ['/painel/cardapio', 'cardapio'],
+  ['/painel/estatisticas', 'estatisticas'],
   ['/painel/relatorios', 'relatorios'],
   ['/painel/avaliacoes', 'avaliacoes'],
   ['/painel/equipa', 'equipa'],

@@ -8,6 +8,7 @@ import { Marca } from '@/components/marca';
 import { Botao, useSinalDeBotao } from '@/components/ui/botao';
 import { clienteNavegador } from '@/lib/supabase/cliente';
 import { cn } from '@/lib/utils';
+import { FOTO_MESA_QR } from '@/lib/fotos';
 
 type Modo = 'entrar' | 'criar';
 
@@ -59,40 +60,27 @@ const TEXTOS: Record<
   },
 };
 
-/**
- * As fotografias do lado da comida.
- *
- * São do Unsplash (licença comercial, atribuição não exigida) e já
- * estavam no projecto, no cardápio de exemplo. Quatro, em mosaico, como
- * na referência: comida a entrar pelo canto do ecrã diz, sem uma
- * palavra, de que negócio é isto.
- *
- * Saiu a fotografia que aqui estava, desfocada por trás de tudo: era do
- * Wikimedia, com licença que obriga a creditar, e o crédito ocupava um
- * rodapé no ecrã de entrada. O ficheiro foi apagado com ela.
- */
-const FOTOS = [
-  '/pratos/muamba-galinha.webp',
-  '/pratos/mufete.webp',
-  '/pratos/kitaba.webp',
-  '/pratos/espetada.webp',
-];
 
 /**
- * O ecrã de entrada.
+ * O ecrã de entrada: um cartão de vidro sobre a sala cheia.
  *
- * Era um cartão de vidro a flutuar sobre uma fotografia desfocada, com o
- * título numa serifa. Lia-se como a página de um hotel, e não como a
- * ferramenta de trabalho de uma cozinha.
+ * É a referência que o dono escolheu. O vidro só existe aqui, e não no
+ * resto da aplicação: neste ecrã há uma fotografia por baixo para ele
+ * filtrar, que é o que faz o efeito. Num painel de trabalho, sobre um
+ * fundo liso, o mesmo vidro é só ruído — por isso ficou fora de lá.
  *
- * Segue agora a referência escolhida: a comida de um lado, o formulário
- * do outro, o nome da casa em laranja. No telemóvel a comida fica em
- * cima, como uma faixa, e o formulário em baixo, onde o polegar chega.
+ * TRÊS CUIDADOS, para o vidro não comer o texto:
+ *  - um véu escuro entre a fotografia e o cartão, senão o branco do céu
+ *    passa e o texto perde-se;
+ *  - o desfoque tem alternativa: nos browsers sem `backdrop-filter` o
+ *    cartão fica com fundo sólido, e lê-se na mesma;
+ *  - os campos têm fundo próprio, mais escuro do que o cartão, para se
+ *    perceber onde se escreve.
  *
- * O que a referência tem e aqui não faz sentido: entrar com Facebook ou
- * Instagram, que este projecto não liga a lado nenhum, e "esqueci-me da
- * palavra-passe", que ainda não tem ecrã para onde ir. Um botão que não
- * faz nada é pior do que botão nenhum.
+ * O que a referência tem e aqui não entra: "remember me", que o Supabase
+ * já faz sozinho ao guardar a sessão, e "esqueci-me da palavra-passe",
+ * que ainda não tem ecrã para onde ir. Um botão que não faz nada é pior
+ * do que botão nenhum.
  */
 export function FormularioAuth({ modo }: { modo: Modo }) {
   const router = useRouter();
@@ -150,169 +138,136 @@ export function FormularioAuth({ modo }: { modo: Modo }) {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col lg:flex-row">
+    <div className="relative flex min-h-dvh items-center justify-center px-4 py-10">
       {/* ------------------------------------------------------------ */}
-      {/* A comida                                                      */}
+      {/* A sala, por trás de tudo                                      */}
       {/* ------------------------------------------------------------ */}
-      <aside className="relative h-[32vh] min-h-[210px] shrink-0 overflow-hidden lg:h-auto lg:min-h-dvh lg:w-[44%]">
-        <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 gap-1">
-          {FOTOS.map((foto) => (
-            <span key={foto} className="relative block overflow-hidden">
-              <Image
-                src={foto}
-                alt=""
-                fill
-                sizes="(max-width: 1024px) 50vw, 22vw"
-                className="object-cover"
-                priority
-              />
-            </span>
-          ))}
-        </div>
-
-        {/*
-          O véu derrete a fotografia na página: em baixo no telemóvel, à
-          direita no computador. Sem ele fica uma costura entre a imagem e
-          o formulário, e é isso que faz um ecrã parecer montado à pressa.
-        */}
-        <div
-          aria-hidden
-          className="absolute inset-0 bg-gradient-to-b from-grafite/40 via-grafite/25 to-grafite lg:bg-gradient-to-r lg:from-grafite/50 lg:via-grafite/20 lg:to-grafite"
+      <div aria-hidden className="fixed inset-0 -z-10 overflow-hidden bg-grafite">
+        <Image
+          src={FOTO_MESA_QR}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          quality={75}
+          className="scale-105 object-cover object-center"
         />
+        {/* O véu: a fotografia é ambiente, o cartão é que é o assunto.
+            Claro, agora — a app é clara, e um véu preto por baixo de um
+            cartão branco fazia uma mancha no meio do ecrã. */}
+        <div className="absolute inset-0 bg-grafite/25" />
+        <div className="absolute inset-0 bg-gradient-to-b from-grafite/60 via-grafite/15 to-grafite/70" />
+      </div>
 
-        {/*
-          Um segundo véu, só no topo. A marca ficava por cima de qualquer
-          fotografia que calhasse ali, e numa clara — um prato de peixe
-          com luz — deixava de se ler. Este escurece a faixa onde ela
-          assenta, e não a imagem toda.
-        */}
-        <div
-          aria-hidden
-          className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-grafite/85 to-transparent"
-        />
+      <form
+        onSubmit={submeter}
+        className={cn(
+          'w-full max-w-[420px] animate-subir rounded-[28px] p-7 sm:p-9',
+          'border border-white/60 bg-grafite/85 supports-[backdrop-filter]:bg-white/60',
+          'backdrop-blur-2xl backdrop-saturate-150',
+          'shadow-[0_30px_70px_-28px_rgba(23,22,27,0.35),inset_0_1px_0_0_rgba(255,255,255,0.9)]',
+        )}
+      >
+        <Marca />
 
-        {/*
-          No computador, a fotografia acabava a direito contra o preto do
-          formulário — um corte de tesoura a meio do ecrã. Estes 160 px
-          derretem-na, e as duas metades passam a ser a mesma página.
-        */}
-        <div
-          aria-hidden
-          className="absolute inset-y-0 right-0 hidden w-40 bg-gradient-to-r from-transparent to-grafite lg:block"
-        />
+        <p className="mt-7 font-sans text-sm font-semibold text-laranja">{texto.acima}</p>
 
-        <div className="absolute left-5 top-5 md:left-8 md:top-8">
-          <Marca />
-        </div>
-      </aside>
+        <h1 className="mt-1.5 text-balance font-display text-3xl leading-tight text-creme">
+          {texto.titulo}
+        </h1>
 
-      {/* ------------------------------------------------------------ */}
-      {/* O formulário                                                  */}
-      {/* ------------------------------------------------------------ */}
-      <main className="flex flex-1 items-center justify-center px-5 pb-10 pt-8 md:px-8 lg:py-16">
-        <form onSubmit={submeter} className="w-full max-w-[400px] animate-subir">
-          <p className="font-sans text-sm font-semibold text-tenue">{texto.acima}</p>
+        <p className="mt-2.5 text-pretty font-sans text-sm leading-relaxed text-creme/75">
+          {texto.sub}
+        </p>
 
-          <h1 className="mt-2 text-balance font-display text-3xl leading-tight text-creme md:text-4xl">
-            {texto.titulo}
-          </h1>
+        <div className="mt-7 flex flex-col gap-3">
+          <label htmlFor="email" className="sr-only">
+            Email
+          </label>
+          <input
+            id="email"
+            type="email"
+            required
+            autoComplete="email"
+            inputMode="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+            className={campo}
+          />
 
-          <p className="mt-3 text-pretty font-sans text-base leading-relaxed text-tenue">
-            {texto.sub}
-          </p>
-
-          <div className="mt-9 flex flex-col gap-6">
-            <div>
-              <label htmlFor="email" className="block font-sans text-sm font-semibold text-creme/85">
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                required
-                autoComplete="email"
-                inputMode="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="nome@restaurante.ao"
-                className={campo}
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="palavra"
-                className="block font-sans text-sm font-semibold text-creme/85"
-              >
-                Palavra-passe
-              </label>
-              <div className="relative">
-                <input
-                  id="palavra"
-                  type={verPalavra ? 'text' : 'password'}
-                  required
-                  autoComplete={modo === 'criar' ? 'new-password' : 'current-password'}
-                  value={palavra}
-                  onChange={(e) => setPalavra(e.target.value)}
-                  placeholder={modo === 'criar' ? 'Pelo menos 8 caracteres' : '••••••••'}
-                  className={cn(campo, 'pr-10')}
-                />
-                <button
-                  type="button"
-                  onClick={() => setVerPalavra((v) => !v)}
-                  aria-label={verPalavra ? 'Ocultar palavra-passe' : 'Mostrar palavra-passe'}
-                  className="absolute bottom-3 right-0 text-creme/50 transition-colors hover:text-creme"
-                >
-                  {verPalavra ? <OlhoFechado /> : <Olho />}
-                </button>
-              </div>
-            </div>
+          <label htmlFor="palavra" className="sr-only">
+            Palavra-passe
+          </label>
+          <div className="relative">
+            <input
+              id="palavra"
+              type={verPalavra ? 'text' : 'password'}
+              required
+              autoComplete={modo === 'criar' ? 'new-password' : 'current-password'}
+              value={palavra}
+              onChange={(e) => setPalavra(e.target.value)}
+              placeholder={modo === 'criar' ? 'Palavra-passe (8 ou mais)' : 'Palavra-passe'}
+              className={cn(campo, 'pr-12')}
+            />
+            <button
+              type="button"
+              onClick={() => setVerPalavra((v) => !v)}
+              aria-label={verPalavra ? 'Ocultar palavra-passe' : 'Mostrar palavra-passe'}
+              className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-creme/60 transition-colors hover:bg-black/10 hover:text-creme"
+            >
+              {verPalavra ? <OlhoFechado /> : <Olho />}
+            </button>
           </div>
+        </div>
 
-          {erro ? (
-            <p role="alert" className="mt-5 font-sans text-sm text-[#ff8a78]">
-              {erro}
-            </p>
-          ) : null}
-          {aviso ? <p className="mt-5 font-sans text-sm text-laranja">{aviso}</p> : null}
+        {erro ? (
+          <p role="alert" className="mt-4 font-sans text-sm text-[#ff8a78]">
+            {erro}
+          </p>
+        ) : null}
+        {aviso ? <p className="mt-4 font-sans text-sm text-laranja">{aviso}</p> : null}
 
-          <Botao
-            type="submit"
-            variante="laranja"
-            tamanho="lg"
-            largo
-            aCarregar={ocupado}
-            estado={sinal}
-            className="mt-8 h-[56px]"
-          >
-            {texto.accao}
-          </Botao>
+        <Botao
+          type="submit"
+          variante="laranja"
+          tamanho="lg"
+          largo
+          aCarregar={ocupado}
+          estado={sinal}
+          className="mt-6 h-[54px] rounded-full"
+        >
+          {texto.accao}
+        </Botao>
 
-          {modo === 'criar' ? (
-            <p className="mt-4 text-center font-sans text-sm text-tenue">
-              Sem cartão de crédito. Paga só se decidir ficar.
-            </p>
-          ) : null}
+        {modo === 'criar' ? (
+          <p className="mt-4 text-center font-sans text-xs text-creme/60">
+            Sem cartão de crédito. Paga só se decidir ficar.
+          </p>
+        ) : null}
 
-          <p className="mt-6 text-center font-sans text-sm text-creme/85">{texto.alternativa}</p>
-        </form>
-      </main>
+        <p className="mt-5 text-center font-sans text-sm text-creme/80">{texto.alternativa}</p>
+      </form>
     </div>
   );
 }
 
+
 /**
- * Campo de linha, como na referência: o nome por cima e uma linha por
- * baixo, que acende a laranja quando se escreve nela.
+ * Campo de vidro: um rectângulo arredondado, mais escuro do que o
+ * cartão, com o nome lá dentro — como na referência.
  *
- * Aqui, e não nos campos do painel: este ecrã tem dois campos e espaço de
- * sobra à volta. Uma página de definições com dez campos precisa do
- * rectângulo cheio, para se ver onde acaba um e começa o outro.
+ * O fundo é preto a 25 %, e não transparente: por cima de uma fotografia,
+ * um campo sem fundo próprio desaparece assim que o céu por trás ficar
+ * claro. O nome dentro do campo (`placeholder`) é o que a referência
+ * mostra; para quem usa leitor de ecrã há uma etiqueta escondida, porque
+ * um `placeholder` desaparece mal se começa a escrever.
  */
 const campo = cn(
-  'h-12 w-full border-0 border-b border-creme/20 bg-transparent px-0',
-  'font-sans text-base text-creme placeholder:text-creme/35',
-  'outline-none transition-colors duration-200 focus:border-laranja',
+  'h-[52px] w-full rounded-2xl border border-creme/15 bg-white/75 px-4',
+  'font-sans text-base text-creme placeholder:text-creme/50',
+  'outline-none transition-[border-color,background-color] duration-200',
+  'hover:border-creme/25 focus:border-laranja-claro focus:bg-white',
 );
 
 /* ------------------------------------------------------------------ */

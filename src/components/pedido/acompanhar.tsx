@@ -95,7 +95,7 @@ export function Acompanhar({ inicial }: { inicial: PedidoPublico }) {
       {/* ---------------------------------------------------------- */}
       {cancelado ? null : (
         <div className="mt-10" aria-hidden>
-          <div className="h-[3px] w-full overflow-hidden rounded-full bg-white/[0.08]">
+          <div className="h-[3px] w-full overflow-hidden rounded-full bg-black/[0.08]">
             {/*
               Nunca a zero. No primeiro estado o cálculo dá 0% e a barra
               desaparecia — e uma barra vazia não se lê como "acabou de

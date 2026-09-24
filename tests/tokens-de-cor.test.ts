@@ -50,22 +50,36 @@ function contraste(a: string, b: string) {
   return (claro + 0.05) / (escuro + 0.05);
 }
 
+/**
+ * O ACENTO TEM DUAS ALTURAS, E É POR ISSO QUE ESTAS MEDIDAS MUDARAM.
+ *
+ * Com a app clara, o âmbar (`--laranja`) é cor de fundo: a letra escura
+ * por cima dele lê-se a 10:1. Como letra, sobre o branco da página,
+ * esse mesmo âmbar dá 1,6:1 — por isso o texto usa o tom escuro
+ * (`--laranja-escuro`), e é esse que o Tailwind serve em `text-laranja`
+ * (ver o `textColor` da configuração).
+ *
+ * Se alguém voltar a apontar o texto para o âmbar, um destes falha.
+ */
 describe('contraste da paleta', () => {
-  it('o laranja lê-se sobre o fundo escuro', () => {
-    expect(contraste(variavel('laranja'), variavel('grafite'))).toBeGreaterThanOrEqual(4.5);
+  it('a letra escura lê-se dentro do botão âmbar', () => {
+    expect(contraste(variavel('creme'), variavel('laranja'))).toBeGreaterThanOrEqual(4.5);
   });
 
-  it('a letra escura lê-se dentro do botão laranja', () => {
-    // É por isto que os botões levam letra escura e não branca: branco
-    // sobre este laranja fica nos 3,1, que chumba em texto normal.
-    expect(contraste(variavel('grafite'), variavel('laranja'))).toBeGreaterThanOrEqual(4.5);
+  it('o âmbar do rato por cima também aguenta letra escura', () => {
+    expect(contraste(variavel('creme'), variavel('laranja-claro'))).toBeGreaterThanOrEqual(4.5);
   });
 
-  it('o laranja claro, do rato por cima, continua a ler-se', () => {
-    expect(contraste(variavel('grafite'), variavel('laranja-claro'))).toBeGreaterThanOrEqual(4.5);
+  it('o laranja escrito lê-se sobre a página', () => {
+    // É o tom que  serve; o âmbar aqui daria 1,6.
+    expect(contraste(variavel('laranja-escuro'), variavel('grafite'))).toBeGreaterThanOrEqual(4.5);
   });
 
-  it('o creme lê-se sobre o fundo escuro', () => {
+  it('o laranja escrito também se lê dentro de um cartão branco', () => {
+    expect(contraste(variavel('laranja-escuro'), variavel('grafite-alto'))).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it('a tinta lê-se sobre a página', () => {
     expect(contraste(variavel('creme'), variavel('grafite'))).toBeGreaterThanOrEqual(4.5);
   });
 });

@@ -40,6 +40,8 @@ const config: Config = {
       fontFamily: {
         display: ['var(--fonte-display)', 'Georgia', 'serif'],
         sans: ['var(--fonte-sans)', 'system-ui', 'sans-serif'],
+        // A assinatura: só para acentos, nunca para texto a ler.
+        assinatura: ['var(--fonte-assinatura)', 'cursive'],
       },
       borderRadius: {
         // Escala da referência: folhas e cartões com raio generoso,
@@ -52,6 +54,25 @@ const config: Config = {
       maxWidth: {
         conteudo: '1140px',
         leitura: '68ch',
+      },
+      /*
+       * O ACENTO TEM DUAS ALTURAS, E ESTA É A LINHA QUE AS SEPARA.
+       *
+       * O âmbar da paleta clara é uma cor de fundo: letra escura em cima
+       * dele lê-se a 10:1. Como letra, sobre branco, dá 1,8:1 — não se lê
+       * de todo, e havia setenta sítios a escrever `text-laranja`.
+       *
+       * Em vez de lhes mexer um a um, a cor do texto aponta para o tom
+       * escuro do mesmo laranja (5,2:1 sobre branco) e o fundo continua a
+       * ser o âmbar. `bg-laranja` e `text-laranja` passam a ser dois
+       * tons da mesma família — que é o que sempre quiseram dizer.
+       */
+      textColor: {
+        laranja: {
+          DEFAULT: 'rgb(var(--laranja-escuro-canais) / <alpha-value>)',
+          claro: 'rgb(var(--laranja-canais) / <alpha-value>)',
+          escuro: 'rgb(var(--laranja-escuro-canais) / <alpha-value>)',
+        },
       },
       boxShadow: {
         // Sombra de um objecto pousado, não de uma caixa a flutuar.
@@ -92,8 +113,8 @@ const config: Config = {
         /* O botão principal brilha por baixo, na cor dele — a luz de um
            objecto laranja num fundo escuro não é preta. Em repouso é
            curta; sob o cursor alarga, como se o botão subisse. */
-        'brilho-laranja': '0 1px 2px rgba(0,0,0,0.4), 0 10px 26px -12px rgba(255,91,36,0.7)',
-        'brilho-laranja-alto': '0 2px 4px rgba(0,0,0,0.4), 0 16px 34px -12px rgba(255,91,36,0.85)',
+        'brilho-laranja': '0 1px 2px rgba(23,22,27,0.08), 0 10px 24px -12px rgba(245,185,59,0.75)',
+        'brilho-laranja-alto': '0 2px 6px rgba(23,22,27,0.1), 0 16px 32px -12px rgba(245,185,59,0.9)',
       },
       keyframes: {
         /* Um só padrão de entrada em toda a aplicação: 12px a subir. */

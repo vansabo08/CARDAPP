@@ -173,7 +173,7 @@ function CartaoAlerta({
       <span
         className={cn(
           'relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full',
-          conta ? 'bg-[#fab219] text-grafite' : 'bg-laranja text-grafite',
+          conta ? 'bg-[#fab219] text-creme' : 'bg-laranja text-creme',
         )}
       >
         <span
@@ -197,7 +197,7 @@ function CartaoAlerta({
       <button
         type="button"
         onClick={aoAtender}
-        className="h-11 shrink-0 rounded-full bg-white/[0.08] px-4 font-sans text-sm font-semibold text-creme transition-colors hover:bg-white/[0.14] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-laranja"
+        className="h-11 shrink-0 rounded-full bg-black/[0.08] px-4 font-sans text-sm font-semibold text-creme transition-colors hover:bg-black/[0.14] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-laranja"
       >
         Atendido
       </button>

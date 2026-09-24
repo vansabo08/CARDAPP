@@ -148,9 +148,9 @@ export function AceitarConvite({ erroInicial }: { erroInicial: 'expirado' | 'lin
 
           {estado === 'a_ler' ? (
             <div className="mt-6 flex flex-col gap-3" aria-busy="true" aria-label="A preparar">
-              <span className="h-12 animate-pulse rounded-campo bg-white/[0.05]" />
-              <span className="h-12 animate-pulse rounded-campo bg-white/[0.05]" />
-              <span className="h-14 animate-pulse rounded-full bg-white/[0.05]" />
+              <span className="h-12 animate-pulse rounded-campo bg-black/[0.05]" />
+              <span className="h-12 animate-pulse rounded-campo bg-black/[0.05]" />
+              <span className="h-14 animate-pulse rounded-full bg-black/[0.05]" />
             </div>
           ) : estado === 'sem_sessao' ? (
             <div className="mt-4">

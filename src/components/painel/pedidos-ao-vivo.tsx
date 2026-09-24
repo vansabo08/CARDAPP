@@ -28,9 +28,9 @@ import type { EstadoPedido, Pedido } from '@/lib/tipos';
 /** Cor de cada estado na lista. O novo salta à vista; o resto acalma. */
 const TOM: Record<EstadoPedido, string> = {
   novo: 'border-laranja/45 bg-laranja/[0.07]',
-  preparar: 'border-linha bg-white/[0.03]',
+  preparar: 'border-linha bg-black/[0.03]',
   pronto: 'border-verde/40 bg-verde/[0.06]',
-  caminho: 'border-linha bg-white/[0.03]',
+  caminho: 'border-linha bg-black/[0.03]',
   entregue: 'border-linha bg-transparent',
   cancelado: 'border-linha bg-transparent',
 };
@@ -237,7 +237,7 @@ export function PedidosAoVivo({
               <button
                 type="button"
                 onClick={ligarSom}
-                className="inline-flex items-center gap-1.5 rounded-full bg-laranja px-3.5 py-1.5 font-sans text-xs font-semibold text-grafite shadow-brilho-laranja transition-colors duration-200 hover:bg-laranja-claro"
+                className="inline-flex items-center gap-1.5 rounded-full bg-laranja px-3.5 py-1.5 font-sans text-xs font-semibold text-creme shadow-brilho-laranja transition-colors duration-200 hover:bg-laranja-claro"
               >
                 <Volume2 className="h-3.5 w-3.5" />
                 Ligar o som

@@ -162,7 +162,7 @@ export function ConviteInstalar() {
               onClick={instalar}
               className={cn(
                 'mt-3 inline-flex items-center gap-2 rounded-full bg-laranja px-4 py-2',
-                'font-sans text-xs font-semibold text-grafite shadow-elevacao-1',
+                'font-sans text-xs font-semibold text-creme shadow-elevacao-1',
                 'transition-[background-color,transform,box-shadow] duration-rapida ease-assinatura',
                 'hover:-translate-y-px hover:bg-laranja-claro hover:shadow-elevacao-2',
                 'active:translate-y-0 active:scale-[0.97]',

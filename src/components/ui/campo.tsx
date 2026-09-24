@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
  * Mais altos também: 48 px, que é o que o polegar acerta sem apontar.
  */
 const BASE_ESCURA =
-  'border border-transparent bg-white/[0.05] text-creme placeholder:text-creme/35 hover:bg-white/[0.07] focus:border-laranja focus:bg-white/[0.07]';
+  'border border-transparent bg-black/[0.05] text-creme placeholder:text-creme/35 hover:bg-black/[0.07] focus:border-laranja focus:bg-black/[0.07]';
 /*
  * No fundo claro — o cardapio do cliente —, o campo tem de se ver.
  *
@@ -23,7 +23,7 @@ const BASE_ESCURA =
  * limite de campo precisa para se distinguir.
  */
 const BASE_CLARA =
-  'border border-grafite/45 bg-grafite/[0.04] text-grafite placeholder:text-grafite/55 hover:border-grafite/65 focus:border-laranja focus:bg-white focus:ring-2 focus:ring-laranja/20';
+  'border border-grafite/45 bg-grafite/[0.04] text-grafite placeholder:text-creme/55 hover:border-grafite/65 focus:border-laranja focus:bg-white focus:ring-2 focus:ring-laranja/20';
 
 export type CampoProps = React.InputHTMLAttributes<HTMLInputElement> & { claro?: boolean };
 

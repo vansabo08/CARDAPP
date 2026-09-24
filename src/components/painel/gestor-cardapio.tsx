@@ -355,7 +355,7 @@ export function GestorCardapio({
                 value={categoria.nome}
                 onChange={(e) => mudarNome(categoria.id, e.target.value)}
                 aria-label="Nome da categoria"
-                className="min-w-0 flex-1 rounded-campo border border-transparent bg-transparent px-2 py-1 font-display text-xl text-creme outline-none transition-colors duration-200 hover:border-linha focus:border-laranja/50 focus:bg-white/[0.04]"
+                className="min-w-0 flex-1 rounded-campo border border-transparent bg-transparent px-2 py-1 font-display text-xl text-creme outline-none transition-colors duration-200 hover:border-linha focus:border-laranja/50 focus:bg-black/[0.04]"
               />
 
               {sala && menus.length ? (
@@ -364,7 +364,7 @@ export function GestorCardapio({
                   <select
                     value={categoria.menu_id ?? ''}
                     onChange={(e) => mudarHorario(categoria.id, e.target.value || null)}
-                    className="h-9 max-w-[140px] appearance-none truncate rounded-full border border-white/10 bg-white/[0.04] px-3 font-sans text-xs font-semibold text-creme outline-none hover:border-white/25 focus-visible:border-laranja"
+                    className="h-9 max-w-[140px] appearance-none truncate rounded-full border border-black/10 bg-black/[0.04] px-3 font-sans text-xs font-semibold text-creme outline-none hover:border-black/25 focus-visible:border-laranja"
                   >
                     <option value="" className="bg-grafite-alto">Sempre</option>
                     {menus.map((m) => (
@@ -414,7 +414,7 @@ export function GestorCardapio({
                   onChange={(e) => mudarNomeEmIngles(categoria.id, e.target.value)}
                   onBlur={(e) => gravarNomeEmIngles(categoria.id, e.target.value)}
                   placeholder="Em inglês — vazio, mostra o português"
-                  className="h-9 min-w-0 flex-1 rounded-campo border border-transparent bg-transparent px-2 font-sans text-sm text-creme/85 outline-none placeholder:text-creme/30 hover:border-linha focus:border-laranja/50 focus:bg-white/[0.04]"
+                  className="h-9 min-w-0 flex-1 rounded-campo border border-transparent bg-transparent px-2 font-sans text-sm text-creme/85 outline-none placeholder:text-creme/30 hover:border-linha focus:border-laranja/50 focus:bg-black/[0.04]"
                 />
               </label>
             ) : null}
@@ -458,7 +458,7 @@ export function GestorCardapio({
               {categoria.itens.map((prato) => (
                 <li
                   key={prato.id}
-                  className="group flex items-center gap-3.5 px-3 py-2.5 transition-colors duration-200 hover:bg-white/[0.03]"
+                  className="group flex items-center gap-3.5 px-3 py-2.5 transition-colors duration-200 hover:bg-black/[0.03]"
                 >
                   <button
                     type="button"
@@ -467,7 +467,7 @@ export function GestorCardapio({
                   >
                     <span
                       className={cn(
-                        'relative block h-14 w-14 shrink-0 overflow-hidden rounded-campo bg-white/[0.04]',
+                        'relative block h-14 w-14 shrink-0 overflow-hidden rounded-campo bg-black/[0.04]',
                         !prato.disponivel && 'opacity-35 grayscale',
                       )}
                     >
@@ -485,7 +485,7 @@ export function GestorCardapio({
                           {prato.nome}
                         </span>
                         {!prato.disponivel ? (
-                          <span className="etiqueta shrink-0 rounded-full bg-white/[0.07] px-2 py-0.5 text-xs text-tenue">
+                          <span className="etiqueta shrink-0 rounded-full bg-black/[0.07] px-2 py-0.5 text-xs text-tenue">
                             Esgotado
                           </span>
                         ) : null}
@@ -495,12 +495,12 @@ export function GestorCardapio({
                           </span>
                         ) : null}
                         {sala && promocaoActiva(prato) ? (
-                          <span className="shrink-0 rounded-full bg-laranja px-2 py-0.5 font-sans text-xs font-bold text-grafite">
+                          <span className="shrink-0 rounded-full bg-laranja px-2 py-0.5 font-sans text-xs font-bold text-creme">
                             -{descontoEmPercentagem(prato)}%
                           </span>
                         ) : null}
                         {sala && prato.grupos?.length ? (
-                          <span className="hidden shrink-0 rounded-full border border-white/10 px-2 py-0.5 font-sans text-xs text-tenue sm:inline">
+                          <span className="hidden shrink-0 rounded-full border border-black/10 px-2 py-0.5 font-sans text-xs text-tenue sm:inline">
                             {prato.grupos.reduce((n, g) => n + g.opcoes.length, 0)} opções
                           </span>
                         ) : null}
@@ -552,7 +552,7 @@ export function GestorCardapio({
                 type="button"
                 disabled={atingiuLimite}
                 onClick={() => setRascunho(RASCUNHO_VAZIO(categoria.id))}
-                className="flex w-full items-center gap-2.5 rounded-campo px-2 py-2 font-sans text-xs font-semibold text-tenue transition-colors duration-200 hover:bg-white/[0.05] hover:text-creme disabled:pointer-events-none disabled:opacity-40"
+                className="flex w-full items-center gap-2.5 rounded-campo px-2 py-2 font-sans text-xs font-semibold text-tenue transition-colors duration-200 hover:bg-black/[0.05] hover:text-creme disabled:pointer-events-none disabled:opacity-40"
               >
                 <span className="flex h-6 w-6 items-center justify-center rounded-full border border-linha text-sm leading-none">
                   +
@@ -623,7 +623,7 @@ function BotaoIcone({
       title={rotulo}
       onClick={onClick}
       disabled={desactivado}
-      className="flex h-8 w-8 items-center justify-center rounded-campo text-sm text-tenue transition-colors duration-200 hover:bg-white/[0.06] hover:text-creme disabled:pointer-events-none disabled:opacity-25"
+      className="flex h-8 w-8 items-center justify-center rounded-campo text-sm text-tenue transition-colors duration-200 hover:bg-black/[0.06] hover:text-creme disabled:pointer-events-none disabled:opacity-25"
     >
       {children}
     </button>
@@ -818,7 +818,7 @@ function FolhaPrato({
               }}
             />
           ) : (
-            <p className="mt-6 rounded-cartao border border-dashed border-white/10 px-4 py-3 font-sans text-xs leading-normal text-tenue">
+            <p className="mt-6 rounded-cartao border border-dashed border-black/10 px-4 py-3 font-sans text-xs leading-normal text-tenue">
               Os tamanhos e os extras juntam-se depois de o prato estar no cardápio. Guarde-o, e volte a
               abri-lo.
             </p>
@@ -914,7 +914,7 @@ function SeccaoPromocao({
           />
         </div>
         {valida && desconto > 0 ? (
-          <span className="mb-3 shrink-0 rounded-full bg-laranja px-2.5 py-1 font-sans text-sm font-bold text-grafite">
+          <span className="mb-3 shrink-0 rounded-full bg-laranja px-2.5 py-1 font-sans text-sm font-bold text-creme">
             -{desconto}%
           </span>
         ) : null}
@@ -986,7 +986,7 @@ function SeccaoIngles({
   return (
     <section
       aria-labelledby="prato-ingles"
-      className="rounded-cartao border border-white/[0.08] bg-white/[0.02] p-4"
+      className="rounded-cartao border border-black/[0.08] bg-black/[0.02] p-4"
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 id="prato-ingles" className="flex items-center gap-2 font-sans text-sm font-semibold text-creme">
@@ -997,7 +997,7 @@ function SeccaoIngles({
           type="button"
           onClick={traduzir}
           disabled={aTraduzir || !dados.nome.trim()}
-          className="inline-flex h-10 items-center gap-1.5 rounded-full border border-white/15 px-3.5 font-sans text-xs font-semibold text-creme transition-colors hover:border-laranja hover:text-laranja disabled:opacity-40"
+          className="inline-flex h-10 items-center gap-1.5 rounded-full border border-black/15 px-3.5 font-sans text-xs font-semibold text-creme transition-colors hover:border-laranja hover:text-laranja disabled:opacity-40"
         >
           {aTraduzir ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> : null}
           {aTraduzir ? 'A traduzir…' : 'Traduzir automaticamente'}

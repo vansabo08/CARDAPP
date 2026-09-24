@@ -9,23 +9,23 @@
        folha branca. O dourado tem duas alturas — o claro é para
        tipografia grande, o médio para botões e acentos pequenos.
        -------------------------------------------------------------- */
-    --grafite: #0f0e0d;
-    --grafite-alto: #171614;
-    --grafite-suave: #211f1c;
-    --grafite-carta: #121110;
+    --grafite: #f2f1ef;
+    --grafite-alto: #ffffff;
+    --grafite-suave: #e9e7e3;
+    --grafite-carta: #ffffff;
 
     /*
      * Os mesmos, em canais. Os véus sobre fotografia são todos grafite
      * com transparência — e sem isto nenhum deles existia: as imagens
      * apareciam à luz toda e o texto por cima lia-se como podia.
      */
-    --grafite-canais: 15 14 13;
-    --grafite-alto-canais: 23 22 20;
-    --grafite-suave-canais: 33 31 28;
-    --grafite-carta-canais: 18 17 16;
+    --grafite-canais: 242 241 239;
+    --grafite-alto-canais: 255 255 255;
+    --grafite-suave-canais: 233 231 227;
+    --grafite-carta-canais: 255 255 255;
 
-    --creme: #faf7f2;
-    --creme-folha: #fdfcfa;
+    --creme: #17161b;
+    --creme-folha: #0c0b0f;
 
     /*
      * Os mesmos canais, soltos, para o Tailwind poder aplicar opacidade.
@@ -37,8 +37,8 @@
      * que media exactamente o mesmo contraste do título, e aos rótulos
      * do percurso do pedido, que apareciam todos acesos.
      */
-    --creme-canais: 250 247 242;
-    --creme-folha-canais: 253 252 250;
+    --creme-canais: 23 22 27;
+    --creme-folha-canais: 12 11 15;
 
     /*
      * O laranja da marca.
@@ -47,11 +47,17 @@
      * que mais abre o apetite, e a que num ecrã escuro se vê de longe sem
      * precisar de tamanho.
      *
-     * Contraste medido contra o grafite do fundo: 6,2 para 1 — passa o AA
-     * para texto de qualquer tamanho. O inverso também: texto grafite em
-     * cima do laranja dá os mesmos 6,2, e é por isso que os botões levam
-     * letra escura. Letra branca no laranja ficava em 3,1, que chumba em
-     * texto normal — é o que a referência faz, e não se copia.
+     * Foi um laranja cheio, #ff5b24, e pesava: num ecrã inteiro de
+     * botões e etiquetas, o vermelho que ele tem dentro cansava a vista.
+     * Este tem a mesma família e menos densidade — a mesma cor, meio
+     * tom mais aberta.
+     *
+     * Contraste medido contra o grafite do fundo: 7,25 para 1 — passa o
+     * AA para texto de qualquer tamanho, e passa-o melhor do que o
+     * anterior. O inverso também: texto grafite em cima do laranja dá os
+     * mesmos 7,25, e é por isso que os botões levam letra escura. Letra
+     * branca no laranja fica em 2,7, que chumba — é o que a referência
+     * faz, e não se copia.
      *
      * Vai também em canais soltos, como o creme: o dourado ia como cor
      * inteira, e todas as transparências dele (`bg-ouro/15`,
@@ -59,25 +65,31 @@
      * avisar. Eram trinta sítios, incluindo o fundo do ícone activo da
      * doca, que nunca chegou a aparecer.
      */
-    --laranja: #ff5b24;
-    --laranja-claro: #ff7a4d;
-    --laranja-escuro: #d94412;
-    --laranja-canais: 255 91 36;
-    --laranja-claro-canais: 255 122 77;
-    --laranja-escuro-canais: 217 68 18;
+    --laranja: #f5b93b;
+    --laranja-claro: #ffd275;
+    --laranja-escuro: #c2410c;
+    --laranja-canais: 245 185 59;
+    --laranja-claro-canais: 255 210 117;
+    --laranja-escuro-canais: 194 65 12;
 
-    --verde: #0f9d58;
-    --verde-canais: 15 157 88;
+    --verde: #1a7f4b;
+    --verde-canais: 26 127 75;
 
-    --linha: rgba(250, 247, 242, 0.1);
-    --linha-escura: rgba(15, 14, 13, 0.08);
-    --tenue: rgba(250, 247, 242, 0.55);
-    --tenue-escuro: rgba(15, 14, 13, 0.64);
+    --linha: rgba(23, 22, 27, 0.1);
+    --linha-escura: rgba(23, 22, 27, 0.08);
+    --tenue: rgba(23, 22, 27, 0.62);
+    --tenue-escuro: rgba(23, 22, 27, 0.64);
 
-    --fonte-display: 'Poppins', system-ui, sans-serif;
-    --fonte-sans: 'Manrope', system-ui, sans-serif;
+    /*
+     * Duas famílias, e a mesma nos dois papéis de estrutura: o Outfit
+     * faz títulos e texto corrido. A variável do texto continua a
+     * existir porque está em centenas de classes — aponta é para a
+     * mesma letra.
+     */
+    --fonte-display: var(--fonte-outfit), system-ui, sans-serif;
+    --fonte-sans: var(--fonte-outfit), system-ui, sans-serif;
 
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   * {
@@ -96,10 +108,15 @@
     text-rendering: optimizeLegibility;
   }
 
-  /* O cardápio público inverte o esquema: folha clara sobre o preto. */
+  /*
+   * O cardápio público já não inverte nada: a app inteira é clara, e ele
+   * é só a folha mais branca de todas. O atributo fica porque há
+   * componentes que o lêem para decidir tons; o que ele muda hoje é
+   * pouco — fundo branco puro em vez do cinzento da página.
+   */
   [data-superficie='clara'] {
-    background-color: var(--creme-folha);
-    color: var(--grafite);
+    background-color: #ffffff;
+    color: var(--creme);
   }
 
   /* Poppins semibold: uma geométrica pesada precisa de se apertar um
@@ -114,7 +131,7 @@
 
   ::selection {
     background: var(--laranja);
-    color: var(--grafite);
+    color: var(--creme);
   }
 
   :focus-visible {
@@ -159,16 +176,18 @@
    * desenho; o laranja inteiro é mais limpo e bate mais forte.
    */
   .laranja-display {
-    color: var(--laranja);
+    /* O escuro, e não o âmbar: âmbar sobre branco não se lê nem em
+       tamanho grande, onde a régua ainda pede 3:1. */
+    color: var(--laranja-escuro);
   }
 
   /* Véu que garante leitura do texto por cima de fotografia. */
   .veu-foto {
     background-image: linear-gradient(
       180deg,
-      rgba(15, 14, 13, 0.15) 0%,
-      rgba(15, 14, 13, 0.55) 45%,
-      rgba(15, 14, 13, 0.94) 100%
+      rgba(242, 241, 239, 0.1) 0%,
+      rgba(242, 241, 239, 0.72) 48%,
+      rgba(242, 241, 239, 0.97) 100%
     );
   }
 
@@ -184,31 +203,31 @@
   }
 
   .brasa-laranja {
-    background: radial-gradient(circle, rgba(255, 91, 36, 0.16) 0%, transparent 64%);
+    background: radial-gradient(circle, rgba(245, 185, 59, 0.3) 0%, transparent 64%);
     animation: derivar-a 46s ease-in-out infinite alternate;
   }
 
   .brasa-cobre {
-    background: radial-gradient(circle, rgba(176, 84, 43, 0.17) 0%, transparent 66%);
+    background: radial-gradient(circle, rgba(232, 150, 60, 0.22) 0%, transparent 66%);
     animation: derivar-b 62s ease-in-out infinite alternate;
   }
 
   .brasa-fria {
-    background: radial-gradient(circle, rgba(72, 96, 110, 0.14) 0%, transparent 68%);
+    background: radial-gradient(circle, rgba(120, 150, 175, 0.16) 0%, transparent 68%);
     animation: derivar-c 54s ease-in-out infinite alternate;
   }
 
   .vinheta {
     position: absolute;
     inset: 0;
-    background: radial-gradient(120% 80% at 50% 0%, transparent 38%, rgba(0, 0, 0, 0.55) 100%);
+    background: radial-gradient(120% 80% at 50% 0%, transparent 45%, rgba(23, 22, 27, 0.1) 100%);
   }
 
   /* Holofote que segue o cursor: as variáveis vêm do componente. */
   .holofote {
     background: radial-gradient(
       520px circle at var(--rato-x, 70%) var(--rato-y, 26%),
-      rgba(255, 91, 36, 0.1) 0%,
+      rgba(245, 185, 59, 0.16) 0%,
       transparent 62%
     );
     transition: opacity 400ms ease-out;
@@ -238,17 +257,17 @@
      ---------------------------------------------------------------- */
   .superficie {
     background-color: var(--grafite-alto);
-    border: 1px solid rgba(250, 247, 242, 0.07);
+    border: 1px solid rgba(23, 22, 27, 0.07);
     box-shadow:
-      0 1px 0 0 rgba(250, 247, 242, 0.04) inset,
-      0 12px 32px -20px rgba(0, 0, 0, 0.9);
+      0 1px 2px rgba(23, 22, 27, 0.04),
+      0 12px 30px -18px rgba(23, 22, 27, 0.18);
   }
 
   /* Para o que se repete muitas vezes no mesmo ecrã: sem sombra, para a
      lista não pesar. */
   .superficie-leve {
-    background-color: rgba(250, 247, 242, 0.035);
-    border: 1px solid rgba(250, 247, 242, 0.06);
+    background-color: rgba(23, 22, 27, 0.035);
+    border: 1px solid rgba(23, 22, 27, 0.07);
   }
 
   /* Sobre a folha clara do cardápio. */

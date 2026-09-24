@@ -246,7 +246,7 @@ export function SeletorDeIdioma({ className }: { className?: string }) {
           className={cn(
             'flex h-9 min-w-[44px] items-center justify-center rounded-full px-3 font-sans text-xs font-bold uppercase tracking-wide transition-colors duration-200',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-laranja',
-            idioma === opcao ? 'bg-creme text-grafite' : 'text-creme/80 hover:text-creme',
+            idioma === opcao ? 'bg-creme text-creme' : 'text-creme/80 hover:text-creme',
           )}
         >
           {opcao === 'pt' ? 'PT' : 'EN'}

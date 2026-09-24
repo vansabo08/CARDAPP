@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { DocaPainel, NavegacaoPainel } from '@/components/painel/navegacao';
+import { NavegacaoPainel } from '@/components/painel/navegacao';
 import { AvisoDemonstracao } from '@/components/aviso-demonstracao';
 import { AvisoDoPlano } from '@/components/painel/aviso-do-plano';
 import { PortaFechada } from '@/components/painel/porta-fechada';
@@ -70,7 +70,7 @@ export default async function LayoutPainel({ children }: { children: React.React
           administrador={administrador}
           papel={papel}
         />
-        <main className="min-w-0 flex-1 px-5 pb-32 pt-8 md:px-10 md:py-12 md:pb-12">
+        <main className="min-w-0 flex-1 px-5 pb-16 pt-7 md:px-10 md:py-12">
           <div className="mx-auto max-w-[880px]">
             {/*
               Prazo passado: a porta fecha-se aqui, no layout, e não em
@@ -90,7 +90,6 @@ export default async function LayoutPainel({ children }: { children: React.React
         </main>
       </div>
 
-      <DocaPainel papel={papel} />
       <ConviteInstalar />
       <AvisoDoIcone />
       {restaurante ? <SinoDePedidos restauranteId={restaurante.id} /> : null}

@@ -96,7 +96,7 @@ function Estatisticas({ pedidos }: { pedidos: Pedido[] }) {
                     {prato.qtd}× · {formatarKz(prato.valor)}
                   </span>
                 </div>
-                <div className="mt-2 h-[3px] w-full overflow-hidden rounded-full bg-white/[0.07]">
+                <div className="mt-2 h-[3px] w-full overflow-hidden rounded-full bg-black/[0.07]">
                   <div
                     className="h-full rounded-full bg-laranja"
                     style={{ width: `${Math.max(6, (prato.qtd / maiorQtd) * 100)}%` }}

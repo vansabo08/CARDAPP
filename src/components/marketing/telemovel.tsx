@@ -52,7 +52,11 @@ export function Telemovel({
           borderRadius: raioAparelho,
           background: TITANIO,
           boxShadow: sombra
-            ? '0 50px 90px -40px rgba(0,0,0,.95), 0 18px 40px -22px rgba(0,0,0,.8)'
+            ? // Duas sombras: uma larga e aberta, que é a luz da sala a
+              // contornar o aparelho, e uma curta e mais fechada, do
+              // contacto. Medidas para fundo claro — as de antes eram
+              // pretas a 95 %, feitas para um ecrã preto.
+              '0 42px 64px -32px rgba(23,22,27,.45), 0 14px 26px -14px rgba(23,22,27,.28)'
             : undefined,
         }}
       >
@@ -86,7 +90,7 @@ export function Telemovel({
 
           {/* barra de gestos */}
           <div
-            className="pointer-events-none absolute left-1/2 z-30 -translate-x-1/2 rounded-full bg-white/85"
+            className="pointer-events-none absolute left-1/2 z-30 -translate-x-1/2 rounded-full bg-black/85"
             style={{
               bottom: 8 * escala,
               width: 134 * escala,

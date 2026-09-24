@@ -172,7 +172,7 @@ export function EditorOpcoes({
           <button
             type="button"
             onClick={() => juntarGrupo('variante')}
-            className="inline-flex h-11 items-center gap-2 rounded-full border border-dashed border-white/20 px-4 font-sans text-sm font-semibold text-creme/85 transition-colors hover:border-laranja hover:text-laranja"
+            className="inline-flex h-11 items-center gap-2 rounded-full border border-dashed border-black/20 px-4 font-sans text-sm font-semibold text-creme/85 transition-colors hover:border-laranja hover:text-laranja"
           >
             <Ruler className="h-4 w-4" aria-hidden />
             Tamanhos
@@ -181,7 +181,7 @@ export function EditorOpcoes({
         <button
           type="button"
           onClick={() => juntarGrupo('extra')}
-          className="inline-flex h-11 items-center gap-2 rounded-full border border-dashed border-white/20 px-4 font-sans text-sm font-semibold text-creme/85 transition-colors hover:border-laranja hover:text-laranja"
+          className="inline-flex h-11 items-center gap-2 rounded-full border border-dashed border-black/20 px-4 font-sans text-sm font-semibold text-creme/85 transition-colors hover:border-laranja hover:text-laranja"
         >
           <Sparkles className="h-4 w-4" aria-hidden />
           Grupo de extras
@@ -252,9 +252,9 @@ function CartaoGrupo({
   }
 
   return (
-    <div className={cn('rounded-cartao border bg-white/[0.02] p-4', grupo.sujo ? 'border-laranja/40' : 'border-white/[0.08]')}>
+    <div className={cn('rounded-cartao border bg-black/[0.02] p-4', grupo.sujo ? 'border-laranja/40' : 'border-black/[0.08]')}>
       <div className="flex items-center gap-2">
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/[0.06] text-laranja">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/[0.06] text-laranja">
           {tamanho ? <Ruler className="h-4 w-4" aria-hidden /> : <Sparkles className="h-4 w-4" aria-hidden />}
         </span>
         <input
@@ -262,7 +262,7 @@ function CartaoGrupo({
           onChange={(e) => aoMudar({ nome: e.target.value })}
           aria-label="Nome do grupo"
           maxLength={40}
-          className="min-w-0 flex-1 rounded-campo border border-transparent bg-transparent px-2 py-1.5 font-sans text-base font-semibold text-creme outline-none hover:border-white/10 focus:border-laranja/60"
+          className="min-w-0 flex-1 rounded-campo border border-transparent bg-transparent px-2 py-1.5 font-sans text-base font-semibold text-creme outline-none hover:border-black/10 focus:border-laranja/60"
         />
         <button
           type="button"
@@ -271,7 +271,7 @@ function CartaoGrupo({
           aria-label={aConfirmar ? `Confirmar: apagar ${grupo.nome}` : `Apagar ${grupo.nome}`}
           className={cn(
             'flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-full px-3 font-sans text-xs font-semibold transition-colors',
-            aConfirmar ? 'bg-[#ff8a78]/15 text-[#ff8a78]' : 'w-10 px-0 text-tenue hover:bg-white/[0.06] hover:text-creme',
+            aConfirmar ? 'bg-[#ff8a78]/15 text-[#ff8a78]' : 'w-10 px-0 text-tenue hover:bg-black/[0.06] hover:text-creme',
           )}
         >
           <Trash2 className="h-4 w-4" aria-hidden />
@@ -290,7 +290,7 @@ function CartaoGrupo({
             aria-label={`Nome do grupo em inglês`}
             placeholder={tamanho ? 'Size' : 'Extras'}
             maxLength={40}
-            className="h-9 min-w-0 flex-1 rounded-campo border border-white/[0.08] bg-transparent px-2.5 font-sans text-sm text-creme outline-none placeholder:text-creme/30 hover:border-white/15 focus:border-laranja/60"
+            className="h-9 min-w-0 flex-1 rounded-campo border border-black/[0.08] bg-transparent px-2.5 font-sans text-sm text-creme outline-none placeholder:text-creme/30 hover:border-black/15 focus:border-laranja/60"
           />
         </div>
       ) : null}
@@ -354,7 +354,7 @@ function CartaoGrupo({
               onClick={() => aoMudar({ opcoes: grupo.opcoes.filter((o) => o.chave !== opcao.chave) })}
               disabled={grupo.opcoes.length <= 1}
               aria-label={`Tirar ${opcao.nome || 'esta opção'}`}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-tenue hover:bg-white/[0.06] hover:text-creme disabled:opacity-30"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-tenue hover:bg-black/[0.06] hover:text-creme disabled:opacity-30"
             >
               <X className="h-4 w-4" aria-hidden />
             </button>
@@ -367,7 +367,7 @@ function CartaoGrupo({
                   onChange={(e) => mudarOpcao(opcao.chave, { nome_en: e.target.value })}
                   placeholder={tamanho ? 'Medium' : 'Cheese'}
                   maxLength={40}
-                  className="h-9 min-w-0 flex-1 rounded-campo border border-white/[0.08] bg-transparent px-2.5 font-sans text-sm text-creme outline-none placeholder:text-creme/30 hover:border-white/15 focus:border-laranja/60"
+                  className="h-9 min-w-0 flex-1 rounded-campo border border-black/[0.08] bg-transparent px-2.5 font-sans text-sm text-creme outline-none placeholder:text-creme/30 hover:border-black/15 focus:border-laranja/60"
                 />
               </label>
             ) : null}
@@ -427,7 +427,7 @@ function Contador({
   rotulo: string;
 }) {
   return (
-    <span className="inline-flex items-center rounded-full border border-white/10">
+    <span className="inline-flex items-center rounded-full border border-black/10">
       <button
         type="button"
         onClick={() => aoMudar(Math.max(min, valor - 1))}

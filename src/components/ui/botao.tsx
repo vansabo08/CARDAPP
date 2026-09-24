@@ -33,9 +33,9 @@ const botaoVariantes = cva(
     variants: {
       variante: {
         laranja:
-          'bg-laranja text-grafite shadow-brilho-laranja hover:bg-laranja-claro hover:shadow-brilho-laranja-alto active:bg-laranja-escuro active:shadow-brilho-laranja',
+          'bg-laranja text-creme shadow-brilho-laranja hover:bg-laranja-claro hover:shadow-brilho-laranja-alto active:bg-laranja-escuro active:shadow-brilho-laranja',
         creme:
-          'bg-creme text-grafite shadow-elevacao-1 hover:bg-white hover:shadow-elevacao-2 active:shadow-elevacao-1',
+          'bg-creme text-creme shadow-elevacao-1 hover:bg-white hover:shadow-elevacao-2 active:shadow-elevacao-1',
         grafite:
           'bg-grafite-carta text-creme shadow-elevacao-1-escura hover:bg-grafite-suave hover:shadow-elevacao-2-escura active:shadow-elevacao-1-escura',
         contorno:

@@ -1,32 +1,40 @@
 import type { Metadata, Viewport } from 'next';
-import { Manrope, Poppins } from 'next/font/google';
+import { Outfit, Parisienne } from 'next/font/google';
 import { SITE_URL } from '@/lib/supabase/config';
 import './globals.css';
 
 /**
- * Regra da casa: Poppins nos títulos, Manrope no resto.
+ * DUAS TIPOGRAFIAS, E SÓ DUAS.
  *
- * Os títulos eram Playfair Display, uma serifa de contraste alto — ar de
- * carta de restaurante, mas dentro de um painel de trabalho lia-se como
- * enfeite. A referência escolhida pede uma letra forte e directa, e é
- * isso que a Poppins é: geométrica, pesada o suficiente para mandar num
- * ecrã escuro sem precisar de tamanho.
+ * A referência que o dono escolheu tem duas colunas: à esquerda letras
+ * geométricas e pesadas, à direita assinaturas à mão. É essa a divisão
+ * que a app passa a ter.
  *
- * Só 600 e 700. Tudo o que é título é semibold, e o 700 fica para números
- * grandes. Sem itálico em lado nenhum, o que poupa um ficheiro por peso.
+ * 1. OUTFIT faz tudo o que é estrutura — títulos, botões, listas, preços
+ *    e texto corrido. Uma família só, com vários pesos, é o que dá a uma
+ *    app o ar de coisa desenhada de uma vez; duas famílias a fazer o
+ *    mesmo trabalho lêem-se como dois sítios colados.
+ *
+ * 2. PARISIENNE é a assinatura. Entra a conta-gotas — a palavra que
+ *    fecha o título, o adeus do rodapé — e nunca em texto que alguém
+ *    tenha de ler depressa. Uma letra manuscrita num preço ou num botão
+ *    é bonita durante um segundo e um estorvo para sempre.
+ *
+ * Saíram a Poppins e a Manrope, que faziam o mesmo trabalho uma ao lado
+ * da outra sem que se notasse a diferença.
  */
-const display = Poppins({
+const display = Outfit({
   subsets: ['latin'],
-  weight: ['600', '700'],
-  style: 'normal',
+  weight: ['400', '500', '600', '700'],
   display: 'swap',
-  variable: '--fonte-display',
+  variable: '--fonte-outfit',
 });
 
-const sans = Manrope({
+const assinatura = Parisienne({
   subsets: ['latin'],
+  weight: ['400'],
   display: 'swap',
-  variable: '--fonte-sans',
+  variable: '--fonte-assinatura',
 });
 
 export const metadata: Metadata = {
@@ -83,8 +91,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     // o que faz o Next associar a fonte à rota e emitir o <link
     // rel="preload">. Só com a variável, o browser só descobre o ficheiro
     // depois de ler o CSS — e o texto espera por ele.
-    <html lang="pt-AO" className={`${display.variable} ${sans.variable}`}>
-      <body className={sans.className}>{children}</body>
+    <html lang="pt-AO" className={`${display.variable} ${assinatura.variable}`}>
+      <body className={display.className}>{children}</body>
     </html>
   );
 }

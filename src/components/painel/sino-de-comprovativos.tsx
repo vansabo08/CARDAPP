@@ -98,7 +98,7 @@ export function SinoDeComprovativos() {
   return (
     <Link
       href="/admin"
-      className="fixed bottom-24 right-5 z-40 flex items-center gap-2 rounded-full bg-laranja px-4 py-2.5 font-sans text-sm font-semibold text-grafite shadow-elevacao-2 transition-transform hover:-translate-y-px md:bottom-8"
+      className="fixed bottom-24 right-5 z-40 flex items-center gap-2 rounded-full bg-laranja px-4 py-2.5 font-sans text-sm font-semibold text-creme shadow-elevacao-2 transition-transform hover:-translate-y-px md:bottom-8"
     >
       {quantos === 1 ? '1 comprovativo à espera' : `${quantos} comprovativos à espera`}
     </Link>

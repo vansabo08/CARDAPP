@@ -67,7 +67,7 @@ export function GestorEquipa({
 
         {/* A barra de lugares: diz de relance quanto falta. */}
         <div
-          className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/[0.06]"
+          className="mt-3 h-1.5 overflow-hidden rounded-full bg-black/[0.06]"
           role="progressbar"
           aria-valuemin={0}
           aria-valuemax={limite}
@@ -82,7 +82,7 @@ export function GestorEquipa({
 
         <ul className="mt-5 flex flex-col gap-2.5">
           <li className="superficie flex items-center gap-4 rounded-cartao px-4 py-3.5">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-laranja font-display text-base text-grafite">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-laranja font-display text-base text-creme">
               <Crown className="h-5 w-5" aria-hidden />
             </span>
             <div className="min-w-0 flex-1">
@@ -97,8 +97,8 @@ export function GestorEquipa({
         </ul>
 
         {membros.length === 0 ? (
-          <div className="mt-2.5 rounded-cartao border border-dashed border-white/10 px-6 py-10 text-center">
-            <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white/[0.05] text-tenue">
+          <div className="mt-2.5 rounded-cartao border border-dashed border-black/10 px-6 py-10 text-center">
+            <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-black/[0.05] text-tenue">
               <UsersRound className="h-5 w-5" aria-hidden />
             </span>
             <p className="mt-4 font-sans text-sm font-semibold text-creme">
@@ -223,7 +223,7 @@ function FormularioConvite({
                       'flex min-h-[56px] cursor-pointer items-start gap-3 rounded-campo border px-3.5 py-3 transition-colors duration-200',
                       escolhido
                         ? 'border-laranja bg-laranja/10'
-                        : 'border-white/10 hover:border-white/25',
+                        : 'border-black/10 hover:border-black/25',
                       'focus-within:ring-2 focus-within:ring-laranja/40',
                     )}
                   >
@@ -299,7 +299,7 @@ function LinhaMembro({
         ocupado && 'opacity-60',
       )}
     >
-      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/[0.06] font-display text-base text-creme">
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-black/[0.06] font-display text-base text-creme">
         {nome.charAt(0).toUpperCase()}
       </span>
 
@@ -329,7 +329,7 @@ function LinhaMembro({
             value={membro.papel}
             disabled={ocupado}
             onChange={(e) => trocarPapel(e.target.value as PapelDeMembro)}
-            className="h-11 appearance-none rounded-full border border-white/10 bg-white/[0.04] pl-9 pr-4 font-sans text-sm font-semibold text-creme outline-none transition-colors hover:border-white/25 focus-visible:border-laranja"
+            className="h-11 appearance-none rounded-full border border-black/10 bg-black/[0.04] pl-9 pr-4 font-sans text-sm font-semibold text-creme outline-none transition-colors hover:border-black/25 focus-visible:border-laranja"
           >
             {PAPEIS_DE_MEMBRO.map((p) => (
               <option key={p} value={p} className="bg-grafite-alto">
@@ -350,7 +350,7 @@ function LinhaMembro({
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-laranja',
             aConfirmar
               ? 'bg-[#ff8a78]/15 text-[#ff8a78]'
-              : 'w-11 px-0 text-tenue hover:bg-white/[0.06] hover:text-creme',
+              : 'w-11 px-0 text-tenue hover:bg-black/[0.06] hover:text-creme',
           )}
         >
           <Trash2 className="h-4 w-4" aria-hidden />

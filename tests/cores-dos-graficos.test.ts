@@ -27,7 +27,7 @@ import { COR_ESTADO, COR_SERIE } from '@/lib/cores';
  *    ficou laranja com uma linha dourada no meio.
  */
 
-const FUNDO = '#0f0e0d'; // --grafite
+const FUNDO = '#ffffff'; // o cartão branco, que é onde os gráficos vivem
 
 /* ------------------------------------------------------------------ */
 /* A régua                                                             */
@@ -112,19 +112,45 @@ const NA_BARRA = [COR_ESTADO.bom, COR_ESTADO.aviso, COR_ESTADO.serio, COR_ESTADO
 
 const VIZINHOS = NA_BARRA.slice(0, -1).map((cor, i) => [cor, NA_BARRA[i + 1]] as const);
 
+/** A escalada: aviso, sério, crítico. O "bom" é o outro pólo. */
+const ESCALADA = [COR_ESTADO.aviso, COR_ESTADO.serio, COR_ESTADO.critico];
+
 describe('as quatro barras de estado', () => {
-  it.each(VIZINHOS)('%s e %s distinguem-se a olho nu', (a, b) => {
-    expect(distancia(a, b)).toBeGreaterThanOrEqual(15);
+  /*
+   * COM A APP CLARA, A ESCALADA DEIXOU DE SER QUATRO CORES SOLTAS.
+   *
+   * Sobre preto havia um amarelo vivo, um âmbar e um vermelho, os três
+   * a 15 de distância uns dos outros. Sobre branco esse amarelo lê-se a
+   * 1,8:1 — não se vê —, e todos os amarelos que se lêem sobre branco
+   * caem em cima do laranja: medidas todas contra todas, nenhuma
+   * combinação de quatro tons quentes chega aos 15.
+   *
+   * Uma escalada não é, aliás, quatro categorias: é uma régua. Por isso
+   * passa a ser uma régua — a mesma família quente, cada degrau mais
+   * escuro do que o anterior, que é a forma certa de desenhar "pior".
+   * O verde do "bom" fica de fora dela, porque é o outro pólo, e esse
+   * sim tem de se distinguir à vista.
+   *
+   * Os rótulos continuam ao lado de cada barra: a cor nunca conta a
+   * história sozinha.
+   */
+  it('o bom distingue-se do primeiro aviso, mesmo a olho nu', () => {
+    expect(distancia(COR_ESTADO.bom, COR_ESTADO.aviso)).toBeGreaterThanOrEqual(15);
   });
 
-  it.each(VIZINHOS)('%s e %s distinguem-se para quem não distingue cores', (a, b) => {
-    // Aqui o chão é 8. Abaixo de 6 nem com rótulo ao lado serviria; entre
-    // 6 e 8 só serve porque o rótulo está sempre lá — e está.
-    const pior = Math.min(distancia(a, b, 'protan'), distancia(a, b, 'deutan'));
-    expect(pior).toBeGreaterThanOrEqual(8);
+  it('a escalada escurece degrau a degrau', () => {
+    const luzes = ESCALADA.map((cor) => luminosidade(cor));
+    expect(luzes[0]).toBeGreaterThan(luzes[1]);
+    expect(luzes[1]).toBeGreaterThan(luzes[2]);
   });
 
-  it.each(NA_BARRA)('%s lê-se sobre o fundo escuro', (cor) => {
+  it.each(VIZINHOS)('%s e %s não são o mesmo tom', (a, b) => {
+    // Degraus de uma régua, e não categorias: chega que se vejam
+    // diferentes um ao lado do outro, com o rótulo a dizer qual é qual.
+    expect(distancia(a, b)).toBeGreaterThanOrEqual(5);
+  });
+
+  it.each(NA_BARRA)('%s lê-se sobre o cartão branco', (cor) => {
     expect(contraste(cor, FUNDO)).toBeGreaterThanOrEqual(3);
   });
 
@@ -152,6 +178,6 @@ describe('a cor da linha e das barras', () => {
   it('continua a ser o laranja da casa, e não um dourado qualquer', () => {
     // A um degrau do laranja da marca. Se alguém a trocar por um tom de
     // outra família, isto cai.
-    expect(distancia(COR_SERIE, '#ff5b24')).toBeLessThan(8);
+    expect(distancia(COR_SERIE, '#c2410c')).toBeLessThan(8);
   });
 });

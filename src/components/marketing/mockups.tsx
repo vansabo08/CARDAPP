@@ -11,6 +11,7 @@ import {
   progresso,
 } from '@/lib/pedidos';
 import { buildWhatsAppMessage } from '@/lib/whatsapp';
+import type { EstadoPedido } from '@/lib/tipos';
 import { cn } from '@/lib/utils';
 import { Logotipo } from '@/components/logotipo';
 
@@ -165,7 +166,7 @@ export function EcraCardapio() {
       <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-grafite via-grafite/90 to-transparent px-4 pb-6 pt-8">
         <div className="flex items-center gap-2.5">
           <div className="flex min-w-0 flex-1 items-center gap-3 rounded-full border border-linha bg-grafite-alto py-2.5 pl-2.5 pr-4">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-laranja font-sans text-sm font-bold text-grafite">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-laranja font-sans text-sm font-bold text-creme">
               6
             </span>
             <span className="min-w-0 flex-1">
@@ -380,7 +381,7 @@ export function EcraPainel() {
                   </span>
                   O alarme volta a tocar até alguém carregar
                 </p>
-                <span className="flex h-12 w-full items-center justify-center rounded-full bg-laranja font-sans text-base font-semibold text-grafite">
+                <span className="flex h-12 w-full items-center justify-center rounded-full bg-laranja font-sans text-base font-semibold text-creme">
                   Recebido — calar o alarme
                 </span>
               </div>
@@ -403,8 +404,7 @@ export function EcraPainel() {
  * escolhido é o do meio — "a preparar" —, que é o que responde à pergunta
  * que faz o cliente levantar a mão: "o meu prato já está a ser feito?"
  */
-export function EcraAcompanhar() {
-  const estado = 'preparar' as const;
+export function EcraAcompanhar({ estado = 'preparar' }: { estado?: EstadoPedido } = {}) {
   const avanco = progresso(estado);
 
   return (
@@ -467,6 +467,89 @@ export function EcraAcompanhar() {
   );
 }
 
+/**
+ * O balão do WhatsApp — o verdadeiro, não uma caixa com texto dentro.
+ *
+ * A mensagem estava num rectângulo cinzento com letra de máquina de
+ * escrever, e quem a via tinha de acreditar que aquilo chegava ao
+ * telefone. Dentro do balão verde, com a bicha do lado, a hora e os dois
+ * certos azuis, não é preciso acreditar: já se viu mil vezes.
+ *
+ * Os valores de cor são os do próprio WhatsApp — o verde `#005c4b` do
+ * que sai de nós, o `#0b141a` da conversa, o azul `#53bdeb` dos certos.
+ * A bicha é um triângulo em CSS, do tamanho da que ele desenha.
+ */
+export function BalaoWhatsApp({
+  mensagem = MENSAGEM_EXEMPLO,
+  hora = '19:42',
+  /**
+   * Com a conversa por trás, ou só o balão.
+   *
+   * Dentro do telemóvel vai com conversa: ali é um ecrã do WhatsApp, e
+   * sem o fundo dele não era. Na página, vai sozinho — recortado, como
+   * se tivessem colado a imagem do balão. O rectângulo escuro no meio de
+   * uma página clara era uma mancha, e não uma mensagem.
+   */
+  fundo = true,
+  className,
+}: {
+  mensagem?: string;
+  hora?: string;
+  fundo?: boolean;
+  className?: string;
+}) {
+  return (
+    <div className={cn('relative', fundo ? 'overflow-hidden bg-[#0b141a] p-3.5' : 'p-0', className)}>
+      {/* O papel de parede: pontos muito ténues, como o dele. */}
+      {fundo ? (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-[0.55]"
+          style={{
+            backgroundImage:
+              'radial-gradient(rgba(233,237,239,0.045) 1px, transparent 1px), radial-gradient(rgba(233,237,239,0.03) 1px, transparent 1px)',
+            backgroundSize: '22px 22px, 22px 22px',
+            backgroundPosition: '0 0, 11px 11px',
+          }}
+        />
+      ) : null}
+
+      <div className={cn('relative flex', fundo ? 'justify-end' : 'justify-start')}>
+        <div
+          className={cn(
+            'relative rounded-[10px] rounded-tr-[3px] bg-[#005c4b] px-2.5 py-2',
+            fundo
+              ? 'max-w-[92%] shadow-[0_1px_1px_rgba(0,0,0,0.35)]'
+              : // Sozinho na página, assenta com a sua própria sombra —
+                // é o que o faz parecer colado por cima e não desenhado.
+                'w-full shadow-[0_20px_36px_-20px_rgba(23,22,27,0.5)]',
+          )}
+        >
+          {/* A bicha do balão, no canto de cima à direita. */}
+          <span
+            aria-hidden
+            className="absolute -right-[7px] top-0 h-0 w-0"
+            style={{
+              borderTop: '8px solid #005c4b',
+              borderRight: '8px solid transparent',
+            }}
+          />
+          <pre className="whitespace-pre-wrap break-words font-sans text-[13px] leading-[1.35] text-[#e9edef]">
+            {mensagem}
+          </pre>
+          <p className="mt-1 flex items-center justify-end gap-1 font-sans text-[11px] text-[#e9edef]/60">
+            {hora}
+            <svg viewBox="0 0 16 11" className="h-3 w-3.5 fill-[#53bdeb]" aria-label="lida">
+              <path d="M11.07.65a.5.5 0 0 0-.7.06L5.2 6.83 3.1 4.63a.5.5 0 1 0-.72.7l2.5 2.6a.5.5 0 0 0 .72-.02l5.53-6.53a.5.5 0 0 0-.06-.73Z" />
+              <path d="M15.07.65a.5.5 0 0 0-.7.06L9.2 6.83l-.6-.63-.68.8.9.93a.5.5 0 0 0 .72-.02l5.53-6.53a.5.5 0 0 0-.06-.73Z" />
+            </svg>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function EcraWhatsApp() {
   return (
     <div className="relative h-full w-full bg-[#0b141a]">
@@ -480,14 +563,7 @@ export function EcraWhatsApp() {
         </div>
       </div>
 
-      <div className="flex justify-end p-3.5">
-        <div className="max-w-[92%] rounded-[14px] rounded-tr-[5px] bg-[#005c4b] px-3 py-2.5">
-          <pre className="whitespace-pre font-mono text-xs leading-normal text-[#e9edef]">
-            {MENSAGEM_EXEMPLO}
-          </pre>
-          <p className="mt-1.5 text-right font-sans text-xs text-white/50">19:42 ✓✓</p>
-        </div>
-      </div>
+      <BalaoWhatsApp />
     </div>
   );
 }

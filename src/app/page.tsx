@@ -4,12 +4,14 @@ import { Botao } from '@/components/ui/botao';
 import { Revelar } from '@/components/ui/revelar';
 import { Marca } from '@/components/marca';
 import { Telemovel } from '@/components/marketing/telemovel';
+import { TelemovelFlutuante } from '@/components/marketing/telemovel-flutuante';
+import { BarraFlutuante } from '@/components/marketing/barra-flutuante';
 import {
   CartaoMesa,
   EcraAcompanhar,
   EcraCardapio,
   EcraPainel,
-  MENSAGEM_EXEMPLO,
+  BalaoWhatsApp,
 } from '@/components/marketing/mockups';
 import { FundoVivo } from '@/components/marketing/fundo-vivo';
 import { FaixaPratos } from '@/components/marketing/faixa-pratos';
@@ -17,6 +19,9 @@ import { FraseRevelada } from '@/components/marketing/frase-revelada';
 import { Prova } from '@/components/marketing/prova';
 import { Perguntas } from '@/components/marketing/perguntas';
 import { Precos } from '@/components/marketing/precos';
+import { Rodape } from '@/components/marketing/rodape';
+import { EcraEmUso } from '@/components/marketing/ecra-em-uso';
+import { EntraESai } from '@/components/marketing/entra-e-sai';
 
 const PASSOS = [
   {
@@ -65,7 +70,11 @@ const CAMINHO_PAINEL = [
 
 export default function PaginaInicial() {
   return (
-    <div className="relative min-h-dvh">
+    // `overflow-x-clip`, e não `hidden`: o clip corta o que sai pelo
+    // lado (o brilho do aparelho, a faixa dos pratos) sem criar um
+    // contexto de rolagem — com `hidden`, a barra de cima deixava de
+    // poder ser fixa.
+    <div className="relative min-h-dvh overflow-x-clip">
       <FundoVivo />
 
       {/*
@@ -75,7 +84,7 @@ export default function PaginaInicial() {
       */}
       <a
         href="#conteudo"
-        className="sr-only rounded-campo bg-laranja px-4 py-2 font-sans text-sm font-semibold text-grafite focus:not-sr-only focus:absolute focus:left-5 focus:top-5 focus:z-[60]"
+        className="sr-only rounded-campo bg-laranja px-4 py-2 font-sans text-sm font-semibold text-creme focus:not-sr-only focus:absolute focus:left-5 focus:top-5 focus:z-[60]"
       >
         Saltar para o conteúdo
       </a>
@@ -83,75 +92,23 @@ export default function PaginaInicial() {
       {/* ---------------------------------------------------------- */}
       {/* Navegação                                                    */}
       {/* ---------------------------------------------------------- */}
-      <header className="superficie sticky top-0 z-50 rounded-none border-x-0 border-t-0 shadow-[inset_0_1px_0_0_rgba(250,247,242,0.11)]">
-        <nav className="mx-auto flex h-[68px] max-w-conteudo items-center justify-between px-5 md:px-8">
-          <Marca />
-          <div className="hidden items-center gap-9 md:flex">
-            <a href="#como-funciona" className="font-sans text-sm text-tenue transition-colors hover:text-creme">
-              Como funciona
-            </a>
-            <a href="#caminhos" className="font-sans text-sm text-tenue transition-colors hover:text-creme">
-              Onde chegam os pedidos
-            </a>
-            <a href="#precos" className="font-sans text-sm text-tenue transition-colors hover:text-creme">
-              Preços
-            </a>
-            <a href="#perguntas" className="font-sans text-sm text-tenue transition-colors hover:text-creme">
-              Perguntas
-            </a>
-            <Link href="/tia-bela?mesa=7" className="font-sans text-sm text-tenue transition-colors hover:text-creme">
-              Ver um cardápio
-            </Link>
-          </div>
-          <div className="flex items-center gap-2">
-            <Botao asChild variante="discreto" tamanho="sm" className="hidden sm:inline-flex">
-              <Link href="/entrar">Entrar</Link>
-            </Botao>
-            <Botao asChild variante="laranja" tamanho="sm">
-              <Link href="/criar-conta">Criar cardápio</Link>
-            </Botao>
-          </div>
-        </nav>
-      </header>
+      <BarraFlutuante />
 
       <main id="conteudo">
       {/* ---------------------------------------------------------- */}
       {/* Herói                                                        */}
       {/* ---------------------------------------------------------- */}
       <section className="relative overflow-hidden">
-        {/* ------------------------------------------------------------
-            Fotografia de sala por trás de tudo. Fica muito escurecida de
-            propósito: é atmosfera, não assunto — o assunto é o título e
-            o telemóvel. Dois véus, um a fechar o lado do texto e outro a
-            derreter a base na página, para não haver costura visível.
-            ------------------------------------------------------------ */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-          <Image
-            src="/pratos/ambiente.webp"
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            quality={55}
-            /* Desfocada como numa objectiva aberta: separa o fundo do
-               telemóvel, que é o que tem de estar nítido. */
-            className="scale-105 object-cover object-center opacity-[0.32] blur-[2px]"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-grafite via-grafite/90 to-grafite/70" />
-          <div className="absolute inset-0 bg-gradient-to-b from-grafite/80 via-transparent to-grafite" />
-          {/* mancha escura por trás do aparelho, para ele destacar */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                'radial-gradient(46% 58% at 74% 52%, rgba(15,14,13,0.66) 0%, transparent 72%)',
-            }}
-          />
-        </div>
-
-        <div className="relative mx-auto max-w-conteudo px-5 pb-24 pt-16 md:px-8 md:pb-32 md:pt-24">
-          <div className="grid items-center gap-16 lg:grid-cols-[1fr_460px]">
-            <div>
+        <div className="relative mx-auto max-w-conteudo px-5 pb-24 pt-24 md:px-8 md:pb-32 md:pt-32">
+          {/*
+            O aparelho fica ao lado do texto em toda a parte, também no
+            telemóvel — em baixo, ninguém o via sem rolar, e era ele que
+            contava o que isto é. Aí é pequeno, com a coluna do texto a
+            mandar; os botões é que descem para debaixo dos dois, porque
+            um botão de 40 % de largura não se carrega bem.
+          */}
+          <div className="grid grid-cols-[1fr_136px] items-center gap-x-5 gap-y-10 sm:grid-cols-[1fr_190px] sm:gap-x-8 lg:grid-cols-[1fr_420px] lg:gap-x-16">
+            <div className="min-w-0">
               <Revelar>
                 <span className="etiqueta text-laranja">Premium · Angola · Kwanza</span>
               </Revelar>
@@ -164,21 +121,43 @@ export default function PaginaInicial() {
                 precisa dele nos tamanhos grandes.
               */}
               <Revelar atraso={60}>
-                <h1 className="mt-6 max-w-[12ch] text-balance font-display text-4xl tracking-tight text-creme md:text-6xl">
-                  O cardápio que cabe numa <span className="laranja-display">mesa.</span>
+                <h1 className="mt-5 max-w-[12ch] text-balance font-display text-[30px] leading-[1.05] tracking-tight text-creme sm:text-4xl md:mt-6 md:text-6xl md:leading-none">
+                  O cardápio que cabe numa{' '}
+                  <span className="laranja-display font-assinatura text-[1.25em] font-normal tracking-normal">
+                    mesa.
+                  </span>
                 </h1>
               </Revelar>
 
               <Revelar atraso={120}>
-                <p className="mt-8 max-w-[44ch] text-pretty font-sans text-lg leading-relaxed text-tenue">
+                <p className="mt-5 max-w-[44ch] text-pretty font-sans text-sm leading-relaxed text-tenue sm:text-base md:mt-8 md:text-lg">
                   O cliente lê o QR da mesa e pede sem instalar nada. O pedido chega à cozinha já
                   escrito, no WhatsApp ou no painel do CardApp, e ele acompanha no telemóvel até o
                   prato chegar.
                 </p>
               </Revelar>
+            </div>
 
+            <Revelar atraso={140} className="flex justify-center lg:row-span-2 lg:justify-end">
+              <TelemovelFlutuante>
+                {/*
+                  Os três momentos, em ciclo: escolher, acompanhar, a
+                  cozinha a receber. É a app a ser usada, e não uma
+                  fotografia dela.
+                */}
+                <EcraEmUso
+                  passos={[
+                    { rotulo: 'Escolhe na mesa', ecra: <EcraCardapio /> },
+                    { rotulo: 'Acompanha o pedido', ecra: <EcraAcompanhar /> },
+                    { rotulo: 'A cozinha recebe', ecra: <EcraPainel /> },
+                  ]}
+                />
+              </TelemovelFlutuante>
+            </Revelar>
+
+            <div className="col-span-2 lg:col-span-1 lg:col-start-1 lg:row-start-2 lg:-mt-2">
               <Revelar atraso={180}>
-                <div className="mt-10 flex flex-wrap items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                   <Botao asChild variante="laranja" tamanho="lg">
                     <Link href="/criar-conta">Experimentar 7 dias</Link>
                   </Botao>
@@ -189,19 +168,11 @@ export default function PaginaInicial() {
               </Revelar>
 
               <Revelar atraso={240}>
-                <p className="mt-7 font-sans text-sm text-tenue">
+                <p className="mt-6 font-sans text-sm text-tenue">
                   Sete dias com tudo aberto. Sem cartão de crédito.
                 </p>
               </Revelar>
             </div>
-
-            <Revelar atraso={140} className="flex justify-center lg:justify-end">
-              <div className="transition-transform duration-500 ease-calmo hover:-translate-y-2 hover:rotate-[-1.2deg]">
-                <Telemovel largura={330}>
-                  <EcraCardapio />
-                </Telemovel>
-              </div>
-            </Revelar>
           </div>
         </div>
       </section>
@@ -230,9 +201,12 @@ export default function PaginaInicial() {
       {/* Como funciona                                                */}
       {/* ---------------------------------------------------------- */}
       <section id="como-funciona" className="mx-auto max-w-conteudo px-5 py-24 md:px-8 md:py-32">
-        <Revelar>
+        {/* Ao meio: são três colunas iguais por baixo, e um título
+            encostado à esquerda por cima de três colunas centradas
+            deixava a secção torta. */}
+        <Revelar className="text-center">
           <span className="etiqueta text-laranja">Como funciona</span>
-          <h2 className="mt-5 max-w-[16ch] text-balance font-display text-4xl leading-none text-creme md:text-5xl">
+          <h2 className="mx-auto mt-5 max-w-[20ch] text-balance font-display text-4xl leading-tight text-creme md:text-5xl">
             Três passos. Nenhum deles é instalar uma aplicação.
           </h2>
         </Revelar>
@@ -258,19 +232,23 @@ export default function PaginaInicial() {
 
           <Revelar atraso={80} className="flex flex-col">
             <PassoCabecalho {...PASSOS[1]} />
-            <div className="superficie mt-9 flex flex-1 items-center justify-center rounded-cartao px-6 py-11 transition-colors duration-300 hover:border-laranja/30">
-              <Telemovel largura={216} sombra={false}>
-                <EcraCardapio />
-              </Telemovel>
+            <div className="mt-9 flex flex-1 items-center justify-center px-2 py-6">
+              <EntraESai de="baixo" atraso={0.05}>
+                <Telemovel largura={216} sombra={false}>
+                  <EcraCardapio />
+                </Telemovel>
+              </EntraESai>
             </div>
           </Revelar>
 
           <Revelar atraso={160} className="flex flex-col">
             <PassoCabecalho {...PASSOS[2]} />
-            <div className="superficie mt-9 flex flex-1 items-center justify-center rounded-cartao px-6 py-11 transition-colors duration-300 hover:border-laranja/30">
-              <Telemovel largura={216} sombra={false}>
-                <EcraPainel />
-              </Telemovel>
+            <div className="mt-9 flex flex-1 items-center justify-center px-2 py-6">
+              <EntraESai de="direita" atraso={0.12}>
+                <Telemovel largura={216} sombra={false}>
+                  <EcraPainel />
+                </Telemovel>
+              </EntraESai>
             </div>
           </Revelar>
         </div>
@@ -283,7 +261,7 @@ export default function PaginaInicial() {
         <div className="mx-auto max-w-conteudo px-5 py-28 md:px-8 md:py-36">
           <FraseRevelada
             texto="O cliente lê, escolhe e envia. A cozinha começa a trabalhar antes de alguém se levantar da mesa."
-            className="mx-auto max-w-[680px] font-display text-4xl leading-none tracking-[-0.015em] md:text-5xl"
+            className="mx-auto max-w-[620px] text-center font-display text-2xl leading-snug tracking-[-0.01em] md:text-[34px]"
           />
         </div>
       </section>
@@ -318,7 +296,7 @@ export default function PaginaInicial() {
           <div className="mt-16 grid gap-6 md:grid-cols-2">
             {/* WhatsApp */}
             <Revelar className="flex">
-              <article className="superficie flex w-full flex-col rounded-cartao p-6 md:p-8">
+              <article className="flex w-full flex-col">
                 <span className="etiqueta text-verde">No WhatsApp</span>
                 <h3 className="mt-4 text-balance font-display text-2xl leading-tight text-creme">
                   O número que a casa já usa todos os dias.
@@ -327,17 +305,20 @@ export default function PaginaInicial() {
                   A mensagem chega escrita de uma vez, com a mesa, as quantidades, as observações e o
                   total alinhado. Não há nada novo para aprender.
                 </p>
-                <div className="superficie-leve mt-6 overflow-x-auto rounded-cartao p-5">
-                  <pre className="whitespace-pre font-mono text-xs leading-relaxed text-creme/90">
-                    {MENSAGEM_EXEMPLO}
-                  </pre>
+                {/* A mensagem dentro do balão do WhatsApp: é assim que
+                    ela chega ao telefone de quem está na cozinha. */}
+                {/* Sem moldura: o balão já tem a cor da conversa, e uma
+                    caixa branca à volta fazia dois cartões um dentro do
+                    outro. */}
+                <div className="mt-6">
+                  <BalaoWhatsApp fundo={false} />
                 </div>
               </article>
             </Revelar>
 
             {/* Painel */}
             <Revelar atraso={80} className="flex">
-              <article className="superficie flex w-full flex-col rounded-cartao border-laranja/30 p-6 md:p-8">
+              <article className="flex w-full flex-col">
                 <span className="etiqueta text-laranja">No painel do CardApp</span>
                 <h3 className="mt-4 text-balance font-display text-2xl leading-tight text-creme">
                   Os pedidos numa lista que se mexe sozinha.
@@ -371,13 +352,19 @@ export default function PaginaInicial() {
       {/* ---------------------------------------------------------- */}
       {/* O cliente acompanha                                          */}
       {/* ---------------------------------------------------------- */}
-      <section className="superficie border-x-0 border-y border-linha backdrop-blur-md">
+      <section className="border-y border-linha">
         <div className="mx-auto grid max-w-conteudo items-center gap-16 px-5 py-24 md:grid-cols-2 md:px-8 md:py-28">
-          <Revelar className="flex justify-center md:order-2">
+          <EntraESai de="direita" className="flex justify-center md:order-2">
             <Telemovel largura={300} sombra={false}>
-              <EcraAcompanhar />
+              {/* Os dois estados que o cliente vê enquanto espera. */}
+              <EcraEmUso
+                passos={[
+                  { rotulo: 'A preparar', ecra: <EcraAcompanhar /> },
+                  { rotulo: 'A caminho da mesa', ecra: <EcraAcompanhar estado="caminho" /> },
+                ]}
+              />
             </Telemovel>
-          </Revelar>
+          </EntraESai>
 
           <Revelar atraso={80}>
             <span className="etiqueta text-laranja">Depois de pedir</span>
@@ -432,46 +419,22 @@ export default function PaginaInicial() {
 
       </main>
 
-      <footer className="border-t border-linha">
-        <div className="mx-auto flex max-w-conteudo flex-col gap-6 px-5 py-10 sm:flex-row sm:items-center sm:justify-between md:px-8">
-          <Marca tamanho="sm" />
-          <div className="flex flex-wrap items-center gap-x-7 gap-y-2">
-            <Link href="/entrar" className="font-sans text-xs text-tenue transition-colors hover:text-creme">
-              Entrar
-            </Link>
-            <Link href="/criar-conta" className="font-sans text-xs text-tenue transition-colors hover:text-creme">
-              Criar conta
-            </Link>
-            <Link href="/tia-bela" className="font-sans text-xs text-tenue transition-colors hover:text-creme">
-              Cardápio de exemplo
-            </Link>
-            <a href="#perguntas" className="font-sans text-xs text-tenue transition-colors hover:text-creme">
-              Perguntas
-            </a>
-          </div>
-
-          {/*
-            Aqui estiveram um número de WhatsApp e um email marcados como
-            [TODO], visíveis para quem visitasse o site — e a ligação
-            apontava mesmo para +244 000 000 000. Um contacto por acabar é
-            pior do que contacto nenhum: quem tenta e falha desconfia da
-            casa toda. Fica só o que é verdade até haver os reais.
-          */}
-          <div className="flex flex-col gap-1.5 font-sans text-xs text-tenue sm:items-end">
-            <span>Luanda, Angola</span>
-          </div>
-        </div>
-      </footer>
+      <Rodape />
     </div>
   );
 }
 
 function PassoCabecalho({ numero, titulo, texto }: { numero: string; titulo: string; texto: string }) {
   return (
-    <div>
-      <span className="font-display text-sm text-laranja">{numero}</span>
-      <h3 className="mt-3 text-balance font-display text-2xl leading-none text-creme">{titulo}</h3>
-      <p className="mt-3 font-sans text-sm leading-normal text-tenue">{texto}</p>
+    <div className="text-center">
+      {/* O número num círculo: ao meio, marca o princípio da coluna. */}
+      <span className="mx-auto flex h-9 w-9 items-center justify-center rounded-full bg-laranja/15 font-display text-sm text-laranja">
+        {numero}
+      </span>
+      <h3 className="mt-4 text-balance font-display text-2xl leading-tight text-creme">{titulo}</h3>
+      <p className="mx-auto mt-3 max-w-[38ch] text-pretty font-sans text-sm leading-normal text-tenue">
+        {texto}
+      </p>
     </div>
   );
 }

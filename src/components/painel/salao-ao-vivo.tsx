@@ -44,9 +44,9 @@ export const ESTADOS: Record<
   livre: {
     nome: 'Livre',
     Icone: CircleDashed,
-    cartao: 'border-white/[0.06] bg-white/[0.02]',
+    cartao: 'border-black/[0.06] bg-black/[0.02]',
     texto: 'text-tenue',
-    ponto: 'bg-white/30',
+    ponto: 'bg-black/30',
   },
   aberta: {
     nome: 'Ocupada',
@@ -167,8 +167,8 @@ export function SalaoAoVivo({
 
   if (mesas.length === 0) {
     return (
-      <div className="mt-8 rounded-cartao border border-dashed border-white/10 px-6 py-14 text-center">
-        <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-white/[0.05] text-tenue">
+      <div className="mt-8 rounded-cartao border border-dashed border-black/10 px-6 py-14 text-center">
+        <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-black/[0.05] text-tenue">
           <UtensilsCrossed className="h-6 w-6" aria-hidden />
         </span>
         <p className="mt-5 font-display text-xl text-creme">Ainda não há mesas.</p>
@@ -191,7 +191,7 @@ export function SalaoAoVivo({
           return (
             <span
               key={estado}
-              className="inline-flex h-9 items-center gap-2 rounded-full border border-white/[0.07] bg-white/[0.03] px-3.5 font-sans text-sm"
+              className="inline-flex h-9 items-center gap-2 rounded-full border border-black/[0.07] bg-black/[0.03] px-3.5 font-sans text-sm"
             >
               <Icone className={cn('h-4 w-4', texto)} aria-hidden />
               <span className="font-semibold tabular-nums text-creme">{contagem[estado]}</span>
@@ -251,7 +251,7 @@ function CartaoMesa({
       <div className="flex items-start justify-between gap-2">
         <span className="font-display text-3xl leading-none text-creme">{mesa.numero}</span>
         {chamada ? (
-          <span className="relative inline-flex items-center gap-1 rounded-full bg-laranja px-2 py-1 font-sans text-xs font-bold text-grafite">
+          <span className="relative inline-flex items-center gap-1 rounded-full bg-laranja px-2 py-1 font-sans text-xs font-bold text-creme">
             {/* A pulsação diz "agora" sem ninguém ter de ler a hora. */}
             <span className="absolute inset-0 animate-ping rounded-full bg-laranja/60 motion-reduce:hidden" aria-hidden />
             <BellRing className="relative h-3 w-3" aria-hidden />
@@ -378,7 +378,7 @@ function DetalheMesa({
         ) : mesa.pedidos.length ? (
           <section className="mt-6">
             <h3 className="font-sans text-sm font-semibold text-creme/85">Pedidos desta mesa</h3>
-            <ul className="mt-3 flex flex-col divide-y divide-white/[0.06] rounded-cartao border border-white/[0.06]">
+            <ul className="mt-3 flex flex-col divide-y divide-black/[0.06] rounded-cartao border border-black/[0.06]">
               {mesa.pedidos.map((pedido) => (
                 <li key={pedido.id} className={cn('px-4 py-3', pedido.estado === 'cancelado' && 'opacity-45')}>
                   <div className="flex items-baseline justify-between gap-3">
@@ -511,7 +511,7 @@ function ContaDaMesa({ conta }: { conta: ContaFechada }) {
           </li>
         ))}
       </ul>
-      <div className="mt-3 flex items-baseline justify-between border-t border-white/10 pt-3">
+      <div className="mt-3 flex items-baseline justify-between border-t border-black/10 pt-3">
         <span className="font-sans text-sm font-semibold text-creme">Total</span>
         <span className="font-display text-2xl tabular-nums text-creme">{formatarKz(conta.total)}</span>
       </div>

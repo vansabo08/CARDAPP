@@ -214,7 +214,7 @@ function CartaoMesaQr({
         type="button"
         onClick={aoRemover}
         aria-label={`Apagar mesa ${mesa.numero}`}
-        className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full text-tenue opacity-0 transition-opacity duration-200 hover:bg-white/[0.07] hover:text-creme focus-visible:opacity-100 group-hover:opacity-100"
+        className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full text-tenue opacity-0 transition-opacity duration-200 hover:bg-black/[0.07] hover:text-creme focus-visible:opacity-100 group-hover:opacity-100"
       >
         ×
       </button>

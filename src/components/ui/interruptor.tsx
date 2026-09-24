@@ -12,7 +12,7 @@ export const Interruptor = React.forwardRef<
     ref={ref}
     className={cn(
       'peer inline-flex h-[22px] w-[38px] shrink-0 cursor-pointer items-center rounded-full border border-transparent transition-colors duration-200 ease-calmo',
-      'data-[state=checked]:bg-verde data-[state=unchecked]:bg-white/[0.14]',
+      'data-[state=checked]:bg-verde data-[state=unchecked]:bg-black/[0.14]',
       className,
     )}
     {...props}

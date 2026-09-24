@@ -695,7 +695,7 @@ function Cardapio({
                 className="superficie flex min-w-0 flex-1 items-center gap-3 rounded-full py-2.5 pl-2.5 pr-4 text-left transition-colors duration-200 hover:border-creme/25"
               >
                 <span
-                  className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-laranja font-sans text-sm font-bold tabular-nums text-grafite"
+                  className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-laranja font-sans text-sm font-bold tabular-nums text-creme"
                   aria-label={t('noPedido', { n: carrinho.quantidadeTotal })}
                 >
                   <AnimatePresence initial={false}>
@@ -795,7 +795,7 @@ function Cardapio({
           <div className="mt-6 rounded-cartao border border-laranja/25 bg-laranja/5 p-4">
             <label
               htmlFor="obs-pedido"
-              className="mb-1 flex items-center gap-2 font-sans text-sm font-semibold text-grafite"
+              className="mb-1 flex items-center gap-2 font-sans text-sm font-semibold text-creme"
             >
               <MessageSquareText className="h-4 w-4 shrink-0 text-laranja-escuro" aria-hidden />
               {t('obsCozinha')}
@@ -897,7 +897,7 @@ function Preco({
             {formatarKz(montra.antes)}
           </s>
           {desconto > 0 ? (
-            <span className="rounded-full bg-laranja px-1.5 py-0.5 font-sans text-xs font-extrabold text-grafite">
+            <span className="rounded-full bg-laranja px-1.5 py-0.5 font-sans text-xs font-extrabold text-creme">
               -{desconto}%
             </span>
           ) : null}
@@ -1001,7 +1001,7 @@ function CartaoDestaque({ prato, agora, aoAbrir }: { prato: Prato; agora: number
       <span className="relative block aspect-[4/3] w-full">
         <FotoPrato nome={nome} url={prato.foto_url} tamanhos="256px" />
         {emPromocao ? (
-          <span className="absolute left-2 top-2 rounded-full bg-laranja px-2 py-0.5 font-sans text-xs font-extrabold text-grafite">
+          <span className="absolute left-2 top-2 rounded-full bg-laranja px-2 py-0.5 font-sans text-xs font-extrabold text-creme">
             -{descontoEmPercentagem(prato)}%
           </span>
         ) : null}
@@ -1088,7 +1088,7 @@ function LinhaPrato({
           {quantidade > 0 ? (
             <span
               key={quantidade}
-              className="animate-marca absolute -right-1.5 -top-1.5 flex h-[24px] min-w-[24px] items-center justify-center rounded-full bg-laranja px-1.5 font-sans text-xs font-extrabold tabular-nums text-grafite ring-2 ring-creme-folha"
+              className="animate-marca absolute -right-1.5 -top-1.5 flex h-[24px] min-w-[24px] items-center justify-center rounded-full bg-laranja px-1.5 font-sans text-xs font-extrabold tabular-nums text-creme ring-2 ring-creme-folha"
             >
               {quantidade}
             </span>

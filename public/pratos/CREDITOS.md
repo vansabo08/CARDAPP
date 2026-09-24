@@ -28,3 +28,5 @@ estas deixam de aparecer.
 | doce-mucua.webp | unsplash.com/photos/1563805042-7684c019e1cb |
 | sala.webp | unsplash.com/photos/1533777857889-4be7c70b33f7 |
 | ambiente.webp | unsplash.com/photos/1517248135467-4c7edcad34c4 |
+| casa-cheia.webp | gerada por IA (Gemini), fornecida pelo dono |
+| mesa-qr.webp | gerada por IA (Gemini), fornecida pelo dono |

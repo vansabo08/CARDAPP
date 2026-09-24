@@ -197,7 +197,7 @@ export function CamposIdentidade({
 
       <div>
         <Rotulo htmlFor="slug">Endereço do cardápio</Rotulo>
-        <div className="flex items-center gap-0 rounded-campo border border-transparent bg-white/[0.05] px-4 transition-colors focus-within:border-laranja focus-within:bg-white/[0.07]">
+        <div className="flex items-center gap-0 rounded-campo border border-transparent bg-black/[0.05] px-4 transition-colors focus-within:border-laranja focus-within:bg-black/[0.07]">
           <span className="shrink-0 font-sans text-base text-tenue">
             {SITE_URL.replace(/^https?:\/\//, '')}/
           </span>
@@ -334,7 +334,7 @@ export function CampoWhatsApp({
   return (
     <div>
       <Rotulo htmlFor="whatsapp">Número de WhatsApp</Rotulo>
-      <div className="flex items-center gap-0 rounded-campo border border-transparent bg-white/[0.05] px-4 transition-colors focus-within:border-laranja focus-within:bg-white/[0.07]">
+      <div className="flex items-center gap-0 rounded-campo border border-transparent bg-black/[0.05] px-4 transition-colors focus-within:border-laranja focus-within:bg-black/[0.07]">
         <span className="shrink-0 font-sans text-base text-tenue">+244</span>
         <input
           id="whatsapp"

@@ -49,7 +49,7 @@ export function Doca({ itens, className }: { itens: ItemDoca[]; className?: stri
                   className={cn(
                     'flex h-8 w-14 items-center justify-center rounded-full transition-colors duration-200',
                     'group-active:scale-95',
-                    item.activo ? 'bg-laranja/15' : 'group-hover:bg-white/[0.05]',
+                    item.activo ? 'bg-laranja/15' : 'group-hover:bg-black/[0.05]',
                   )}
                 >
                   <Icone className="h-5 w-5" strokeWidth={item.activo ? 2.2 : 1.8} />

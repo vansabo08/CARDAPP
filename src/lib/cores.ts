@@ -32,10 +32,10 @@
  * existe precisamente para gritar.
  */
 export const COR_ESTADO = {
-  bom: '#0ca30c',
-  aviso: '#fab219',
-  serio: '#c88228',
-  critico: '#d03b3b',
+  bom: '#15803d',
+  aviso: '#d97706',
+  serio: '#b45309',
+  critico: '#b3261e',
 } as const;
 
 export type TomDeEstado = keyof typeof COR_ESTADO;
@@ -43,12 +43,42 @@ export type TomDeEstado = keyof typeof COR_ESTADO;
 /**
  * A cor das séries — a linha dos pedidos por dia e as barras das casas.
  *
- * É o laranja da marca, um degrau abaixo. O `#ff5b24` dos botões tem
- * luminosidade 0,684 e fica fora da banda do modo escuro; este tem 0,60,
- * cai dentro, e lê-se a 5,3:1 sobre o grafite. É o mesmo laranja, sem
- * ser o que berra.
+ * É o laranja da marca, no tom que se lê sobre branco. O âmbar dos
+ * botões, numa linha de dois pixéis, desaparecia contra o cartão: 1,8
+ * para 1. Este dá 5,2 e continua a ser a mesma família.
  *
- * Era o dourado da marca antiga. A marca mudou e o gráfico ficou para
- * trás: o painel inteiro laranja e a única linha dele dourada.
+ * Acompanha a marca: quando o laranja dos botões abriu, este abriu com
+ * ele. Já esteve dourado depois de a marca passar a laranja, e o painel
+ * inteiro ficou laranja com uma linha dourada no meio.
  */
-export const COR_SERIE = '#e8561f';
+export const COR_SERIE = '#c2410c';
+
+/**
+ * As cores da dashboard da casa: verde, azul, laranja — e o vermelho
+ * das descidas.
+ *
+ * Medidas contra o cartão branco, e não contra o cinzento da página: é
+ * em cima do cartão que os gráficos vivem. As quatro passam a banda de
+ * luminosidade do modo claro, o chroma e o contraste.
+ *
+ * A REGRA QUE AS ACOMPANHA, E SEM A QUAL NÃO SE PODEM USAR: cada uma
+ * manda no seu cartão, sozinha. Nunca duas na mesma figura.
+ *
+ * Porquê: medidas todas contra todas, o vermelho e o laranja ficam a
+ * 2,8 um do outro mesmo para quem vê todas as cores, e a 2,2 para quem
+ * não distingue verdes de vermelhos — muito abaixo dos 15 e dos 8 que
+ * se exigem. Lado a lado, no mesmo gráfico, seriam a mesma barra. Uma
+ * por cartão, cada uma com o seu título por cima, e a pergunta "qual é
+ * qual" nunca chega a existir.
+ *
+ * O vermelho não é categoria: é o sinal de que um número desceu, e vai
+ * sempre com a seta para baixo ao lado — nunca sozinho a dizer mau.
+ */
+export const COR_GRAFICO = {
+  receita: '#1a7f4b',
+  pedidos: '#2563c9',
+  movimento: COR_SERIE,
+  descida: '#c0392b',
+} as const;
+
+export type SerieDaCasa = keyof typeof COR_GRAFICO;

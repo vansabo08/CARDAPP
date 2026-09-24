@@ -434,6 +434,39 @@ export async function obterPedidosDeHoje(restaurantId: string): Promise<Pedido[]
 }
 
 /**
+ * Pedidos entre duas datas — o que a dashboard lê.
+ *
+ * Uma consulta só para as duas janelas (a do período e a anterior, com
+ * que se compara): pede-se desde o início da mais antiga, e a separação
+ * faz-se em memória, onde não custa nada. Duas consultas à base para o
+ * mesmo ecrã seriam o dobro da espera para o mesmo resultado.
+ */
+export async function obterPedidosEntre(
+  restaurantId: string,
+  inicio: Date,
+  fim: Date,
+): Promise<Pedido[]> {
+  const supabase = await clienteServidor();
+  if (!supabase) return PEDIDOS_DEMO;
+
+  const { data } = await supabase
+    .from('orders')
+    .select('id, restaurant_id, table_id, itens, total, created_at, estado, actualizado_em, tables (numero)')
+    .eq('restaurant_id', restaurantId)
+    .gte('created_at', inicio.toISOString())
+    .lt('created_at', fim.toISOString())
+    .order('created_at', { ascending: true });
+
+  if (!data) return [];
+
+  return (data as unknown as (Pedido & { tables?: { numero: number } | null })[]).map((p) => ({
+    ...p,
+    total: numeroSeguro(p.total),
+    mesa: p.tables?.numero ?? null,
+  }));
+}
+
+/**
  * Meia-noite de hoje em Luanda (UTC+1), devolvida em UTC.
  * Angola nao muda a hora, por isso o desvio e sempre de uma hora.
  */
