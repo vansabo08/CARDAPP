@@ -140,8 +140,6 @@ export type DadosPrato = {
   promo_inicio?: string | null;
   promo_fim?: string | null;
   prato_do_dia?: boolean;
-  nome_en?: string | null;
-  descricao_en?: string | null;
 };
 
 export async function criarPrato(categoryId: string, dados: DadosPrato): Promise<Resultado> {
@@ -248,8 +246,6 @@ function limpar(dados: DadosPrato) {
     extra.promo_fim = valida ? fim : null;
   }
   if (dados.prato_do_dia !== undefined) extra.prato_do_dia = Boolean(dados.prato_do_dia);
-  if (dados.nome_en !== undefined) extra.nome_en = dados.nome_en?.trim().slice(0, 80) || null;
-  if (dados.descricao_en !== undefined) extra.descricao_en = dados.descricao_en?.trim().slice(0, 200) || null;
 
   return { ...base, ...extra };
 }

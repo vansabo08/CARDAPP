@@ -41,7 +41,7 @@ export function ChamarDaMesa({
   /** Com o carrinho à vista, o botão sobe para não ficar por baixo dele. */
   comCarrinho: boolean;
 }) {
-  const { idioma, t } = useIdioma();
+  const { t } = useIdioma();
   const [aberto, setAberto] = React.useState(false);
   const [aChamar, setAChamar] = React.useState<Tipo | null>(null);
   const [avisados, setAvisados] = React.useState<Partial<Record<Tipo, number>>>({});
@@ -90,7 +90,7 @@ export function ChamarDaMesa({
       const resposta = await fetch('/api/mesa/chamar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slug, mesa, tipo, idioma }),
+        body: JSON.stringify({ slug, mesa, tipo }),
       });
       const corpo = (await resposta.json()) as RespostaChamada;
 

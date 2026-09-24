@@ -38,12 +38,14 @@ const LINHA = z.object({
 const PEDIDO = z.object({
   slug: z.string().trim().min(1).max(80),
   table_id: z.string().trim().max(64).nullish(),
+  /* O número da mesa, lido do endereço pelo browser. É por aqui que a
+     mesa chega desde que a página deixou de ler o endereço. */
+  mesa: z.coerce.number().int().min(1).max(999).nullish(),
   itens: z.array(LINHA).min(1, { error: 'O pedido está vazio.' }).max(60),
   // Uma observação estragada não deita o pedido abaixo: ignora-se, e a
   // comida chega na mesma.
   observacao: z.unknown().optional(),
   // A língua das mensagens de erro. O pedido grava-se sempre em português.
-  idioma: z.enum(['pt', 'en']).catch('pt').default('pt'),
 });
 
 function erro(mensagem: string, estado: number) {
@@ -61,8 +63,7 @@ export async function POST(pedido: Request) {
   const dados = PEDIDO.safeParse(corpo);
   if (!dados.success) return erro(dados.error.issues[0]?.message ?? 'Pedido inválido.', 400);
 
-  const { slug, itens: linhas, idioma } = dados.data;
-  const ingles = idioma === 'en';
+  const { slug, itens: linhas } = dados.data;
 
   const restaurante = await obterRestaurantePorSlug(slug);
   if (!restaurante) return erro('Restaurante não encontrado.', 404);
@@ -94,17 +95,13 @@ export async function POST(pedido: Request) {
 
     if (!prato) {
       return erro(
-        ingles
-          ? `${linha.nome ?? 'A dish'} is no longer on the menu. Please refresh the page.`
-          : `${linha.nome ?? 'Um prato'} já não está no cardápio. Atualize a página.`,
+        `${linha.nome ?? 'Um prato'} já não está no cardápio. Atualize a página.`,
         409,
       );
     }
     if (!prato.disponivel) {
       return erro(
-        ingles
-          ? `${prato.nome_en || prato.nome} just sold out. Remove it from your order to continue.`
-          : `${prato.nome} esgotou entretanto. Tire-o do pedido para continuar.`,
+        `${prato.nome} esgotou entretanto. Tire-o do pedido para continuar.`,
         409,
       );
     }
@@ -112,9 +109,7 @@ export async function POST(pedido: Request) {
     const conta = contarLinha(prato, linha.opcao_ids ?? [], agora);
     if (!conta.ok) {
       return erro(
-        ingles
-          ? `${prato.nome_en || prato.nome}: the options changed. Please open the dish and choose again.`
-          : `${prato.nome}: ${conta.erro}`,
+        `${prato.nome}: ${conta.erro}`,
         409,
       );
     }
@@ -137,12 +132,27 @@ export async function POST(pedido: Request) {
    * conta de outra casa.
    */
   let tableId: string | null = dados.data.table_id || null;
-  if (tableId) {
-    const publico = clientePublico();
-    const { data: mesa } = publico
-      ? await publico.from('tables').select('id').eq('id', tableId).eq('restaurant_id', restaurante.id).maybeSingle()
-      : { data: null };
+  const publico = clientePublico();
+
+  if (tableId && publico) {
+    const { data: mesa } = await publico
+      .from('tables')
+      .select('id')
+      .eq('id', tableId)
+      .eq('restaurant_id', restaurante.id)
+      .maybeSingle();
     if (!mesa) tableId = null;
+  }
+
+  // Sem id, mas com número: a mesa procura-se aqui, e não na página.
+  if (!tableId && dados.data.mesa != null && publico) {
+    const { data: mesa } = await publico
+      .from('tables')
+      .select('id')
+      .eq('restaurant_id', restaurante.id)
+      .eq('numero', dados.data.mesa)
+      .maybeSingle();
+    tableId = (mesa as { id?: string } | null)?.id ?? null;
   }
 
   // A observação do pedido inteiro. Cortada, porque vem de fora e vai

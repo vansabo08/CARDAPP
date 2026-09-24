@@ -83,8 +83,4 @@ export const APRESENTACAO: Record<Funcionalidade, { nome: string; frase: string 
     nome: 'Avaliações',
     frase: 'Estrelas e comentários de quem acabou de comer, e aviso quando alguém sai insatisfeito.',
   },
-  multi_idioma: {
-    nome: 'Cardápio em inglês',
-    frase: 'O cliente escolhe português ou inglês, com tradução automática para começar.',
-  },
 };

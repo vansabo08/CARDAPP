@@ -1,32 +1,22 @@
-'use client';
-
-import * as React from 'react';
-import { cn } from '@/lib/utils';
-
 /**
- * O cardápio do cliente em português e em inglês.
+ * Os textos fixos do cardápio do cliente.
  *
- * DUAS CAMADAS:
+ * "Ver pedido", "Juntar", "Obrigatório" — as frases que são da app e
+ * não da casa. Ficam todas aqui, numa tabela, e os ecrãs pedem-nas por
+ * nome: `t('verPedido')`. Ter as frases num sítio só é o que permite
+ * corrigir uma palavra sem a andar a caçar por dez ficheiros.
  *
- *   - Os textos fixos do ecrã ("Ver pedido", "Juntar", "Obrigatório")
- *     vivem aqui, nas duas línguas.
- *   - Os textos da casa (pratos, categorias, opções) vêm da base, com a
- *     coluna `_en` ao lado. `em()` escolhe — e, faltando a tradução,
- *     devolve o português. Um prato sem inglês lê-se em português; nunca
- *     aparece um buraco.
- *
- * O PEDIDO FICA EM PORTUGUÊS. O que vai para a cozinha — a mensagem de
- * WhatsApp, o painel — leva sempre os nomes portugueses, os que a casa
- * escreveu. O turista lê "Chicken muamba"; a cozinha lê "Muamba de
- * Galinha", que é o que ela conhece.
- *
- * A escolha fica guardada no telemóvel. Na primeira visita, um telemóvel
- * em inglês começa em inglês; depois manda o que a pessoa escolheu.
+ * ISTO JÁ FOI UM CARDÁPIO EM DUAS LÍNGUAS, com um botão PT|EN no canto,
+ * os nomes dos pratos em inglês na base de dados e tradução automática
+ * no painel. O dono mandou tirar, e saiu: o cardápio é em português, que
+ * é a língua de quem se senta à mesa em Angola. As colunas `_en` ficaram
+ * na base de dados, vazias e sem ninguém a lê-las — apagá-las era
+ * destrutivo e não devolvia nada em troca.
  */
 
-export type Idioma = 'pt' | 'en';
 
-export const TEXTOS = {
+
+const TEXTOS = {
   pt: {
     cardapio: 'Cardápio',
     mesa: 'Mesa {n}',
@@ -84,174 +74,30 @@ export const TEXTOS = {
     semLigacao: 'Sem ligação. Chame o empregado com um gesto.',
     idioma: 'Idioma do cardápio',
   },
-  en: {
-    cardapio: 'Menu',
-    mesa: 'Table {n}',
-    categorias: 'Categories',
-    maisPedidos: 'Most ordered',
-    aServir: 'Now serving:',
-    ateAs: '{menu} until {hora}',
-    pratoDoDia: "Today's special",
-    foraDeHorasTitulo: 'The kitchen is resting.',
-    foraDeHorasTexto: 'Nothing is being served right now. Our opening hours:',
-    desde: 'from',
-    antes: 'was',
-    esgotado: 'sold out',
-    adicionar: 'Add {nome}',
-    verPedido: 'View order',
-    enviarPedido: 'Send order',
-    enviarWhatsApp: 'Send order via WhatsApp',
-    noPedido: '{n} in your order',
-    oSeuPedido: 'Your order',
-    resumo: 'Order summary',
-    cada: '{preco} each',
-    obsCozinha: 'Note for the kitchen',
-    opcional: 'optional',
-    obsCozinhaAjuda: 'Allergies, how you like your meat, extra cutlery — anything about the whole order.',
-    obsCozinhaExemplo: 'E.g. no onion, little salt, seafood allergy…',
-    caracteres: '{n} characters left',
-    total: 'Total',
-    segueApp: 'Your order goes straight to the restaurant and you can follow it here. You pay at the table.',
-    segueWhatsApp: "Your order goes to the restaurant's WhatsApp. You pay at the table.",
-    continuar: 'Keep browsing',
-    obsPrato: 'Note for this dish',
-    obsPratoExemplo: 'no onion, well done, to share…',
-    obrigatorio: 'Required',
-    opcionalTitulo: 'Optional',
-    escolhaN: 'Choose {min}',
-    escolhaNaM: 'Choose {min} to {max}',
-    ateN: 'Up to {max}',
-    gratis: 'free',
-    juntar: 'Add',
-    esgotadoBotao: 'Sold out',
-    menosUm: 'One less {nome}',
-    maisUm: 'One more {nome}',
-    exemplo: "This is the sample menu — orders don't reach any kitchen.",
-    falhouEnvio: "We couldn't send your order. Check your connection and try again.",
-    erroEscolha: 'Choose {grupo}.',
-    erroMinimo: 'Choose at least {n} in {grupo}.',
-    erroMaximo: 'At most {n} in {grupo}.',
-    erroOpcao: 'One of the options is no longer available. Please choose again.',
-    erroOpcaoEsgotada: 'An option in {grupo} just sold out. Please choose another.',
-    chamar: 'Call the waiter',
-    pedirConta: 'Ask for the bill',
-    avisado: 'notified',
-    fechar: 'Close',
-    chamarOuConta: 'Call the waiter or ask for the bill',
-    semLigacao: 'No connection. Please wave to the waiter.',
-    idioma: 'Menu language',
-  },
-} as const satisfies Record<Idioma, Record<string, string>>;
+} as const;
 
 export type Chave = keyof (typeof TEXTOS)['pt'];
 
-/** O texto fixo na língua pedida, com as variáveis `{assim}` preenchidas. */
-export function traduzir(idioma: Idioma, chave: Chave, variaveis: Record<string, string | number> = {}) {
-  let texto: string = TEXTOS[idioma][chave] ?? TEXTOS.pt[chave];
-  for (const [nome, valor] of Object.entries(variaveis)) texto = texto.split(`{${nome}}`).join(String(valor));
+/** O texto fixo, com as variáveis `{assim}` preenchidas. */
+export function traduzir(chave: Chave, variaveis: Record<string, string | number> = {}) {
+  let texto: string = TEXTOS.pt[chave];
+  for (const [nome, valor] of Object.entries(variaveis)) {
+    texto = texto.split(`{${nome}}`).join(String(valor));
+  }
   return texto;
 }
 
-/** Os textos da casa: o inglês se houver, o português se não. */
-export function em(idioma: Idioma, pt: string, en?: string | null): string;
-export function em(idioma: Idioma, pt: string | null, en?: string | null): string | null;
-export function em(idioma: Idioma, pt: string | null, en?: string | null) {
-  if (idioma === 'en' && en && en.trim()) return en;
-  return pt;
-}
-
-/** Para os testes: as duas línguas têm as mesmas chaves. */
-export const CHAVES = { pt: Object.keys(TEXTOS.pt), en: Object.keys(TEXTOS.en) };
-
-const GUARDADO = 'cardapp:idioma';
-
-type Contexto = {
-  idioma: Idioma;
-  mudar: (idioma: Idioma) => void;
-  t: (chave: Chave, variaveis?: Record<string, string | number>) => string;
-};
-
-const ContextoIdioma = React.createContext<Contexto>({
-  idioma: 'pt',
-  mudar: () => {},
-  t: (chave, variaveis) => traduzir('pt', chave, variaveis),
-});
+/** Para os testes: as frases todas, para se verem de uma vez. */
+export const CHAVES = Object.keys(TEXTOS.pt);
 
 /**
- * Começa sempre em português, no servidor e no primeiro desenho do
- * browser — senão os dois desenhos não batiam certo e o React deitava o
- * ecrã abaixo. Logo a seguir lê a escolha guardada (ou a língua do
- * telemóvel) e troca, se for caso disso.
+ * O que os ecrãs usam: `t('chave')`.
+ *
+ * Já foi um contexto de React, com provedor e tudo, porque o cardápio
+ * tinha duas línguas e a escolhida vivia no estado. Agora a tabela é uma
+ * só e não muda — não há nada para guardar, e um hook sem estado é mais
+ * barato do que um contexto que nunca muda de valor.
  */
-export function ProvedorDeIdioma({ ligado, children }: { ligado: boolean; children: React.ReactNode }) {
-  const [idioma, setIdioma] = React.useState<Idioma>('pt');
-
-  React.useEffect(() => {
-    if (!ligado) return;
-    let inicial: Idioma = 'pt';
-    try {
-      const guardado = window.localStorage.getItem(GUARDADO);
-      if (guardado === 'pt' || guardado === 'en') inicial = guardado;
-      else if (navigator.language?.toLowerCase().startsWith('en')) inicial = 'en';
-    } catch {
-      /* sem armazenamento: fica em português */
-    }
-    setIdioma(inicial);
-  }, [ligado]);
-
-  React.useEffect(() => {
-    document.documentElement.lang = idioma === 'en' ? 'en' : 'pt-AO';
-  }, [idioma]);
-
-  const valor = React.useMemo<Contexto>(
-    () => ({
-      idioma: ligado ? idioma : 'pt',
-      mudar: (novo) => {
-        setIdioma(novo);
-        try {
-          window.localStorage.setItem(GUARDADO, novo);
-        } catch {
-          /* fica só nesta visita */
-        }
-      },
-      t: (chave, variaveis) => traduzir(ligado ? idioma : 'pt', chave, variaveis),
-    }),
-    [idioma, ligado],
-  );
-
-  return <ContextoIdioma.Provider value={valor}>{children}</ContextoIdioma.Provider>;
-}
-
 export function useIdioma() {
-  return React.useContext(ContextoIdioma);
-}
-
-/** O botão PT | EN, por cima da fotografia da capa. */
-export function SeletorDeIdioma({ className }: { className?: string }) {
-  const { idioma, mudar, t } = useIdioma();
-  return (
-    <div
-      role="radiogroup"
-      aria-label={t('idioma')}
-      className={cn('inline-flex rounded-full bg-grafite/60 p-1 backdrop-blur-sm', className)}
-    >
-      {(['pt', 'en'] as const).map((opcao) => (
-        <button
-          key={opcao}
-          type="button"
-          role="radio"
-          aria-checked={idioma === opcao}
-          lang={opcao === 'en' ? 'en' : 'pt'}
-          onClick={() => mudar(opcao)}
-          className={cn(
-            'flex h-9 min-w-[44px] items-center justify-center rounded-full px-3 font-sans text-xs font-bold uppercase tracking-wide transition-colors duration-200',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-laranja',
-            idioma === opcao ? 'bg-creme text-creme' : 'text-creme/80 hover:text-creme',
-          )}
-        >
-          {opcao === 'pt' ? 'PT' : 'EN'}
-        </button>
-      ))}
-    </div>
-  );
+  return { t: traduzir };
 }

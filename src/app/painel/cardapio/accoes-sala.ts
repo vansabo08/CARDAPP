@@ -5,7 +5,6 @@ import { z } from 'zod';
 import { emModoDemonstracao, obterPapelNoPainel, obterRestauranteDoDono } from '@/lib/dados';
 import { temFuncionalidade, type Funcionalidade } from '@/lib/funcionalidades';
 import { clienteDoPainel } from '@/lib/supabase/servidor';
-import { traduzirParaIngles } from '@/lib/traducao';
 
 /**
  * As escritas do cardápio que só existem no Plano Sala: opções dos
@@ -57,17 +56,9 @@ function primeiroErro(e: z.ZodError) {
 /* Opções dos pratos                                                   */
 /* ------------------------------------------------------------------ */
 
-const EM_INGLES = z
-  .string()
-  .trim()
-  .max(40)
-  .nullish()
-  .transform((v) => v || null);
-
 const OPCAO = z.object({
   id: z.uuid().optional(),
   nome: z.string().trim().min(1, { error: 'Dê um nome a cada opção.' }).max(40),
-  nome_en: EM_INGLES,
   preco: z.coerce.number().min(0, { error: 'O preço não pode ser negativo.' }).max(10_000_000),
   disponivel: z.boolean().default(true),
 });
@@ -77,7 +68,6 @@ const GRUPO = z
     itemId: ID,
     id: z.uuid().optional(),
     nome: z.string().trim().min(1, { error: 'Dê um nome ao grupo — "Tamanho", "Extras".' }).max(40),
-    nome_en: EM_INGLES,
     tipo: z.enum(['variante', 'extra']),
     minimo: z.coerce.number().int().min(0).max(20),
     maximo: z.coerce.number().int().min(1).max(20),
@@ -114,7 +104,7 @@ export async function guardarGrupo(entrada: unknown): Promise<Resultado> {
     .maybeSingle();
   if (!prato) return { ok: false, erro: 'Esse prato não é desta casa.' };
 
-  const linha = { item_id: g.itemId, nome: g.nome, nome_en: g.nome_en, tipo: g.tipo, minimo: g.minimo, maximo: g.maximo };
+  const linha = { item_id: g.itemId, nome: g.nome, tipo: g.tipo, minimo: g.minimo, maximo: g.maximo };
 
   let grupoId = g.id;
   if (grupoId) {
@@ -148,7 +138,6 @@ export async function guardarGrupo(entrada: unknown): Promise<Resultado> {
   for (const [ordem, opcao] of g.opcoes.entries()) {
     const campos = {
       nome: opcao.nome,
-      nome_en: opcao.nome_en,
       preco: Math.round(opcao.preco * 100) / 100,
       disponivel: opcao.disponivel,
       ordem,
@@ -189,7 +178,6 @@ const MENU = z
   .object({
     id: z.uuid().optional(),
     nome: z.string().trim().min(1, { error: 'Dê um nome ao horário — "Almoço", "Jantar".' }).max(40),
-    nome_en: EM_INGLES,
     hora_inicio: HORA,
     hora_fim: HORA,
     dias: z
@@ -283,129 +271,6 @@ export async function mudarModoEsgotado(entrada: unknown): Promise<Resultado> {
     .eq('id', acesso.restaurante.id);
   if (error) return { ok: false, erro: traduzir(error) };
   return feito(acesso.restaurante.slug);
-}
-
-/* ------------------------------------------------------------------ */
-/* O inglês                                                            */
-/* ------------------------------------------------------------------ */
-
-export async function nomeDaCategoriaEmIngles(entrada: unknown): Promise<Resultado> {
-  const dados = z.object({ categoriaId: ID, nome_en: z.string().trim().max(60) }).safeParse(entrada);
-  if (!dados.success) return { ok: false, erro: primeiroErro(dados.error) };
-
-  const acesso = await autorizar('multi_idioma');
-  if (acesso.tipo === 'demonstracao') return { ok: true, demonstracao: true };
-  if (acesso.tipo === 'erro') return { ok: false, erro: acesso.erro };
-
-  const { error } = await acesso.supabase
-    .from('categories')
-    .update({ nome_en: dados.data.nome_en || null })
-    .eq('id', dados.data.categoriaId)
-    .eq('restaurant_id', acesso.restaurante.id);
-  if (error) return { ok: false, erro: traduzir(error) };
-  return feito(acesso.restaurante.slug);
-}
-
-export type ResultadoTraducao = { ok: true; traducoes: string[] } | { ok: false; erro: string };
-
-/** Traduz textos soltos, para o editor preencher — não grava nada. */
-export async function traduzirTextos(entrada: unknown): Promise<ResultadoTraducao> {
-  const dados = z.object({ textos: z.array(z.string().max(300)).min(1).max(40) }).safeParse(entrada);
-  if (!dados.success) return { ok: false, erro: 'Não há nada para traduzir.' };
-
-  const acesso = await autorizar('multi_idioma');
-  if (acesso.tipo === 'demonstracao') return { ok: false, erro: 'Na demonstração não se traduz — nada é gravado.' };
-  if (acesso.tipo === 'erro') return { ok: false, erro: acesso.erro };
-
-  return traduzirParaIngles(dados.data.textos);
-}
-
-type Tarefa = { tabela: 'categories' | 'items' | 'grupos_opcoes' | 'opcoes' | 'menus_horario'; id: string; coluna: 'nome_en' | 'descricao_en'; texto: string };
-
-type LinhaCategoria = {
-  id: string;
-  nome: string;
-  nome_en: string | null;
-  itens: { id: string; nome: string; nome_en: string | null; descricao: string | null; descricao_en: string | null }[] | null;
-};
-
-const LIMITE: Record<Tarefa['tabela'], number> = {
-  categories: 60,
-  items: 80,
-  grupos_opcoes: 40,
-  opcoes: 40,
-  menus_horario: 40,
-};
-
-/**
- * Traduz tudo o que ainda não tem inglês, e grava.
- *
- * Só toca no que está vazio: o que o dono já escreveu ou corrigiu à mão
- * fica como está. Carregar duas vezes não estraga nada — da segunda já
- * não há nada por traduzir.
- */
-export async function traduzirCardapioTodo(): Promise<
-  { ok: true; traduzidos: number } | { ok: false; erro: string }
-> {
-  const acesso = await autorizar('multi_idioma');
-  if (acesso.tipo === 'demonstracao') return { ok: false, erro: 'Na demonstração não se traduz — nada é gravado.' };
-  if (acesso.tipo === 'erro') return { ok: false, erro: acesso.erro };
-  const { supabase, restaurante } = acesso;
-
-  const [{ data: categorias }, { data: grupos }, { data: opcoes }, { data: menus }] = await Promise.all([
-    supabase
-      .from('categories')
-      .select('id, nome, nome_en, itens:items (id, nome, nome_en, descricao, descricao_en)')
-      .eq('restaurant_id', restaurante.id),
-    supabase.from('grupos_opcoes').select('id, nome, nome_en').eq('restaurante_id', restaurante.id),
-    supabase.from('opcoes').select('id, nome, nome_en').eq('restaurante_id', restaurante.id),
-    supabase.from('menus_horario').select('id, nome, nome_en').eq('restaurante_id', restaurante.id),
-  ]);
-
-  const tarefas: Tarefa[] = [];
-  const falta = (v: unknown) => typeof v !== 'string' || !v.trim();
-
-  for (const c of (categorias ?? []) as unknown as LinhaCategoria[]) {
-    if (falta(c.nome_en)) tarefas.push({ tabela: 'categories', id: c.id, coluna: 'nome_en', texto: c.nome });
-    for (const i of c.itens ?? []) {
-      if (falta(i.nome_en)) tarefas.push({ tabela: 'items', id: i.id, coluna: 'nome_en', texto: i.nome });
-      if (i.descricao && falta(i.descricao_en)) {
-        tarefas.push({ tabela: 'items', id: i.id, coluna: 'descricao_en', texto: i.descricao });
-      }
-    }
-  }
-  const soltas: [Tarefa['tabela'], unknown][] = [
-    ['grupos_opcoes', grupos],
-    ['opcoes', opcoes],
-    ['menus_horario', menus],
-  ];
-  for (const [tabela, linhas] of soltas) {
-    for (const l of (linhas ?? []) as { id: string; nome: string; nome_en: string | null }[]) {
-      if (falta(l.nome_en)) tarefas.push({ tabela, id: l.id, coluna: 'nome_en', texto: l.nome });
-    }
-  }
-
-  if (!tarefas.length) return { ok: true, traduzidos: 0 };
-
-  const resultado = await traduzirParaIngles(tarefas.map((t) => t.texto));
-  if (!resultado.ok) return { ok: false, erro: resultado.erro };
-
-  // Grava uma a uma; a casa entra no filtro das tabelas que a têm.
-  let traduzidos = 0;
-  for (const [n, tarefa] of tarefas.entries()) {
-    const limite = tarefa.coluna === 'descricao_en' ? 200 : LIMITE[tarefa.tabela];
-    const en = resultado.traducoes[n]?.slice(0, limite);
-    if (!en) continue;
-
-    let consulta = supabase.from(tarefa.tabela).update({ [tarefa.coluna]: en }).eq('id', tarefa.id);
-    if (tarefa.tabela === 'categories') consulta = consulta.eq('restaurant_id', restaurante.id);
-    else if (tarefa.tabela !== 'items') consulta = consulta.eq('restaurante_id', restaurante.id);
-    const { error } = await consulta;
-    if (!error) traduzidos += 1;
-  }
-
-  feito(restaurante.slug);
-  return { ok: true, traduzidos };
 }
 
 /* ------------------------------------------------------------------ */

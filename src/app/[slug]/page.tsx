@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { CardapioPublico } from '@/components/cardapio/cardapio-publico';
 import { AvisoDemonstracao } from '@/components/aviso-demonstracao';
-import { obterCardapio, obterMenus, obterMesaPorNumero, obterRestaurantePorSlug } from '@/lib/dados';
+import { obterCardapio, obterMenus, obterRestaurantePorSlug } from '@/lib/dados';
 import { temFuncionalidade } from '@/lib/funcionalidades';
 import { cardapioNoAr, estadoDaConta } from '@/lib/planos';
 import { ForaDoAr } from '@/components/cardapio/fora-do-ar';
@@ -14,11 +14,21 @@ import { ForaDoAr } from '@/components/cardapio/fora-do-ar';
 
 type Props = {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ mesa?: string }>;
 };
 
-// Uma hora de cache no limite: mudar um preço aparece rápido, mas o
-// scan típico não paga o custo de uma leitura à base de dados.
+/*
+ * Uma hora de cache na borda.
+ *
+ * ISTO SÓ FUNCIONA PORQUE A PÁGINA NÃO OLHA PARA O ENDEREÇO. Enquanto
+ * lia `?mesa=` aqui, o Next marcava a rota como dinâmica e desenhava-a
+ * de raiz em cada leitura de QR: três segundos até ao primeiro byte,
+ * com o cliente sentado à mesa à espera. O número da mesa é lido no
+ * browser (ver `CardapioPublico`), e o cardápio — que é igual para toda
+ * a gente — volta a ser uma página feita à espera de quem chega.
+ *
+ * O que muda dentro da hora continua a aparecer na hora: o esgotado vai
+ * por Realtime, e gravar o cardápio no painel revalida esta página.
+ */
 export const revalidate = 3600;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -48,16 +58,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-function lerNumeroDaMesa(valor: string | undefined) {
-  if (!valor) return null;
-  const n = Number.parseInt(valor, 10);
-  if (!Number.isFinite(n) || n < 1 || n > 999) return null;
-  return n;
-}
-
-export default async function PaginaCardapio({ params, searchParams }: Props) {
+export default async function PaginaCardapio({ params }: Props) {
   const { slug } = await params;
-  const { mesa: mesaBruta } = await searchParams;
 
   const restaurante = await obterRestaurantePorSlug(slug);
   if (!restaurante) notFound();
@@ -69,11 +71,8 @@ export default async function PaginaCardapio({ params, searchParams }: Props) {
    */
   if (!cardapioNoAr(estadoDaConta(restaurante.acesso_expira_em))) return <ForaDoAr />;
 
-  const numero = lerNumeroDaMesa(mesaBruta);
-
-  const [categorias, mesa, menus] = await Promise.all([
+  const [categorias, menus] = await Promise.all([
     obterCardapio(restaurante.id),
-    numero != null ? obterMesaPorNumero(restaurante.id, numero) : Promise.resolve(null),
     temFuncionalidade(restaurante, 'menus_horario') ? obterMenus(restaurante.id) : Promise.resolve([]),
   ]);
 
@@ -84,9 +83,8 @@ export default async function PaginaCardapio({ params, searchParams }: Props) {
         restaurante={restaurante}
         categorias={categorias}
         menus={menus}
-        agoraDoServidor={Date.now()}
-        mesa={mesa?.numero ?? numero}
-        tableId={mesa?.id ?? null}
+        mesa={null}
+        tableId={null}
         marcaVisivel={!temFuncionalidade(restaurante, 'sem_marca')}
       />
     </>

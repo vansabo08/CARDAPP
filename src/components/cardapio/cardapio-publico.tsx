@@ -27,7 +27,7 @@ import type { CategoriaComPratos, MenuHorario, Prato, Restaurante } from '@/lib/
 import { useCarrinho, type Escolha, type LinhaCarrinho } from './carrinho';
 import { ASSINATURA, DA_DIREITA, MOLA, ProvedorDeMovimento, SUBIR, UMA_VEZ, cascata } from './movimento';
 import { ChamarDaMesa } from './chamar-da-mesa';
-import { ProvedorDeIdioma, SeletorDeIdioma, em, useIdioma, type Idioma } from './idioma';
+import { useIdioma } from './idioma';
 import { temFuncionalidade } from '@/lib/funcionalidades';
 import { corQueSeLe } from '@/lib/cores';
 
@@ -39,8 +39,35 @@ import { corQueSeLe } from '@/lib/cores';
  * isso sem o cliente recarregar. Começa na hora do servidor para o
  * primeiro desenho ser igual nos dois lados.
  */
-function useRelogio(inicial: number) {
-  const [agora, setAgora] = React.useState(inicial);
+/**
+ * A hora, de minuto a minuto, começada no browser.
+ *
+ * Já veio do servidor, para o primeiro desenho bater certo com o do
+ * browser. Deixou de poder vir: a página é servida da borda, feita há
+ * talvez meia hora, e a hora de lá seria a de quando foi feita — um
+ * horário de almoço podia aparecer fechado à uma da tarde.
+ *
+ * O primeiro desenho usa o zero, que não acende horário nenhum nem
+ * promoção nenhuma, e o efeito que corre logo a seguir põe a hora certa.
+ * O servidor e o browser desenham a mesma coisa, que é o que a
+ * hidratação exige.
+ */
+/** O número da mesa que o QR trouxe no endereço. */
+function useMesaDoEndereco(inicial: number | null) {
+  const [mesa, setMesa] = React.useState<number | null>(inicial);
+
+  React.useEffect(() => {
+    const bruto = new URLSearchParams(window.location.search).get('mesa');
+    if (!bruto) return;
+    const n = Number.parseInt(bruto, 10);
+    if (Number.isFinite(n) && n >= 1 && n <= 999) setMesa(n);
+  }, []);
+
+  return mesa;
+}
+
+function useRelogio() {
+  const [agora, setAgora] = React.useState(0);
   React.useEffect(() => {
     setAgora(Date.now());
     const relogio = window.setInterval(() => setAgora(Date.now()), 60_000);
@@ -91,7 +118,6 @@ type Props = {
   restaurante: Restaurante;
   categorias: CategoriaComPratos[];
   menus?: MenuHorario[];
-  agoraDoServidor: number;
   mesa: number | null;
   tableId: string | null;
   marcaVisivel: boolean;
@@ -103,9 +129,9 @@ type Props = {
  */
 export function CardapioPublico(props: Props) {
   return (
-    <ProvedorDeIdioma ligado={temFuncionalidade(props.restaurante, 'multi_idioma')}>
+    <>
       <Cardapio {...props} />
-    </ProvedorDeIdioma>
+    </>
   );
 }
 
@@ -113,16 +139,24 @@ function Cardapio({
   restaurante,
   categorias: categoriasDoServidor,
   menus = [],
-  agoraDoServidor,
-  mesa,
+  mesa: mesaDoServidor,
   tableId,
   marcaVisivel,
 }: Props) {
   const router = useRouter();
-  const { idioma, t } = useIdioma();
-  const multiIdioma = temFuncionalidade(restaurante, 'multi_idioma');
+  const { t } = useIdioma();
+  /*
+   * A MESA VEM DO ENDEREÇO, E É LIDA AQUI.
+   *
+   * Ler `?mesa=` no servidor tornava a página dinâmica: cada leitura de
+   * QR pagava a renderização inteira, três segundos até ao primeiro
+   * byte. Lida no browser, a página é a mesma para toda a gente e pode
+   * ficar guardada na borda; o número entra logo a seguir, e o que
+   * muda com ele é um distintivo e o campo do pedido.
+   */
+  const mesa = useMesaDoEndereco(mesaDoServidor);
   const carrinho = useCarrinho();
-  const agora = useRelogio(agoraDoServidor);
+  const agora = useRelogio();
   const aoVivo = temFuncionalidade(restaurante, 'esgotado_ao_vivo');
   const comHorarios = temFuncionalidade(restaurante, 'menus_horario');
   const disponivelAoVivo = useEsgotadoAoVivo(categoriasDoServidor, aoVivo);
@@ -306,11 +340,11 @@ function Cardapio({
       json: JSON.stringify({
         slug: restaurante.slug,
         table_id: tableId,
+        mesa,
         itens: paraOServidor,
         observacao: observacao.trim() || null,
         // Só muda a língua das respostas de erro; o pedido vai em português.
-        idioma,
-      }),
+              }),
     };
   }
 
@@ -450,12 +484,6 @@ function Cardapio({
           <div className="veu-foto absolute inset-0" />
         </div>
 
-        {multiIdioma ? (
-          <div className="absolute right-4 top-4 z-10">
-            <SeletorDeIdioma />
-          </div>
-        ) : null}
-
         <div className="absolute inset-x-0 bottom-0 px-5 pb-9">
           <m.div
             className="mx-auto flex max-w-[600px] items-end gap-3"
@@ -475,9 +503,14 @@ function Cardapio({
               */}
               <h1
                 style={{ color: cor }}
-                /* Na assinatura da casa: é o nome de um restaurante, não
-                   o cabeçalho de uma aplicação. */
-                className="mt-1 font-assinatura text-[42px] leading-[1.1] sm:text-[52px]"
+                /*
+                   NÃO VAI NA ASSINATURA. A letra manuscrita ficava bem
+                   em "Tia Bela" e ilegível em "FRANGO ASSADO": os nomes
+                   das casas vêm em maiúsculas com frequência, e uma
+                   manuscrita em maiúsculas não se lê. A assinatura fica
+                   para o que é nosso e escrevemos nós.
+                */
+                className="mt-2 font-display text-3xl font-semibold leading-none tracking-[-0.02em] sm:text-4xl"
               >
                 {restaurante.nome}
               </h1>
@@ -557,7 +590,7 @@ function Cardapio({
                       : 'border-creme/15 text-tenue-escuro hover:border-creme/35 hover:text-creme',
                   )}
                 >
-                  {em(idioma, categoria.nome, categoria.nome_en)}
+                  {categoria.nome}
                 </button>
               );
             })}
@@ -575,7 +608,7 @@ function Cardapio({
             {t('aServir')}{' '}
             {menusAServir.map((m) => (
               <span key={m.id} className="font-semibold text-creme">
-                {t('ateAs', { menu: em(idioma, m.nome, m.nome_en), hora: horaCurta(m.hora_fim) })}
+                {t('ateAs', { menu: m.nome, hora: horaCurta(m.hora_fim) })}
               </span>
             ))}
           </p>
@@ -623,7 +656,7 @@ function Cardapio({
               {/* diz ao polegar que há mais fila do lado de lá */}
               <div
                 aria-hidden
-                className="pointer-events-none absolute inset-y-0 right-0 w-14 bg-gradient-to-l from-creme-folha via-creme-folha/70 to-transparent"
+                className="pointer-events-none absolute inset-y-0 right-0 w-14 bg-gradient-to-l from-white via-white/70 to-transparent"
               />
             </div>
           </section>
@@ -641,7 +674,7 @@ function Cardapio({
               className="scroll-mt-28 pt-9"
             >
               <h2 className="font-sans text-lg font-extrabold tracking-[-0.02em] text-creme">
-                {em(idioma, categoria.nome, categoria.nome_en)}
+                {categoria.nome}
               </h2>
 
               <ul className="mt-4 flex flex-col lg:grid lg:grid-cols-2 lg:gap-x-8">
@@ -783,7 +816,7 @@ function Cardapio({
                 <LinhaResumo
                   key={linha.id}
                   linha={linha}
-                  mostrada={mostrarLinha(linha, pratosPorId, idioma)}
+                  mostrada={mostrarLinha(linha)}
                   aoAlterar={(d) => carrinho.alterarQuantidade(linha.id, d)}
                 />
               ))}
@@ -930,9 +963,9 @@ function PratoDoDia({
   cor: string;
   aoAbrir: () => void;
 }) {
-  const { idioma, t } = useIdioma();
-  const nome = em(idioma, prato.nome, prato.nome_en);
-  const descricao = em(idioma, prato.descricao, prato.descricao_en);
+  const { t } = useIdioma();
+  const nome = prato.nome;
+  const descricao = prato.descricao;
   return (
     <section className="mx-auto max-w-[600px] px-5 pt-6" aria-labelledby="prato-do-dia">
       <m.button
@@ -978,7 +1011,7 @@ function PratoDoDia({
  * quando abre.
  */
 function ForaDeHoras({ menus }: { menus: MenuHorario[] }) {
-  const { idioma, t } = useIdioma();
+  const { t } = useIdioma();
   return (
     <div className="mx-auto max-w-[600px] px-5 pt-10 text-center">
       <p className="font-display text-2xl text-creme">{t('foraDeHorasTitulo')}</p>
@@ -988,7 +1021,7 @@ function ForaDeHoras({ menus }: { menus: MenuHorario[] }) {
       <ul className="mt-5 flex flex-col gap-2">
         {menus.map((m) => (
           <li key={m.id} className="rounded-cartao bg-creme/[0.04] px-4 py-3 font-sans text-sm text-creme">
-            {descreverMenu({ ...m, nome: em(idioma, m.nome, m.nome_en) })}
+            {descreverMenu({ ...m, nome: m.nome })}
           </li>
         ))}
       </ul>
@@ -997,10 +1030,9 @@ function ForaDeHoras({ menus }: { menus: MenuHorario[] }) {
 }
 
 function CartaoDestaque({ prato, agora, aoAbrir }: { prato: Prato; agora: number; aoAbrir: () => void }) {
-  const { idioma } = useIdioma();
   const emPromocao = promocaoActiva(prato, agora);
-  const nome = em(idioma, prato.nome, prato.nome_en);
-  const descricao = em(idioma, prato.descricao, prato.descricao_en);
+  const nome = prato.nome;
+  const descricao = prato.descricao;
   return (
     <m.button
       type="button"
@@ -1047,10 +1079,10 @@ function LinhaPrato({
   aoAbrir: () => void;
   aoAdicionar: () => void;
 }) {
-  const { idioma, t } = useIdioma();
+  const { t } = useIdioma();
   const esgotado = !prato.disponivel;
-  const nome = em(idioma, prato.nome, prato.nome_en);
-  const descricao = em(idioma, prato.descricao, prato.descricao_en);
+  const nome = prato.nome;
+  const descricao = prato.descricao;
 
   return (
     <div
@@ -1099,7 +1131,7 @@ function LinhaPrato({
           {quantidade > 0 ? (
             <span
               key={quantidade}
-              className="animate-marca absolute -right-1.5 -top-1.5 flex h-[24px] min-w-[24px] items-center justify-center rounded-full bg-laranja px-1.5 font-sans text-xs font-extrabold tabular-nums text-creme ring-2 ring-creme-folha"
+              className="animate-marca absolute -right-1.5 -top-1.5 flex h-[24px] min-w-[24px] items-center justify-center rounded-full bg-laranja px-1.5 font-sans text-xs font-extrabold tabular-nums text-grafite ring-2 ring-white"
             >
               {quantidade}
             </span>
@@ -1111,27 +1143,14 @@ function LinhaPrato({
 }
 
 /**
- * O que o cliente lê de uma linha do carrinho, na língua dele.
+ * A linha do carrinho, como se mostra.
  *
- * A linha guarda o português — é o que vai para a cozinha. Aqui vai-se
- * buscar o prato e as opções pelos ids, e escreve-se na língua escolhida.
- * Um prato que já não esteja no cardápio fica com o nome guardado.
+ * O nome guardado na linha é o que vai para a cozinha, e é esse que se
+ * mostra. Um prato que já não esteja no cardápio fica com o nome que
+ * tinha quando foi pedido.
  */
-function mostrarLinha(linha: LinhaCarrinho, pratos: Map<string, Prato>, idioma: Idioma) {
-  const prato = pratos.get(linha.itemId);
-  if (!prato || idioma === 'pt') return { nome: linha.nome, opcoes: descreverOpcoes(linha) };
-
-  const opcoes: string[] = [];
-  for (const grupo of prato.grupos ?? []) {
-    for (const opcao of grupo.opcoes) {
-      if (!linha.opcaoIds.includes(opcao.id)) continue;
-      const nome = em(idioma, opcao.nome, opcao.nome_en);
-      opcoes.push(
-        grupo.tipo === 'variante' ? `· ${nome}` : `+ ${nome}${opcao.preco > 0 ? ` (+${formatarKz(opcao.preco)})` : ''}`,
-      );
-    }
-  }
-  return { nome: em(idioma, prato.nome, prato.nome_en), opcoes };
+function mostrarLinha(linha: LinhaCarrinho) {
+  return { nome: linha.nome, opcoes: descreverOpcoes(linha) };
 }
 
 function LinhaResumo({
@@ -1237,7 +1256,7 @@ function FolhaPrato({
   aoFechar: () => void;
   aoConfirmar: (prato: Prato, qtd: number, obs: string, escolha: Escolha) => void;
 }) {
-  const { idioma, t } = useIdioma();
+  const { t } = useIdioma();
   const [qtd, setQtd] = React.useState(1);
   const [obs, setObs] = React.useState('');
   const [escolhidas, setEscolhidas] = React.useState<string[]>([]);
@@ -1263,13 +1282,13 @@ function FolhaPrato({
   const conta = contarLinha(prato, escolhidas, agora);
   const grupos = [...(prato.grupos ?? [])].sort((a, b) => a.ordem - b.ordem);
   const esgotado = !prato.disponivel;
-  const nome = em(idioma, prato.nome, prato.nome_en);
-  const descricao = em(idioma, prato.descricao, prato.descricao_en);
+  const nome = prato.nome;
+  const descricao = prato.descricao;
 
   /** O erro da escolha, na língua do cliente. */
   function erroDaEscolha() {
     if (conta.ok) return null;
-    const grupo = conta.grupo ? em(idioma, conta.grupo.nome, conta.grupo.nome_en).toLowerCase() : '';
+    const grupo = conta.grupo ? conta.grupo.nome.toLowerCase() : '';
     switch (conta.codigo) {
       case 'escolha':
         return t('erroEscolha', { grupo });
@@ -1350,7 +1369,7 @@ function FolhaPrato({
             return (
               <fieldset key={grupo.id} className="mt-6">
                 <legend className="flex w-full items-baseline justify-between gap-3">
-                  <span className="font-sans text-sm font-semibold text-creme">{em(idioma, grupo.nome, grupo.nome_en)}</span>
+                  <span className="font-sans text-sm font-semibold text-creme">{grupo.nome}</span>
                   <span
                     className={cn(
                       'rounded-full px-2 py-0.5 font-sans text-xs font-semibold',
@@ -1403,7 +1422,7 @@ function FolhaPrato({
                           ) : null}
                         </span>
                         <span className="min-w-0 flex-1 font-sans text-sm text-creme">
-                          {em(idioma, opcao.nome, opcao.nome_en)}
+                          {opcao.nome}
                           {indisponivel ? <span className="ml-2 text-xs text-tenue-escuro">{t('esgotado')}</span> : null}
                         </span>
                         <span className="shrink-0 font-sans text-sm font-semibold tabular-nums text-tenue-escuro">

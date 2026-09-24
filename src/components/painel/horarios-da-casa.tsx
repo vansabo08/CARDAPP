@@ -31,7 +31,6 @@ const DIAS = [
 type Rascunho = {
   id?: string;
   nome: string;
-  nome_en?: string;
   hora_inicio: string;
   hora_fim: string;
   dias: number[];
@@ -45,15 +44,12 @@ export function HorariosDaCasa({
   esgotadoModo,
   podeMudarEsgotado,
   demonstracao,
-  ingles = false,
 }: {
   menus: MenuHorario[];
   aoMudar: (menus: MenuHorario[]) => void;
   esgotadoModo: 'mostrar' | 'esconder';
   podeMudarEsgotado: boolean;
   demonstracao: boolean;
-  /** Com o cardápio em inglês, o nome do horário também tem o seu. */
-  ingles?: boolean;
 }) {
   const [rascunho, setRascunho] = React.useState<Rascunho | null>(null);
   const [erro, setErro] = React.useState<string | null>(null);
@@ -73,11 +69,10 @@ export function HorariosDaCasa({
     if (!rascunho) return;
     setErro(null);
     iniciar(async () => {
-      const { nome_en, ...resto } = rascunho;
-      const r = await guardarMenu(ingles ? rascunho : resto);
+      const r = await guardarMenu(rascunho);
       if (!r.ok) return setErro(r.erro);
       const id = rascunho.id ?? r.id ?? `local-${Date.now()}`;
-      const guardado: MenuHorario = { ...resto, nome_en: nome_en?.trim() || null, id, ordem: menus.length };
+      const guardado: MenuHorario = { ...rascunho, id, ordem: menus.length };
       aoMudar(rascunho.id ? menus.map((m) => (m.id === id ? { ...m, ...guardado } : m)) : [...menus, guardado]);
       setRascunho(null);
     });
@@ -154,7 +149,6 @@ export function HorariosDaCasa({
                     setRascunho({
                       id: menu.id,
                       nome: menu.nome,
-                      nome_en: menu.nome_en ?? '',
                       hora_inicio: horaCurta(menu.hora_inicio),
                       hora_fim: horaCurta(menu.hora_fim),
                       dias: [...menu.dias],
@@ -192,16 +186,6 @@ export function HorariosDaCasa({
                   placeholder="Almoço"
                   autoFocus
                 />
-                {ingles ? (
-                  <Campo
-                    value={rascunho.nome_en ?? ''}
-                    maxLength={40}
-                    onChange={(e) => setRascunho({ ...rascunho, nome_en: e.target.value })}
-                    placeholder="Em inglês: Lunch"
-                    aria-label="Nome do horário em inglês"
-                    className="mt-2"
-                  />
-                ) : null}
               </div>
               <div>
                 <Rotulo htmlFor="menu-inicio">Das</Rotulo>

@@ -24,13 +24,7 @@ import { descontoEmPercentagem, promocaoActiva } from '@/lib/precos';
 import { CartaoUpgrade } from '@/components/painel/cartao-upgrade';
 import { EditorOpcoes } from '@/components/painel/editor-opcoes';
 import { HorariosDaCasa } from '@/components/painel/horarios-da-casa';
-import {
-  atribuirMenu,
-  nomeDaCategoriaEmIngles,
-  traduzirCardapioTodo,
-  traduzirTextos,
-} from '@/app/painel/cardapio/accoes-sala';
-import { Languages, Loader2 } from 'lucide-react';
+import { atribuirMenu } from '@/app/painel/cardapio/accoes-sala';
 import {
   actualizarPrato,
   alternarDisponivel,
@@ -55,9 +49,6 @@ type Rascunho = {
   promo_inicio: string;
   promo_fim: string;
   prato_do_dia: boolean;
-  /** Em inglês — só no Plano Sala. Vazios, o cardápio mostra o português. */
-  nome_en: string;
-  descricao_en: string;
   grupos: GrupoOpcoes[];
 };
 
@@ -74,8 +65,6 @@ function rascunhoDe(prato: Prato, categoryId: string): Rascunho {
     promo_inicio: paraCampoLuanda(prato.promo_inicio),
     promo_fim: paraCampoLuanda(prato.promo_fim),
     prato_do_dia: Boolean(prato.prato_do_dia),
-    nome_en: prato.nome_en ?? '',
-    descricao_en: prato.descricao_en ?? '',
     grupos: prato.grupos ?? [],
   };
 }
@@ -92,8 +81,6 @@ const RASCUNHO_VAZIO = (categoryId: string): Rascunho => ({
   promo_inicio: '',
   promo_fim: '',
   prato_do_dia: false,
-  nome_en: '',
-  descricao_en: '',
   grupos: [],
 });
 
@@ -114,7 +101,6 @@ export function GestorCardapio({
   eDono?: boolean;
 }) {
   const sala = temFuncionalidade({ plano }, 'opcoes');
-  const ingles = temFuncionalidade({ plano }, 'multi_idioma');
   const [menus, setMenus] = React.useState(menusIniciais);
   const [categorias, setCategorias] = React.useState(categoriasIniciais);
   const [rascunho, setRascunho] = React.useState<Rascunho | null>(null);
@@ -153,15 +139,6 @@ export function GestorCardapio({
   async function mudarNome(id: string, nome: string) {
     setCategorias((c) => c.map((x) => (x.id === id ? { ...x, nome } : x)));
     await renomearCategoria(id, nome);
-  }
-
-  function mudarNomeEmIngles(id: string, nome_en: string) {
-    setCategorias((c) => c.map((x) => (x.id === id ? { ...x, nome_en } : x)));
-  }
-
-  async function gravarNomeEmIngles(id: string, nome_en: string) {
-    if (id.startsWith('nova-')) return;
-    await nomeDaCategoriaEmIngles({ categoriaId: id, nome_en });
   }
 
   async function mudarHorario(categoriaId: string, menuId: string | null) {
@@ -226,9 +203,6 @@ export function GestorCardapio({
             promo_fim: deCampoLuanda(dados.promo_fim),
             prato_do_dia: dados.prato_do_dia,
           }
-        : {}),
-      ...(ingles
-        ? { nome_en: dados.nome_en.trim() || null, descricao_en: dados.descricao_en.trim() || null }
         : {}),
     };
 
@@ -314,16 +288,9 @@ export function GestorCardapio({
           esgotadoModo={esgotadoModo}
           podeMudarEsgotado={eDono}
           demonstracao={demonstracao}
-          ingles={ingles}
-        />
+          />
       ) : (
         <CartaoUpgrade funcionalidade="opcoes" compacto className="mt-8" />
-      )}
-
-      {ingles ? (
-        <TraduzirTudo demonstracao={demonstracao} />
-      ) : (
-        <CartaoUpgrade funcionalidade="multi_idioma" compacto className="mt-4" />
       )}
 
       <div className="mt-9 flex flex-col gap-4">
@@ -403,21 +370,6 @@ export function GestorCardapio({
                 </BotaoIcone>
               </div>
             </header>
-
-            {ingles ? (
-              <label className="flex items-center gap-2 border-b border-linha px-4 py-2">
-                <span className="etiqueta shrink-0 text-[11px] text-tenue">EN</span>
-                <span className="sr-only">Nome de {categoria.nome} em inglês</span>
-                <input
-                  value={categoria.nome_en ?? ''}
-                  maxLength={60}
-                  onChange={(e) => mudarNomeEmIngles(categoria.id, e.target.value)}
-                  onBlur={(e) => gravarNomeEmIngles(categoria.id, e.target.value)}
-                  placeholder="Em inglês — vazio, mostra o português"
-                  className="h-9 min-w-0 flex-1 rounded-campo border border-transparent bg-transparent px-2 font-sans text-sm text-creme/85 outline-none placeholder:text-creme/30 hover:border-linha focus:border-laranja/50 focus:bg-black/[0.04]"
-                />
-              </label>
-            ) : null}
 
             {/* Apagar uma categoria leva os pratos todos atrás dela — a
                 base de dados faz cascade. Um clique só é pouco para uma
@@ -592,7 +544,6 @@ export function GestorCardapio({
       <FolhaPrato
         rascunho={rascunho}
         sala={sala}
-        ingles={ingles}
         demonstracao={demonstracao}
         aoFechar={() => setRascunho(null)}
         aoGravar={gravarPrato}
@@ -633,7 +584,6 @@ function BotaoIcone({
 function FolhaPrato({
   rascunho,
   sala,
-  ingles,
   demonstracao,
   aoFechar,
   aoGravar,
@@ -642,7 +592,6 @@ function FolhaPrato({
 }: {
   rascunho: Rascunho | null;
   sala: boolean;
-  ingles: boolean;
   demonstracao: boolean;
   aoFechar: () => void;
   aoGravar: (r: Rascunho) => void;
@@ -746,10 +695,6 @@ function FolhaPrato({
             />
           </div>
 
-          {ingles ? (
-            <SeccaoIngles dados={dados} aoMudar={(m) => setDados((d) => (d ? { ...d, ...m } : d))} />
-          ) : null}
-
           <div>
             <Rotulo htmlFor="preco-prato">Preço em Kwanzas</Rotulo>
             <Campo
@@ -811,8 +756,7 @@ function FolhaPrato({
               itemId={dados.id}
               grupos={dados.grupos}
               demonstracao={demonstracao}
-              ingles={ingles}
-              aoMudar={(grupos) => {
+                    aoMudar={(grupos) => {
                 setDados((d) => (d ? { ...d, grupos } : d));
                 aoMudarGrupos(dados.id!, grupos);
               }}
@@ -959,137 +903,4 @@ function SeccaoPromocao({
   );
 }
 
-/**
- * O prato em inglês. Os campos ficam sempre editáveis: a tradução
- * automática é um ponto de partida, e o dono corrige o que quiser.
- */
-function SeccaoIngles({
-  dados,
-  aoMudar,
-}: {
-  dados: Rascunho;
-  aoMudar: (m: Partial<Rascunho>) => void;
-}) {
-  const [aTraduzir, iniciar] = React.useTransition();
-  const [erro, setErro] = React.useState<string | null>(null);
 
-  function traduzir() {
-    setErro(null);
-    iniciar(async () => {
-      const r = await traduzirTextos({ textos: [dados.nome, dados.descricao] });
-      if (!r.ok) return setErro(r.erro);
-      const [nome_en, descricao_en] = r.traducoes;
-      aoMudar({ nome_en: nome_en ?? '', descricao_en: descricao_en ?? '' });
-    });
-  }
-
-  return (
-    <section
-      aria-labelledby="prato-ingles"
-      className="rounded-cartao border border-black/[0.08] bg-black/[0.02] p-4"
-    >
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 id="prato-ingles" className="flex items-center gap-2 font-sans text-sm font-semibold text-creme">
-          <Languages className="h-4 w-4 text-laranja" aria-hidden />
-          Em inglês
-        </h3>
-        <button
-          type="button"
-          onClick={traduzir}
-          disabled={aTraduzir || !dados.nome.trim()}
-          className="inline-flex h-10 items-center gap-1.5 rounded-full border border-black/15 px-3.5 font-sans text-xs font-semibold text-creme transition-colors hover:border-laranja hover:text-laranja disabled:opacity-40"
-        >
-          {aTraduzir ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden /> : null}
-          {aTraduzir ? 'A traduzir…' : 'Traduzir automaticamente'}
-        </button>
-      </div>
-      <p className="mt-1 font-sans text-xs text-tenue">
-        Para os clientes que escolhem EN no cardápio. Vazio, aparece o português.
-      </p>
-
-      <div className="mt-3 flex flex-col gap-3">
-        <div>
-          <Rotulo htmlFor="nome-prato-en">Nome em inglês</Rotulo>
-          <Campo
-            id="nome-prato-en"
-            value={dados.nome_en}
-            maxLength={80}
-            onChange={(e) => aoMudar({ nome_en: e.target.value })}
-            placeholder="Chicken Muamba"
-          />
-        </div>
-        <div>
-          <Rotulo htmlFor="desc-prato-en">Descrição em inglês</Rotulo>
-          <AreaTexto
-            id="desc-prato-en"
-            rows={2}
-            maxLength={200}
-            value={dados.descricao_en}
-            onChange={(e) => aoMudar({ descricao_en: e.target.value })}
-            placeholder="Free-range chicken, palm oil, okra and funge"
-          />
-        </div>
-      </div>
-
-      {erro ? <Erro>{erro}</Erro> : null}
-    </section>
-  );
-}
-
-/**
- * Traduz o que ainda não tem inglês, de uma vez. O que o dono já
- * escreveu à mão não se toca.
- */
-function TraduzirTudo({ demonstracao }: { demonstracao: boolean }) {
-  const [aTraduzir, iniciar] = React.useTransition();
-  const [aviso, setAviso] = React.useState<{ texto: string; ok: boolean } | null>(null);
-
-  function traduzir() {
-    setAviso(null);
-    iniciar(async () => {
-      const r = await traduzirCardapioTodo();
-      if (!r.ok) return setAviso({ texto: r.erro, ok: false });
-      if (r.traduzidos === 0) {
-        return setAviso({ texto: 'Já está tudo em inglês. Nada por traduzir.', ok: true });
-      }
-      setAviso({
-        texto: `${r.traduzidos} ${r.traduzidos === 1 ? 'texto traduzido' : 'textos traduzidos'}. A recarregar…`,
-        ok: true,
-      });
-      // Os campos em inglês vivem no estado do ecrã: recarregar mostra-os.
-      window.setTimeout(() => window.location.reload(), 900);
-    });
-  }
-
-  return (
-    <section className="superficie mt-4 flex flex-wrap items-center gap-3 rounded-cartao p-4 sm:p-5">
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-laranja/15 text-laranja">
-        <Languages className="h-5 w-5" aria-hidden />
-      </span>
-      <div className="min-w-0 flex-1">
-        <h2 className="font-display text-lg text-creme">Cardápio em inglês</h2>
-        <p className="font-sans text-xs leading-normal text-tenue">
-          Os clientes escolhem PT ou EN no cardápio. Traduza o que falta — os nomes angolanos ficam como são — e corrija à mão o que quiser.
-        </p>
-      </div>
-      <Botao
-        variante="contorno"
-        tamanho="md"
-        aCarregar={aTraduzir}
-        disabled={demonstracao}
-        onClick={traduzir}
-        className="w-full sm:w-auto"
-      >
-        Traduzir o que falta
-      </Botao>
-      {aviso ? (
-        <p
-          role={aviso.ok ? 'status' : 'alert'}
-          className={cn('w-full font-sans text-sm', aviso.ok ? 'text-verde' : 'text-[#ff8a78]')}
-        >
-          {aviso.texto}
-        </p>
-      ) : null}
-    </section>
-  );
-}

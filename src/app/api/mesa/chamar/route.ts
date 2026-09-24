@@ -21,7 +21,6 @@ const CHAMADA = z.object({
     .regex(/^[a-z0-9-]+$/, { error: 'Endereço de cardápio inválido.' }),
   mesa: z.coerce.number().int().min(1).max(999),
   tipo: z.enum(['empregado', 'conta']),
-  idioma: z.enum(['pt', 'en']).default('pt'),
 });
 
 export type RespostaChamada = {
@@ -30,14 +29,6 @@ export type RespostaChamada = {
 };
 
 /** As respostas em inglês, para o cardápio que o cliente pôs em inglês. */
-const MENSAGEM_EN: Record<string, RespostaChamada> = {
-  avisado: { estado: 'avisado', mensagem: 'The waiter has been notified.' },
-  ja_avisado: { estado: 'ja_avisado', mensagem: 'The waiter was notified a moment ago and is on the way.' },
-  fora_do_plano: { estado: 'recusado', mensagem: "This restaurant doesn't take calls from the menu." },
-  mesa_desconhecida: { estado: 'recusado', mensagem: "We couldn't find this table. Please wave to the waiter." },
-  casa_desconhecida: { estado: 'recusado', mensagem: "This menu isn't available right now." },
-};
-
 const MENSAGEM: Record<string, RespostaChamada> = {
   avisado: { estado: 'avisado', mensagem: 'O empregado já foi avisado.' },
   ja_avisado: {
@@ -77,13 +68,13 @@ export async function POST(pedido: Request) {
     );
   }
 
-  const { slug, mesa, tipo, idioma } = dados.data;
+  const { slug, mesa, tipo } = dados.data;
 
   // Na demonstração ninguém é chamado, mas o cliente vê o que veria.
   const restaurante = await obterRestaurantePorSlug(slug);
   const supabase = await clienteServidor();
   if (!supabase || (restaurante && eDemonstracao(restaurante.id))) {
-    return NextResponse.json<RespostaChamada>(traduzir('avisado', tipo, idioma));
+    return NextResponse.json<RespostaChamada>(resposta('avisado', tipo));
   }
 
   const comRpc = supabase as unknown as {
@@ -102,21 +93,14 @@ export async function POST(pedido: Request) {
     );
   }
 
-  return NextResponse.json<RespostaChamada>(traduzir(data, tipo, idioma));
+  return NextResponse.json<RespostaChamada>(resposta(data, tipo));
 }
 
 /** A resposta da base, dita ao cliente — a da conta diz que é a conta. */
-function traduzir(estado: string, tipo: 'empregado' | 'conta', idioma: 'pt' | 'en' = 'pt'): RespostaChamada {
-  const tabela = idioma === 'en' ? MENSAGEM_EN : MENSAGEM;
-  const resposta = tabela[estado] ?? tabela.casa_desconhecida;
-  if (tipo === 'conta' && resposta.estado === 'avisado') {
-    return {
-      estado: 'avisado',
-      mensagem:
-        idioma === 'en'
-          ? 'Your bill is on the way. The waiter has been notified.'
-          : 'A conta vai a caminho. O empregado já foi avisado.',
-    };
+function resposta(estado: string, tipo: 'empregado' | 'conta'): RespostaChamada {
+  const dita = MENSAGEM[estado] ?? MENSAGEM.casa_desconhecida;
+  if (tipo === 'conta' && dita.estado === 'avisado') {
+    return { estado: 'avisado', mensagem: 'A conta vai a caminho. O empregado já foi avisado.' };
   }
-  return resposta;
+  return dita;
 }

@@ -83,8 +83,7 @@ export type Funcionalidade =
   | 'opcoes'
   | 'menus_horario'
   | 'promocoes'
-  | 'avaliacoes'
-  | 'multi_idioma';
+  | 'avaliacoes';
 
 const TUDO_O_QUE_E_SALA: readonly Funcionalidade[] = [
   'estatisticas',
@@ -98,7 +97,6 @@ const TUDO_O_QUE_E_SALA: readonly Funcionalidade[] = [
   'menus_horario',
   'promocoes',
   'avaliacoes',
-  'multi_idioma',
 ];
 
 export const FUNCIONALIDADES_DO_PLANO: Record<Plano, readonly Funcionalidade[]> = {

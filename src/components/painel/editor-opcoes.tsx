@@ -23,7 +23,6 @@ type OpcaoRascunho = {
   chave: string;
   id?: string;
   nome: string;
-  nome_en?: string;
   preco: string;
   disponivel: boolean;
 };
@@ -32,7 +31,6 @@ type GrupoRascunho = {
   chave: string;
   id?: string;
   nome: string;
-  nome_en?: string;
   tipo: 'variante' | 'extra';
   minimo: number;
   maximo: number;
@@ -48,7 +46,6 @@ function doServidor(g: GrupoOpcoes): GrupoRascunho {
     chave: g.id,
     id: g.id,
     nome: g.nome,
-    nome_en: g.nome_en ?? '',
     tipo: g.tipo,
     minimo: g.minimo,
     maximo: g.maximo,
@@ -57,7 +54,6 @@ function doServidor(g: GrupoOpcoes): GrupoRascunho {
       chave: o.id,
       id: o.id,
       nome: o.nome,
-      nome_en: o.nome_en ?? '',
       preco: String(o.preco),
       disponivel: o.disponivel,
     })),
@@ -68,7 +64,6 @@ function paraOServidor(g: GrupoRascunho): GrupoOpcoes {
   return {
     id: g.id ?? g.chave,
     nome: g.nome,
-    nome_en: g.nome_en?.trim() || null,
     tipo: g.tipo,
     minimo: g.minimo,
     maximo: g.maximo,
@@ -76,7 +71,6 @@ function paraOServidor(g: GrupoRascunho): GrupoOpcoes {
     opcoes: g.opcoes.map((o, ordem) => ({
       id: o.id ?? o.chave,
       nome: o.nome,
-      nome_en: o.nome_en?.trim() || null,
       preco: Number(o.preco.replace(',', '.')) || 0,
       disponivel: o.disponivel,
       ordem,
@@ -88,14 +82,11 @@ export function EditorOpcoes({
   itemId,
   grupos: iniciais,
   demonstracao,
-  ingles = false,
   aoMudar,
 }: {
   itemId: string;
   grupos: GrupoOpcoes[];
   demonstracao: boolean;
-  /** Com o cardápio em inglês, cada nome tem o seu campo em inglês. */
-  ingles?: boolean;
   /** Para o gestor actualizar a lista sem recarregar. */
   aoMudar: (grupos: GrupoOpcoes[]) => void;
 }) {
@@ -147,7 +138,6 @@ export function EditorOpcoes({
             grupo={grupo}
             itemId={itemId}
             demonstracao={demonstracao}
-            ingles={ingles}
             aoMudar={(m) => actualizar(grupo.chave, m)}
             aoGravar={(id) => {
               setGrupos((gs) => {
@@ -195,7 +185,6 @@ function CartaoGrupo({
   grupo,
   itemId,
   demonstracao,
-  ingles,
   aoMudar,
   aoGravar,
   aoApagar,
@@ -203,7 +192,6 @@ function CartaoGrupo({
   grupo: GrupoRascunho;
   itemId: string;
   demonstracao: boolean;
-  ingles: boolean;
   aoMudar: (m: Partial<GrupoRascunho>) => void;
   aoGravar: (id: string) => void;
   aoApagar: () => void;
@@ -224,14 +212,12 @@ function CartaoGrupo({
         itemId,
         id: grupo.id,
         nome: grupo.nome,
-        ...(ingles ? { nome_en: grupo.nome_en } : {}),
         tipo: grupo.tipo,
         minimo: grupo.minimo,
         maximo: grupo.maximo,
         opcoes: grupo.opcoes.map((o) => ({
           id: o.id,
           nome: o.nome,
-          ...(ingles ? { nome_en: o.nome_en } : {}),
           preco: o.preco.replace(/\s/g, '').replace(',', '.') || '0',
           disponivel: o.disponivel,
         })),
@@ -278,22 +264,6 @@ function CartaoGrupo({
           {aConfirmar ? 'Apagar?' : null}
         </button>
       </div>
-
-      {ingles ? (
-        <div className="mt-1 flex items-center gap-2 pl-10">
-          <span className="etiqueta shrink-0 text-[11px] text-tenue" aria-hidden>
-            EN
-          </span>
-          <input
-            value={grupo.nome_en ?? ''}
-            onChange={(e) => aoMudar({ nome_en: e.target.value })}
-            aria-label={`Nome do grupo em inglês`}
-            placeholder={tamanho ? 'Size' : 'Extras'}
-            maxLength={40}
-            className="h-9 min-w-0 flex-1 rounded-campo border border-black/[0.08] bg-transparent px-2.5 font-sans text-sm text-creme outline-none placeholder:text-creme/30 hover:border-black/15 focus:border-laranja/60"
-          />
-        </div>
-      ) : null}
 
       <p className="mt-1 pl-10 font-sans text-xs text-tenue">
         {tamanho
@@ -358,19 +328,6 @@ function CartaoGrupo({
             >
               <X className="h-4 w-4" aria-hidden />
             </button>
-            {ingles ? (
-              <label className="flex w-full items-center gap-2 pl-1">
-                <span className="etiqueta shrink-0 text-[11px] text-tenue">EN</span>
-                <span className="sr-only">{`${opcao.nome || 'Opção'} em inglês`}</span>
-                <input
-                  value={opcao.nome_en ?? ''}
-                  onChange={(e) => mudarOpcao(opcao.chave, { nome_en: e.target.value })}
-                  placeholder={tamanho ? 'Medium' : 'Cheese'}
-                  maxLength={40}
-                  className="h-9 min-w-0 flex-1 rounded-campo border border-black/[0.08] bg-transparent px-2.5 font-sans text-sm text-creme outline-none placeholder:text-creme/30 hover:border-black/15 focus:border-laranja/60"
-                />
-              </label>
-            ) : null}
           </li>
         ))}
       </ul>
