@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { CardapioPublico } from '@/components/cardapio/cardapio-publico';
 import { AvisoDemonstracao } from '@/components/aviso-demonstracao';
 import { obterCardapio, obterMenus, obterRestaurantePorSlug } from '@/lib/dados';
+import { clientePublico } from '@/lib/supabase/publico';
 import { temFuncionalidade } from '@/lib/funcionalidades';
 import { cardapioNoAr, estadoDaConta } from '@/lib/planos';
 import { ForaDoAr } from '@/components/cardapio/fora-do-ar';
@@ -89,4 +90,33 @@ export default async function PaginaCardapio({ params }: Props) {
       />
     </>
   );
+}
+
+/**
+ * As casas que existem hoje, desenhadas no build.
+ *
+ * Sem esta lista, o Next não sabe que slugs existem e desenha cada
+ * cardápio à chegada do primeiro cliente — que paga a espera inteira, à
+ * mesa, com o telemóvel na mão. Com ela, os cardápios das casas activas
+ * saem prontos do build e são servidos da borda.
+ *
+ * Uma casa criada depois do build continua a funcionar: `dynamicParams`
+ * fica ligado por omissão, e o primeiro pedido desenha-a e guarda-a.
+ *
+ * Se a base não responder durante o build, devolve-se a lista vazia em
+ * vez de rebentar: fica tudo como estava antes, desenhado à chegada.
+ */
+export async function generateStaticParams() {
+  try {
+    const supabase = clientePublico();
+    if (!supabase) return [];
+
+    const { data } = await supabase.from('restaurants').select('slug').limit(200);
+    return ((data ?? []) as { slug?: string }[])
+      .map((r) => r.slug)
+      .filter((slug): slug is string => Boolean(slug))
+      .map((slug) => ({ slug }));
+  } catch {
+    return [];
+  }
 }
