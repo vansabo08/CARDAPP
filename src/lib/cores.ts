@@ -82,3 +82,52 @@ export const COR_GRAFICO = {
 } as const;
 
 export type SerieDaCasa = keyof typeof COR_GRAFICO;
+
+/**
+ * A cor da casa, escurecida até se ler sobre a folha branca.
+ *
+ * Cada restaurante escolhe a sua cor, e muitas são douradas, amarelas ou
+ * cor de areia — bonitas num fundo escuro, invisíveis num claro. O nome
+ * da casa no topo do cardápio chegou a ficar a 1,5:1 sobre o véu branco
+ * da fotografia: lá estava escrito, e não se lia.
+ *
+ * Esta função devolve a cor tal como é quando ela já se lê, e uma versão
+ * dela escurecida quando não. Escurecer é misturar com preto, o que
+ * mantém o tom — o dourado continua dourado, mais fechado — em vez de
+ * trocar a cor da casa por uma nossa.
+ */
+export function corQueSeLe(cor: string, minimo = 3.2): string {
+  const canais = paraCanais(cor);
+  if (!canais) return cor;
+
+  let [r, g, b] = canais;
+  for (let n = 0; n < 12; n++) {
+    if (contrasteComBranco([r, g, b]) >= minimo) break;
+    r = Math.round(r * 0.88);
+    g = Math.round(g * 0.88);
+    b = Math.round(b * 0.88);
+  }
+  return `#${[r, g, b].map((c) => c.toString(16).padStart(2, '0')).join('')}`;
+}
+
+function paraCanais(cor: string): [number, number, number] | null {
+  const hex = cor.trim().replace('#', '');
+  const inteiro =
+    hex.length === 3
+      ? hex
+          .split('')
+          .map((c) => c + c)
+          .join('')
+      : hex;
+  if (!/^[0-9a-fA-F]{6}$/.test(inteiro)) return null;
+  return [0, 2, 4].map((i) => parseInt(inteiro.slice(i, i + 2), 16)) as [number, number, number];
+}
+
+function contrasteComBranco([r, g, b]: [number, number, number]) {
+  const linear = (c: number) => {
+    const v = c / 255;
+    return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+  };
+  const luz = 0.2126 * linear(r) + 0.7152 * linear(g) + 0.0722 * linear(b);
+  return 1.05 / (luz + 0.05);
+}

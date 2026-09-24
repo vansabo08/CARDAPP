@@ -13,6 +13,7 @@ import {
 import { buildWhatsAppMessage } from '@/lib/whatsapp';
 import type { EstadoPedido } from '@/lib/tipos';
 import { cn } from '@/lib/utils';
+import { corQueSeLe } from '@/lib/cores';
 import { Logotipo } from '@/components/logotipo';
 
 /**
@@ -23,7 +24,7 @@ import { Logotipo } from '@/components/logotipo';
  */
 
 /** A casa de exemplo escolheu esta cor; o cardápio dela usa-a em tudo. */
-const COR_DA_CASA = RESTAURANTE_DEMO.cor_marca;
+const COR_DA_CASA = corQueSeLe(RESTAURANTE_DEMO.cor_marca);
 
 const DESTAQUES = [
   { nome: 'Muamba de Galinha', desc: 'Óleo de palma e quiabo', preco: 4500, foto: '/pratos/muamba-galinha.webp' },
@@ -74,7 +75,7 @@ export function EcraCardapio() {
             </div>
             <span
               style={{ backgroundColor: COR_DA_CASA }}
-              className="etiqueta shrink-0 rounded-full px-3.5 py-2 text-grafite"
+              className="etiqueta shrink-0 rounded-full px-3.5 py-2 text-white"
             >
               Mesa 07
             </span>
@@ -83,9 +84,9 @@ export function EcraCardapio() {
       </div>
 
       {/* folha */}
-      <div className="relative z-10 -mt-5 rounded-t-folha bg-creme-folha pb-6 text-grafite">
+      <div className="relative z-10 -mt-5 rounded-t-folha bg-white pb-6 text-creme">
         <div className="flex justify-center pt-3">
-          <span className="block h-[4px] w-[38px] rounded-full bg-grafite/10" />
+          <span className="block h-[4px] w-[38px] rounded-full bg-creme/10" />
         </div>
 
         <div className="flex gap-2 overflow-hidden px-5 py-3">
@@ -95,7 +96,7 @@ export function EcraCardapio() {
               className={cn(
                 'shrink-0 whitespace-nowrap rounded-full px-4 py-2 font-sans text-xs font-semibold',
                 i === 1
-                  ? 'bg-grafite-carta text-creme'
+                  ? 'bg-creme text-grafite'
                   : 'border border-linha-escura text-tenue-escuro',
               )}
             >
@@ -113,7 +114,7 @@ export function EcraCardapio() {
           {DESTAQUES.map((prato) => (
             <div
               key={prato.nome}
-              className="w-[168px] shrink-0 overflow-hidden rounded-cartao bg-grafite-carta"
+              className="w-[168px] shrink-0 overflow-hidden rounded-cartao border border-linha-escura bg-white"
             >
               <span className="relative block aspect-[4/3] w-full">
                 <Image src={prato.foto} alt="" fill sizes="256px" className="object-cover" />
@@ -154,7 +155,7 @@ export function EcraCardapio() {
                   {formatarKz(prato.preco)}
                 </span>
               </span>
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-grafite-carta text-lg leading-none text-creme">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-creme text-lg leading-none text-creme">
                 +
               </span>
             </div>
@@ -228,7 +229,7 @@ export function QrDecorativo({ tamanho = 84, seed = 7 }: { tamanho?: number; see
       viewBox={`0 0 ${modulos} ${modulos}`}
       aria-hidden="true"
       shapeRendering="crispEdges"
-      className="text-grafite"
+      className="text-creme"
     >
       {celulas}
       {olho(0, 0)}
@@ -240,7 +241,7 @@ export function QrDecorativo({ tamanho = 84, seed = 7 }: { tamanho?: number; see
 
 export function CartaoMesa({ numero = 7, nome = 'Tia Bela' }: { numero?: number; nome?: string }) {
   return (
-    <div className="relative w-full max-w-[248px] overflow-hidden rounded-cartao bg-creme-folha px-7 py-8 text-center text-grafite shadow-cartao">
+    <div className="relative w-full max-w-[248px] overflow-hidden rounded-cartao bg-white px-7 py-8 text-center text-grafite shadow-cartao">
       <Logotipo tamanho={24} className="mx-auto" />
       <p className="mt-3 font-display text-xl leading-none">{nome}</p>
       <div className="my-6 flex justify-center">

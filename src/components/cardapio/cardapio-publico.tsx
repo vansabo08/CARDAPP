@@ -29,6 +29,7 @@ import { ASSINATURA, DA_DIREITA, MOLA, ProvedorDeMovimento, SUBIR, UMA_VEZ, casc
 import { ChamarDaMesa } from './chamar-da-mesa';
 import { ProvedorDeIdioma, SeletorDeIdioma, em, useIdioma, type Idioma } from './idioma';
 import { temFuncionalidade } from '@/lib/funcionalidades';
+import { corQueSeLe } from '@/lib/cores';
 
 /**
  * Um relógio de minuto a minuto, a começar na hora do servidor.
@@ -406,7 +407,12 @@ function Cardapio({
   const temCarrinho = carrinho.quantidadeTotal > 0;
   // Chamar da mesa só faz sentido sabendo que mesa é — e só no Plano Sala.
   const podeChamar = mesa != null && temFuncionalidade(restaurante, 'chamar_empregado');
-  const cor = restaurante.cor_marca || '#D9B36B';
+  /*
+   * A cor da casa, escurecida até se ler sobre a folha branca. Muitas
+   * casas escolhem dourados e areias — bonitos no escuro, invisíveis no
+   * claro. O tom mantém-se; só fecha o suficiente para se ler.
+   */
+  const cor = corQueSeLe(restaurante.cor_marca || '#D9B36B');
   const pratoDoDia = temFuncionalidade(restaurante, 'promocoes')
     ? todos.find((i) => i.prato_do_dia && i.disponivel)
     : undefined;
