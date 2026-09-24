@@ -469,7 +469,9 @@ function Cardapio({
               */}
               <h1
                 style={{ color: cor }}
-                className="mt-2 font-display text-3xl leading-none tracking-[-0.02em] sm:text-4xl"
+                /* Na assinatura da casa: é o nome de um restaurante, não
+                   o cabeçalho de uma aplicação. */
+                className="mt-1 font-assinatura text-[42px] leading-[1.1] sm:text-[52px]"
               >
                 {restaurante.nome}
               </h1>
@@ -478,7 +480,9 @@ function Cardapio({
             {mesa != null ? (
               <m.span
                 variants={SUBIR}
-                className="etiqueta shrink-0 rounded-full px-3.5 py-2 text-grafite"
+                /* Letra branca: o fundo é a cor da casa, que é sempre um
+                   tom cheio — a tinta escura desaparecia nas escuras. */
+                className="etiqueta shrink-0 rounded-full px-3.5 py-2 text-white"
                 style={{ backgroundColor: cor }}
               >
                 {t('mesa', { n: numeroMesa(mesa) })}
@@ -500,7 +504,7 @@ function Cardapio({
           className="superficie-clara sticky top-0 z-30 rounded-t-folha"
         >
           <div className="flex justify-center pt-3">
-            <span className="block h-[4px] w-[38px] rounded-full bg-grafite/10" />
+            <span className="block h-[4px] w-[38px] rounded-full bg-creme/10" />
           </div>
           <div
             className="barra-esconde relative mx-auto flex max-w-[600px] gap-2 overflow-x-auto px-5 py-3"
@@ -515,7 +519,7 @@ function Cardapio({
             */}
             <span
               aria-hidden
-              className="pointer-events-none absolute left-0 top-0 rounded-full bg-grafite-carta transition-[transform,width,height] duration-300 ease-assinatura motion-reduce:transition-none"
+              className="pointer-events-none absolute left-0 top-0 rounded-full bg-creme transition-[transform,width,height] duration-300 ease-assinatura motion-reduce:transition-none"
               style={{
                 width: indicador.w,
                 height: indicador.h,
@@ -539,11 +543,12 @@ function Cardapio({
                     'relative z-10 flex min-h-[44px] shrink-0 items-center whitespace-nowrap rounded-full border px-4 font-sans text-sm font-semibold transition-colors duration-200',
                     activaAgora
                       ? cn(
-                          'border-transparent text-creme',
+                          // Letra clara: a pastilha por baixo é tinta cheia.
+                          'border-transparent text-grafite',
                           // Ate a pastilha ser medida, o botao pinta o proprio fundo.
-                          !indicador.w && 'bg-grafite-carta',
+                          !indicador.w && 'bg-creme',
                         )
-                      : 'border-grafite/15 text-tenue-escuro hover:border-grafite/35 hover:text-grafite',
+                      : 'border-creme/15 text-tenue-escuro hover:border-creme/35 hover:text-creme',
                   )}
                 >
                   {em(idioma, categoria.nome, categoria.nome_en)}
@@ -563,7 +568,7 @@ function Cardapio({
             </span>
             {t('aServir')}{' '}
             {menusAServir.map((m) => (
-              <span key={m.id} className="font-semibold text-grafite">
+              <span key={m.id} className="font-semibold text-creme">
                 {t('ateAs', { menu: em(idioma, m.nome, m.nome_en), hora: horaCurta(m.hora_fim) })}
               </span>
             ))}
@@ -587,7 +592,7 @@ function Cardapio({
         {destaques.length >= 3 ? (
           <section className="pt-7">
             <div className="mx-auto max-w-[600px] px-5">
-              <h2 className="font-sans text-lg font-extrabold tracking-[-0.02em] text-grafite">
+              <h2 className="font-sans text-lg font-extrabold tracking-[-0.02em] text-creme">
                 {t('maisPedidos')}
               </h2>
             </div>
@@ -629,7 +634,7 @@ function Cardapio({
               }}
               className="scroll-mt-28 pt-9"
             >
-              <h2 className="font-sans text-lg font-extrabold tracking-[-0.02em] text-grafite">
+              <h2 className="font-sans text-lg font-extrabold tracking-[-0.02em] text-creme">
                 {em(idioma, categoria.nome, categoria.nome_en)}
               </h2>
 
@@ -685,7 +690,7 @@ function Cardapio({
             transition={MOLA}
             className={cn(
               'fixed inset-x-0 bottom-0 z-40 px-4 pb-[max(16px,env(safe-area-inset-bottom))] pt-8',
-              'bg-gradient-to-t from-grafite via-grafite/90 to-transparent',
+              'bg-gradient-to-t from-grafite via-creme/90 to-transparent',
             )}
           >
             <div className="mx-auto flex max-w-[600px] items-center gap-2.5">
@@ -886,7 +891,7 @@ function Preco({
 
   return (
     <span className={cn('inline-flex flex-wrap items-baseline gap-x-2 gap-y-0.5', className)}>
-      <span className={cn('font-sans font-extrabold tracking-[-0.02em]', escuro ? 'text-creme' : 'text-grafite')}>
+      <span className={cn('font-sans font-extrabold tracking-[-0.02em]', escuro ? 'text-creme' : 'text-creme')}>
         {montra.desde ? <span className="mr-1 text-xs font-semibold opacity-70">{t('desde')}</span> : null}
         {formatarKz(montra.agora)}
       </span>
@@ -941,7 +946,7 @@ function PratoDoDia({
         <span className="relative block aspect-[16/10] w-full">
           <FotoPrato nome={nome} url={prato.foto_url} tamanhos="(max-width: 600px) 92vw, 560px" />
           <span
-            className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-sans text-xs font-bold text-grafite shadow-elevacao-2"
+            className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-sans text-xs font-bold text-creme shadow-elevacao-2"
             style={{ backgroundColor: cor }}
           >
             ★ {t('pratoDoDia')}
@@ -970,13 +975,13 @@ function ForaDeHoras({ menus }: { menus: MenuHorario[] }) {
   const { idioma, t } = useIdioma();
   return (
     <div className="mx-auto max-w-[600px] px-5 pt-10 text-center">
-      <p className="font-display text-2xl text-grafite">{t('foraDeHorasTitulo')}</p>
+      <p className="font-display text-2xl text-creme">{t('foraDeHorasTitulo')}</p>
       <p className="mx-auto mt-2 max-w-[36ch] font-sans text-sm leading-normal text-tenue-escuro">
         {t('foraDeHorasTexto')}
       </p>
       <ul className="mt-5 flex flex-col gap-2">
         {menus.map((m) => (
-          <li key={m.id} className="rounded-cartao bg-grafite/[0.04] px-4 py-3 font-sans text-sm text-grafite">
+          <li key={m.id} className="rounded-cartao bg-creme/[0.04] px-4 py-3 font-sans text-sm text-creme">
             {descreverMenu({ ...m, nome: em(idioma, m.nome, m.nome_en) })}
           </li>
         ))}
@@ -1053,13 +1058,13 @@ function LinhaPrato({
         onClick={aoAbrir}
         disabled={esgotado}
         aria-label={nome}
-        className="relative block h-[82px] w-[82px] shrink-0 overflow-hidden rounded-[16px] bg-grafite/5"
+        className="relative block h-[82px] w-[82px] shrink-0 overflow-hidden rounded-[16px] bg-creme/5"
       >
         <FotoPrato nome={nome} url={prato.foto_url} tamanhos="128px" />
       </button>
 
       <button type="button" onClick={aoAbrir} disabled={esgotado} className="min-w-0 flex-1 text-left">
-        <p className="font-display text-base leading-snug text-grafite">{nome}</p>
+        <p className="font-display text-base leading-snug text-creme">{nome}</p>
         {descricao ? (
           <p className="mt-1 line-clamp-2 font-sans text-xs leading-snug text-tenue-escuro">
             {descricao}
@@ -1186,7 +1191,7 @@ export function SeletorQuantidade({
         onClick={() => aoAlterar(-1)}
         aria-label={t('menosUm', { nome: rotulo })}
         className={cn(
-          'flex items-center justify-center rounded-full border border-linha-escura leading-none transition-colors duration-200 hover:border-grafite/30',
+          'flex items-center justify-center rounded-full border border-linha-escura leading-none transition-colors duration-200 hover:border-creme/30',
           tamanho,
         )}
       >
@@ -1205,7 +1210,7 @@ export function SeletorQuantidade({
         onClick={() => aoAlterar(1)}
         aria-label={t('maisUm', { nome: rotulo })}
         className={cn(
-          'flex items-center justify-center rounded-full border border-linha-escura leading-none transition-colors duration-200 hover:border-grafite/30',
+          'flex items-center justify-center rounded-full border border-linha-escura leading-none transition-colors duration-200 hover:border-creme/30',
           tamanho,
         )}
       >
@@ -1303,7 +1308,7 @@ function FolhaPrato({
   return (
     <FolhaInferior aberta={Boolean(prato)} aoFechar={aoFechar} titulo={nome}>
       <div className="flex min-h-0 flex-col overflow-y-auto">
-        <div className="relative mx-4 mt-2 aspect-[16/10] shrink-0 overflow-hidden rounded-cartao bg-grafite/5">
+        <div className="relative mx-4 mt-2 aspect-[16/10] shrink-0 overflow-hidden rounded-cartao bg-creme/5">
           <FotoPrato
             nome={nome}
             url={prato.foto_url}
@@ -1339,11 +1344,11 @@ function FolhaPrato({
             return (
               <fieldset key={grupo.id} className="mt-6">
                 <legend className="flex w-full items-baseline justify-between gap-3">
-                  <span className="font-sans text-sm font-semibold text-grafite">{em(idioma, grupo.nome, grupo.nome_en)}</span>
+                  <span className="font-sans text-sm font-semibold text-creme">{em(idioma, grupo.nome, grupo.nome_en)}</span>
                   <span
                     className={cn(
                       'rounded-full px-2 py-0.5 font-sans text-xs font-semibold',
-                      emFalta ? 'bg-[#b4402f] text-white' : 'bg-grafite/[0.06] text-tenue-escuro',
+                      emFalta ? 'bg-[#b4402f] text-white' : 'bg-creme/[0.06] text-tenue-escuro',
                     )}
                   >
                     {legenda}
@@ -1360,7 +1365,7 @@ function FolhaPrato({
                         key={opcao.id}
                         className={cn(
                           'flex min-h-[52px] cursor-pointer items-center gap-3 rounded-campo border px-3.5 py-2.5 transition-colors duration-200',
-                          marcada ? 'border-grafite bg-grafite/[0.04]' : 'border-grafite/15 hover:border-grafite/35',
+                          marcada ? 'border-grafite bg-creme/[0.04]' : 'border-creme/15 hover:border-creme/35',
                           (indisponivel || cheio) && 'cursor-not-allowed opacity-45',
                           'focus-within:ring-2 focus-within:ring-laranja/40',
                         )}
@@ -1378,7 +1383,7 @@ function FolhaPrato({
                           className={cn(
                             'flex h-5 w-5 shrink-0 items-center justify-center border-2 transition-colors duration-150',
                             unico ? 'rounded-full' : 'rounded-[6px]',
-                            marcada ? 'border-grafite bg-grafite' : 'border-grafite/30 bg-white',
+                            marcada ? 'border-grafite bg-grafite' : 'border-creme/30 bg-white',
                           )}
                         >
                           {marcada ? (
@@ -1391,7 +1396,7 @@ function FolhaPrato({
                             )
                           ) : null}
                         </span>
-                        <span className="min-w-0 flex-1 font-sans text-sm text-grafite">
+                        <span className="min-w-0 flex-1 font-sans text-sm text-creme">
                           {em(idioma, opcao.nome, opcao.nome_en)}
                           {indisponivel ? <span className="ml-2 text-xs text-tenue-escuro">{t('esgotado')}</span> : null}
                         </span>
@@ -1413,7 +1418,7 @@ function FolhaPrato({
           <div className="mt-6">
             <label
               htmlFor="obs-prato"
-              className="mb-2 flex items-center gap-2 font-sans text-sm font-semibold text-grafite"
+              className="mb-2 flex items-center gap-2 font-sans text-sm font-semibold text-creme"
             >
               <MessageSquareText className="h-4 w-4 shrink-0 text-laranja-escuro" aria-hidden />
               {t('obsPrato')}

@@ -435,18 +435,20 @@ export function avisarDoComprovativo(quantos: number) {
 /* ------------------------------------------------------------------ */
 
 /**
- * Um "dim-dom" suave, para quando uma mesa chama o empregado ou pede a
+ * O sino de balcão, para quando uma mesa chama o empregado ou pede a
  * conta.
  *
- * Não é o sino dos pedidos, de propósito. O sino é para a cozinha, tem de
- * atravessar o exaustor e insiste até alguém confirmar. A chamada é para
- * a sala, onde há clientes a jantar: duas notas descendentes, redondas,
- * a menos de metade do volume do sino, e uma vez só. O aviso que fica é
- * o visual — o cartão a pulsar até alguém carregar em "Atendido".
+ * NÃO É O SINO DOS PEDIDOS, E TEM DE SE PERCEBER SÓ DE OUVIDO, porque
+ * quem está na sala não vai ao ecrã confirmar qual dos dois tocou:
  *
- * Duas notas de uma quinta (mi e lá), porque é o intervalo das
- * campainhas de porta: toda a gente o lê como "está alguém a chamar"
- * sem ter de o aprender.
+ *   pedidos  → pancada grave, e repete de quatro em quatro segundos até
+ *              alguém carregar em Recebido. É para a cozinha, e insiste.
+ *   chamada  → duas pancadas agudas, claras, e cala-se. É para a sala,
+ *              onde há gente a jantar. O que insiste é o cartão a pulsar
+ *              no painel, não o som.
+ *
+ * O intervalo é o das campainhas de porta — toda a gente o lê como
+ * "está alguém a chamar" sem ter de o aprender.
  */
 export async function tocarChamada() {
   const ctx = obterContexto();
@@ -462,36 +464,64 @@ export async function tocarChamada() {
   if (ctx.state !== 'running') return false;
 
   const saida = ctx.createGain();
-  saida.gain.value = 0.22;
+  saida.gain.value = 0.3;
   saida.connect(ctx.destination);
 
-  const inicio = ctx.currentTime + 0.01;
-  const notas: [frequencia: number, quando: number][] = [
-    [1318.5, 0],
-    [880, 0.28],
+  /*
+   * O TIMBRE É O QUE FAZ SOAR A SINO, E NÃO A NOTA.
+   *
+   * Isto era duas ondas puras, uma a seguir à outra: lia-se como o
+   * "pluim" de uma aplicação de mensagens, e ao fundo de uma sala com
+   * gente perdia-se. Um sino de balcão não é uma onda pura — é uma
+   * pancada de metal com parciais que não são múltiplos exactos da
+   * fundamental, e é essa "desafinação" que o ouvido reconhece como
+   * metal.
+   *
+   * Os números são os de um sino pequeno: a fundamental, a oitava
+   * ligeiramente alta, e duas parciais agudas curtas, cada uma a apagar
+   * mais depressa do que a de baixo. Isso dá o "tin" do ataque seguido
+   * do zumbido que fica.
+   */
+  const PARCIAIS: [multiplo: number, forca: number, decaimento: number][] = [
+    [1, 1, 1.9],
+    [2.02, 0.55, 1.2],
+    [3.01, 0.28, 0.6],
+    [4.17, 0.16, 0.34],
   ];
 
-  let porAcabar = notas.length;
-  for (const [frequencia, quando] of notas) {
-    const oscilador = ctx.createOscillator();
-    const envolvente = ctx.createGain();
-    oscilador.type = 'sine';
-    oscilador.frequency.value = frequencia;
+  // Duas pancadas, a segunda uma quarta abaixo: o "dim-dom" da porta.
+  const PANCADAS: [fundamental: number, quando: number, forca: number][] = [
+    [1174.7, 0, 1],
+    [880, 0.3, 0.86],
+  ];
 
+  const inicio = ctx.currentTime + 0.01;
+  let porAcabar = PANCADAS.length * PARCIAIS.length;
+
+  for (const [fundamental, quando, forca] of PANCADAS) {
     const t = inicio + quando;
-    envolvente.gain.setValueAtTime(0, t);
-    envolvente.gain.linearRampToValueAtTime(1, t + 0.012);
-    envolvente.gain.setTargetAtTime(0, t + 0.012, 0.32);
 
-    oscilador.connect(envolvente);
-    envolvente.connect(saida);
-    oscilador.start(t);
-    oscilador.stop(t + 1.8);
-    oscilador.onended = () => {
-      envolvente.disconnect();
-      porAcabar -= 1;
-      if (porAcabar === 0) saida.disconnect();
-    };
+    for (const [multiplo, peso, decaimento] of PARCIAIS) {
+      const oscilador = ctx.createOscillator();
+      const envolvente = ctx.createGain();
+      oscilador.type = 'sine';
+      oscilador.frequency.value = fundamental * multiplo;
+
+      // Ataque quase instantâneo — é uma pancada — e queda exponencial.
+      envolvente.gain.setValueAtTime(0, t);
+      envolvente.gain.linearRampToValueAtTime(peso * forca, t + 0.004);
+      envolvente.gain.setTargetAtTime(0, t + 0.004, decaimento / 4);
+
+      oscilador.connect(envolvente);
+      envolvente.connect(saida);
+      oscilador.start(t);
+      oscilador.stop(t + decaimento + 0.4);
+      oscilador.onended = () => {
+        envolvente.disconnect();
+        porAcabar -= 1;
+        if (porAcabar === 0) saida.disconnect();
+      };
+    }
   }
 
   return true;

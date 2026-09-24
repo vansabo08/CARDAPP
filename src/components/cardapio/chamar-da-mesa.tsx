@@ -132,7 +132,10 @@ export function ChamarDaMesa({
           aria-label={aberto ? t('fechar') : t('chamarOuConta')}
           className={cn(
             'relative flex h-12 w-12 items-center justify-center rounded-full shadow-elevacao-2',
-            'border border-black/10 bg-grafite-carta text-creme',
+            // Tinta cheia, e não branco: a app é clara, e um círculo
+            // branco sobre uma folha branca não existe. Era o que estava
+            // a acontecer — o botão era desenhado e ninguém o via.
+            'bg-creme text-grafite shadow-elevacao-2',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-laranja focus-visible:ring-offset-2',
           )}
         >
@@ -145,11 +148,15 @@ export function ChamarDaMesa({
               transition={{ duration: 0.16 }}
               className="flex"
             >
-              {aberto ? <X className="h-5 w-5" aria-hidden /> : <BellRing className="h-5 w-5 text-laranja" aria-hidden />}
+              {aberto ? (
+                <X className="h-5 w-5" aria-hidden />
+              ) : (
+                <BellRing className="h-5 w-5 text-laranja-claro" aria-hidden />
+              )}
             </m.span>
           </AnimatePresence>
           {algumAvisado && !aberto ? (
-            <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-verde ring-2 ring-grafite-carta">
+            <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-verde ring-2 ring-creme">
               <Check className="h-2.5 w-2.5 text-white" aria-hidden />
             </span>
           ) : null}
@@ -182,17 +189,17 @@ export function ChamarDaMesa({
                     aria-label={avisado ? `${t(rotulo)}: ${t('avisado')}` : t(rotulo)}
                     className={cn(
                       'flex h-11 items-center gap-2 rounded-full pl-3.5 pr-4 font-sans text-sm font-semibold shadow-elevacao-2',
-                      'border border-black/10 bg-grafite-carta text-creme',
+                      'bg-creme text-grafite shadow-elevacao-2',
                       'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-laranja',
-                      avisado && 'border-verde/40 text-creme/80',
+                      avisado && 'bg-verde text-white',
                     )}
                   >
                     {aChamar === tipo ? (
                       <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
                     ) : avisado ? (
-                      <Check className="h-4 w-4 text-verde" aria-hidden />
+                      <Check className="h-4 w-4" aria-hidden />
                     ) : (
-                      <Icone className="h-4 w-4 text-laranja" aria-hidden />
+                      <Icone className="h-4 w-4 text-laranja-claro" aria-hidden />
                     )}
                     {avisado ? `${t(rotulo)} · ${t('avisado')}` : t(rotulo)}
                   </m.button>
@@ -219,7 +226,7 @@ export function ChamarDaMesa({
               transition={{ duration: 0.26, ease: ASSINATURA }}
               className={cn(
                 'flex max-w-[420px] items-center gap-2.5 rounded-full px-4 py-3 font-sans text-sm font-semibold shadow-elevacao-3-escura',
-                aviso.ok ? 'bg-grafite-carta text-creme' : 'bg-[#3a1d18] text-[#ffb4a8]',
+                aviso.ok ? 'bg-creme text-grafite' : 'bg-[#b3261e] text-white',
               )}
             >
               {aviso.ok ? (

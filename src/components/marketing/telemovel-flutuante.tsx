@@ -111,7 +111,9 @@ function Aparelho({ children }: { children: React.ReactNode }) {
       <m.div
         aria-hidden
         className="pointer-events-none absolute inset-x-[8%] bottom-[-5%] -z-10 h-[7%] rounded-[50%] bg-[#17161b] blur-xl"
-        animate={{ opacity: [0.3, 0.16, 0.3], scaleX: [1, 0.86, 1] }}
+        // Só a opacidade: mexer na escala de um elemento desfocado obriga
+        // o browser a refazer o desfoque em cada fotograma.
+        animate={{ opacity: [0.3, 0.15, 0.3] }}
         transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
       />
 

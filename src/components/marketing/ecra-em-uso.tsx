@@ -51,13 +51,26 @@ function Ciclo({ passos }: { passos: Passo[] }) {
     return () => observador.disconnect();
   }, []);
 
+  /*
+   * Também pára com o separador escondido. Sem isto, o ciclo continuava
+   * a trocar ecrãs numa página que ninguém tem à frente — e cada troca
+   * desenha um mockup inteiro, com as suas fotografias.
+   */
+  const [separadorAberto, setSeparadorAberto] = React.useState(true);
   React.useEffect(() => {
-    if (!aVer || passos.length < 2) return;
+    const ver = () => setSeparadorAberto(document.visibilityState === 'visible');
+    ver();
+    document.addEventListener('visibilitychange', ver);
+    return () => document.removeEventListener('visibilitychange', ver);
+  }, []);
+
+  React.useEffect(() => {
+    if (!aVer || !separadorAberto || passos.length < 2) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     const relogio = window.setInterval(() => setN((actual) => (actual + 1) % passos.length), DEMORA);
     return () => window.clearInterval(relogio);
-  }, [aVer, passos.length]);
+  }, [aVer, separadorAberto, passos.length]);
 
   const passo = passos[n];
 
