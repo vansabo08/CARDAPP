@@ -12,3 +12,8 @@ next-env.d.ts
 tsconfig.tsbuildinfo
 coverage
 tests/saida
+
+# Coisas desta maquina, nao da app: os servidores locais de outros
+# projectos e as skills por instalar. O repositorio e publico.
+.claude/launch.json
+skills-para-instalar/
