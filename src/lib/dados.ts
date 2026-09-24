@@ -1,6 +1,6 @@
 import 'server-only';
 import { clienteServidor } from './supabase/servidor';
-import { clientePublico } from './supabase/publico';
+import { SEGUNDOS_DE_CARDAPIO, clientePublico } from './supabase/publico';
 import { supabaseConfigurado } from './supabase/config';
 import {
   CARDAPIO_DEMO,
@@ -103,7 +103,7 @@ function comColunasNovas(linha: unknown): Restaurante {
 }
 
 export async function obterRestaurantePorSlug(slug: string): Promise<Restaurante | null> {
-  const supabase = clientePublico();
+  const supabase = clientePublico(SEGUNDOS_DE_CARDAPIO);
   if (!supabase) {
     return slug === RESTAURANTE_DEMO.slug ? RESTAURANTE_DEMO : null;
   }
@@ -146,7 +146,7 @@ export async function obterCardapio(
    * Antes o painel lia pela porta pública, e uma categoria acabada de
    * criar desaparecia ao recarregar a página, por ainda não ter pratos.
    */
-  const supabase = opcoes.doPainel ? await clienteServidor() : clientePublico();
+  const supabase = opcoes.doPainel ? await clienteServidor() : clientePublico(SEGUNDOS_DE_CARDAPIO);
   if (!supabase) return CARDAPIO_DEMO;
 
   const completa = await supabase
@@ -207,7 +207,7 @@ function limparPrato(item: Prato): Prato {
 /** Os horários de uma casa. Sem a tabela, não há horários — e tudo aparece. */
 export async function obterMenus(restaurantId: string): Promise<MenuHorario[]> {
   if (eDemonstracao(restaurantId)) return MENUS_DEMO;
-  const supabase = clientePublico();
+  const supabase = clientePublico(SEGUNDOS_DE_CARDAPIO);
   if (!supabase) return MENUS_DEMO;
 
   const { data } = await supabase
