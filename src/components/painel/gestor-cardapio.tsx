@@ -398,7 +398,7 @@ export function GestorCardapio({
                   <button
                     type="button"
                     onClick={() => removerCategoria(categoria.id)}
-                    className="rounded-full bg-[#e0655a] px-4 py-2 font-sans text-xs font-semibold text-grafite transition-opacity duration-200 hover:opacity-90"
+                    className="rounded-full bg-[#b3261e] px-4 py-2 font-sans text-xs font-semibold text-white transition-opacity duration-200 hover:opacity-90"
                   >
                     Apagar
                   </button>

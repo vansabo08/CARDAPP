@@ -259,6 +259,9 @@ export function NavegacaoPainel(props: Props) {
                       <li key={ligacao.href}>
                         <Link
                           href={ligacao.href}
+                          /* O Next não adivinha rotas dinâmicas: sem isto,
+                             só começa a buscar a secção depois do toque. */
+                          prefetch
                           aria-current={activa ? 'page' : undefined}
                           className={cn(
                             'flex items-center gap-3 rounded-full px-3.5 py-2.5 font-sans text-sm font-semibold transition-colors duration-200',
@@ -271,7 +274,7 @@ export function NavegacaoPainel(props: Props) {
                           <span className="flex-1 truncate">{ligacao.rotulo}</span>
                           {fechada ? (
                             <Lock
-                              className={cn('h-3.5 w-3.5', activa ? 'text-grafite/70' : 'text-tenue')}
+                              className={cn('h-3.5 w-3.5', activa ? 'text-creme/70' : 'text-tenue')}
                               aria-label="Plano Sala"
                             />
                           ) : null}

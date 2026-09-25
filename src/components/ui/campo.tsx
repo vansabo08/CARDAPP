@@ -23,7 +23,7 @@ const BASE_ESCURA =
  * limite de campo precisa para se distinguir.
  */
 const BASE_CLARA =
-  'border border-grafite/45 bg-grafite/[0.04] text-grafite placeholder:text-creme/55 hover:border-grafite/65 focus:border-laranja focus:bg-white focus:ring-2 focus:ring-laranja/20';
+  'border border-creme/35 bg-creme/[0.03] text-creme placeholder:text-creme/45 hover:border-creme/55 focus:border-laranja-escuro focus:bg-white focus:ring-2 focus:ring-laranja/25';
 
 export type CampoProps = React.InputHTMLAttributes<HTMLInputElement> & { claro?: boolean };
 
@@ -75,7 +75,7 @@ export function Rotulo({
     <label
       className={cn(
         'mb-2 block font-sans text-sm font-semibold',
-        claro ? 'text-grafite' : 'text-creme/85',
+        claro ? 'text-creme' : 'text-creme/85',
         className,
       )}
       {...props}

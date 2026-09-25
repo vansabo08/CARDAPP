@@ -1131,7 +1131,7 @@ function LinhaPrato({
           {quantidade > 0 ? (
             <span
               key={quantidade}
-              className="animate-marca absolute -right-1.5 -top-1.5 flex h-[24px] min-w-[24px] items-center justify-center rounded-full bg-laranja px-1.5 font-sans text-xs font-extrabold tabular-nums text-grafite ring-2 ring-white"
+              className="animate-marca absolute -right-1.5 -top-1.5 flex h-[24px] min-w-[24px] items-center justify-center rounded-full bg-laranja px-1.5 font-sans text-xs font-extrabold tabular-nums text-creme ring-2 ring-white"
             >
               {quantidade}
             </span>

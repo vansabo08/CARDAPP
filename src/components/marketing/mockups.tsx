@@ -241,7 +241,7 @@ export function QrDecorativo({ tamanho = 84, seed = 7 }: { tamanho?: number; see
 
 export function CartaoMesa({ numero = 7, nome = 'Tia Bela' }: { numero?: number; nome?: string }) {
   return (
-    <div className="relative w-full max-w-[248px] overflow-hidden rounded-cartao bg-white px-7 py-8 text-center text-grafite shadow-cartao">
+    <div className="relative w-full max-w-[248px] overflow-hidden rounded-cartao bg-white px-7 py-8 text-center text-creme shadow-cartao">
       <Logotipo tamanho={24} className="mx-auto" />
       <p className="mt-3 font-display text-xl leading-none">{nome}</p>
       <div className="my-6 flex justify-center">

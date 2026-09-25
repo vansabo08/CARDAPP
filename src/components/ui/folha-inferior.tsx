@@ -35,7 +35,7 @@ export function FolhaInferior({
             // do painel, que e escrito para fundo escuro, ficava com letra
             // branca em fundo branco: via-se a folha e mais nada.
             claro
-              ? 'superficie-clara text-grafite'
+              ? 'superficie-clara text-creme'
               : 'border-t border-black/[0.08] bg-grafite-alto text-creme shadow-[0_-24px_48px_-24px_rgba(0,0,0,0.8)]',
             className,
           )}

@@ -35,20 +35,20 @@ const botaoVariantes = cva(
         laranja:
           'bg-laranja text-creme shadow-brilho-laranja hover:bg-laranja-claro hover:shadow-brilho-laranja-alto active:bg-laranja-escuro active:shadow-brilho-laranja',
         creme:
-          'bg-creme text-creme shadow-elevacao-1 hover:bg-white hover:shadow-elevacao-2 active:shadow-elevacao-1',
+          'bg-creme text-grafite shadow-elevacao-1 hover:bg-white hover:shadow-elevacao-2 active:shadow-elevacao-1',
         grafite:
           'bg-grafite-carta text-creme shadow-elevacao-1-escura hover:bg-grafite-suave hover:shadow-elevacao-2-escura active:shadow-elevacao-1-escura',
         contorno:
           'border border-linha bg-transparent text-creme hover:border-creme/30 hover:bg-creme/[0.05] hover:shadow-elevacao-1-escura',
         'contorno-escuro':
-          'border border-linha-escura bg-transparent text-grafite hover:border-grafite/20 hover:bg-grafite/[0.04] hover:shadow-elevacao-1',
+          'border border-linha-escura bg-transparent text-creme hover:border-creme/25 hover:bg-creme/[0.04] hover:shadow-elevacao-1',
         verde:
           'bg-verde text-white shadow-elevacao-1 hover:bg-[#12ad61] hover:shadow-elevacao-2 active:shadow-elevacao-1',
         // Os discretos não têm corpo, por isso não têm sombra nem sobem:
         // uma sombra debaixo de texto solto lê-se como sujidade.
         discreto: 'bg-transparent text-tenue hover:translate-y-0 hover:text-creme',
         'discreto-escuro':
-          'bg-transparent text-tenue-escuro hover:translate-y-0 hover:text-grafite',
+          'bg-transparent text-tenue-escuro hover:translate-y-0 hover:text-creme',
       },
       tamanho: {
         sm: 'h-9 px-4 text-xs',

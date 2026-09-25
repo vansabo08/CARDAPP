@@ -84,7 +84,7 @@ export async function Prova() {
               {/* O cartão da mesa, tal e qual sai da impressora. */}
               <figure className="w-[264px] rounded-cartao border border-linha bg-creme p-6 shadow-[0_30px_70px_-40px_rgba(0,0,0,0.9)]">
                 <figcaption className="text-center">
-                  <span className="etiqueta text-grafite/55">Mesa 7</span>
+                  <span className="etiqueta text-creme/55">Mesa 7</span>
                 </figcaption>
 
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -96,7 +96,7 @@ export async function Prova() {
                   className="mt-4 h-auto w-full rounded-[6px]"
                 />
 
-                <p className="mt-4 text-center text-pretty font-sans text-xs leading-normal text-grafite/60">
+                <p className="mt-4 text-center text-pretty font-sans text-xs leading-normal text-creme/60">
                   Aponte a câmara. O cardápio abre sem instalar nada.
                 </p>
               </figure>
