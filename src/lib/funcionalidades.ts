@@ -4,6 +4,7 @@ import {
   type Funcionalidade,
   type Plano,
 } from '@/config/planos';
+import { CAMINHO_DE_PAGAMENTO } from '@/lib/planos';
 
 export type { Funcionalidade };
 
@@ -32,9 +33,15 @@ export function planoQueAbre(funcionalidade: Funcionalidade): Plano {
   return FUNCIONALIDADES_DO_PLANO.mesa.includes(funcionalidade) ? 'mesa' : 'sala';
 }
 
-/** Onde se compra o plano que abre uma funcionalidade. */
-export function ligacaoParaAbrir(funcionalidade: Funcionalidade): string {
-  return PLANOS[planoQueAbre(funcionalidade)].link;
+/**
+ * Onde se compra o plano que abre uma funcionalidade.
+ *
+ * Já foi um checkout externo; agora é o ecrã de pagamento da própria
+ * app, onde se paga por Multicaixa ou transferência e se envia o
+ * comprovativo.
+ */
+export function ligacaoParaAbrir(_funcionalidade: Funcionalidade): string {
+  return CAMINHO_DE_PAGAMENTO;
 }
 
 /** O que se diz a quem ainda não tem — no cartão de upgrade. */

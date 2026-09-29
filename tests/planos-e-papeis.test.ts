@@ -51,9 +51,10 @@ describe('o que cada plano abre', () => {
     }
   });
 
-  it('o cartão manda comprar o Sala na Kursinha', () => {
-    expect(ligacaoParaAbrir('equipa')).toBe(PLANOS.sala.link);
-    expect(PLANOS.sala.link).toMatch(/^https:\/\/pay\.kursinha\.com\//);
+  it('o cartão manda pagar dentro da app', () => {
+    // Já mandou para um checkout de fora. Agora o pagamento é por
+    // Multicaixa ou transferência, com o comprovativo enviado no painel.
+    expect(ligacaoParaAbrir('equipa')).toBe('/painel/pagar');
   });
 });
 

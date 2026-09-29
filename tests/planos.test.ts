@@ -4,7 +4,6 @@ import {
   INCLUI,
   PLANOS,
   PRECO_PLANO,
-  PRODUTO_KURSINHA,
   avisoDoPrazo,
   cardapioNoAr,
   diasAteExpirar,
@@ -34,17 +33,16 @@ describe('tabela de planos', () => {
     expect(PLANOS.sala.dias).toBe(30);
   });
 
-  it('o identificador do produto vive dentro do link', () => {
-    // Se se separarem, um pagamento abre a conta no plano errado.
+  it('paga-se dentro da app, e não num sítio de fora', () => {
     for (const p of ['mesa', 'sala'] as Plano[]) {
-      expect(PLANOS[p].link).toContain(PLANOS[p].produtoId);
-      expect(linkDePagamento(p)).toContain(PLANOS[p].produtoId);
+      expect(linkDePagamento(p)).toBe('/painel/pagar');
     }
   });
 
-  it('os identificadores sao os que a Kursinha tem', () => {
-    expect(PRODUTO_KURSINHA.mesa).toBe('6a0c3beddb1169d43a28e16c');
-    expect(PRODUTO_KURSINHA.sala).toBe('69fc6b443420b95cb08c1ebe');
+  it('cada plano tem o seu identificador', () => {
+    expect(PLANOS.mesa.produtoId).toBeTruthy();
+    expect(PLANOS.sala.produtoId).toBeTruthy();
+    expect(PLANOS.mesa.produtoId).not.toBe(PLANOS.sala.produtoId);
   });
 
   it('os atalhos batem certo com a configuracao', () => {

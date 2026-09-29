@@ -15,13 +15,13 @@ export default function manifest(): MetadataRoute.Manifest {
     scope: '/',
     display: 'standalone',
     orientation: 'portrait',
-    background_color: '#0B0B0B',
-    theme_color: '#0B0B0B',
+    background_color: '#F2F1EF',
+    theme_color: '#F2F1EF',
     categories: ['food', 'business'],
     icons: [
-      { src: '/icone-192.png?v=2', sizes: '192x192', type: 'image/png', purpose: 'any' },
-      { src: '/icone-512.png?v=2', sizes: '512x512', type: 'image/png', purpose: 'any' },
-      { src: '/icone-maskable-512.png?v=2', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+      { src: '/icone-192.png?v=3', sizes: '192x192', type: 'image/png', purpose: 'any' },
+      { src: '/icone-512.png?v=3', sizes: '512x512', type: 'image/png', purpose: 'any' },
+      { src: '/icone-maskable-512.png?v=3', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
     ],
   };
 }

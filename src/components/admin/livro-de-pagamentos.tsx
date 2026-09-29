@@ -11,7 +11,7 @@ import { aplicarPagamento } from '@/app/admin/accoes';
  * O livro dos pagamentos.
  *
  * Existe por uma avaria que é a mais provável de todas porque é a mais
- * humana: pagar na Kursinha com um email e ter a conta do CardApp
+ * humana: pagar com um email e ter a conta do CardApp
  * noutro. O webhook faz o que deve — grava, não abre nada a ninguém, e
  * escreve porquê. Mas isso ficava só na base de dados, e ninguém vai à
  * base de dados ver se alguém pagou.
@@ -73,7 +73,7 @@ export function LivroDePagamentos({
         ) : null}
       </div>
       <p className="mt-1 text-pretty font-sans text-xs leading-normal text-tenue">
-        O que a Kursinha mandou, e o que cada aviso fez à conta.
+        Os pagamentos que entraram, e o que cada um fez à conta.
       </p>
 
       {erro ? (

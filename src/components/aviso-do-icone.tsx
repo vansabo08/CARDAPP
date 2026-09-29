@@ -31,7 +31,12 @@ import { cn } from '@/lib/utils';
  * aviso sobre coisa nenhuma.
  */
 
-const CHAVE = 'cardapp:aviso-do-icone';
+/*
+ * A chave leva a versão do ícone. Mudar o desenho é mudar a chave: quem
+ * já tinha dispensado o aviso da vez anterior volta a ser avisado, e
+ * quem nunca o viu não vê dois.
+ */
+const CHAVE = 'cardapp:aviso-do-icone:3';
 
 /**
  * O ícone mudou a 20 de Setembro de 2026. Dois meses chegam para toda a

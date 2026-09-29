@@ -35,7 +35,10 @@ export function Logotipo({
       // como o next/image faz por omissão, aparecia um espaço vazio ao
       // lado de "CardApp" até o browser decidir ir buscá-la.
       loading="eager"
-      className={cn('shrink-0 rounded-full', className)}
+      // Sem recorte redondo: a marca nova já é uma forma fechada, com
+      // fundo transparente. Um `rounded-full` por cima cortava-lhe as
+      // pontas do cartão.
+      className={cn('shrink-0', className)}
     />
   );
 }

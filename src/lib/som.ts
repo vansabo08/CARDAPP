@@ -536,7 +536,7 @@ export function avisarDaChamada(mesa: number, tipo: 'empregado' | 'conta') {
     new Notification(tipo === 'conta' ? `Mesa ${mesa} pediu a conta` : `Mesa ${mesa} chama o empregado`, {
       body: 'Toque para abrir o salão.',
       tag: `cardapp-chamada-${mesa}-${tipo}`,
-      icon: '/icone-192.png?v=2',
+      icon: '/icone-192.png?v=3',
     });
   } catch {
     /* alguns browsers móveis só deixam notificar pelo service worker */

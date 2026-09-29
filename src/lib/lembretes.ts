@@ -14,7 +14,7 @@ import {
 /**
  * Os avisos de renovação.
  *
- * A Kursinha só vende pagamento único: não há débito automático nem
+ * Não há débito automático nem
  * aviso de renovação do lado dela. Se o CardApp não lembrar, ninguém
  * lembra, e a casa descobre que o prazo acabou quando um cliente lhe
  * disser que o QR não abre. É o pior sítio possível para descobrir.

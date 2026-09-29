@@ -49,16 +49,16 @@ export const metadata: Metadata = {
   manifest: '/manifest.webmanifest',
   icons: {
     icon: [
-      { url: '/favicon.ico?v=2', sizes: '32x32' },
-      { url: '/favicon-32.png?v=2', type: 'image/png', sizes: '32x32' },
-      { url: '/icone-192.png?v=2', type: 'image/png', sizes: '192x192' },
+      { url: '/favicon.ico?v=3', sizes: '32x32' },
+      { url: '/favicon-32.png?v=3', type: 'image/png', sizes: '32x32' },
+      { url: '/icone-192.png?v=3', type: 'image/png', sizes: '192x192' },
     ],
-    apple: [{ url: '/apple-touch-icon.png?v=2', sizes: '180x180' }],
+    apple: [{ url: '/apple-touch-icon.png?v=3', sizes: '180x180' }],
   },
   appleWebApp: {
     capable: true,
     title: 'CardApp',
-    statusBarStyle: 'black-translucent',
+    statusBarStyle: 'default',
   },
   // A distribuição vai ser quase toda por WhatsApp: o cartão de partilha
   // é o que decide se alguém toca no link.
@@ -79,7 +79,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0B0B0B',
+  // A app é clara: a barra do sistema acompanha a página.
+  themeColor: '#F2F1EF',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,

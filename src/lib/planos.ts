@@ -21,11 +21,6 @@ export const PRECO_PLANO: Record<Plano, number> = {
   sala: PLANOS.sala.preco,
 };
 
-export const PRODUTO_KURSINHA: Record<Plano, string> = {
-  mesa: PLANOS.mesa.produtoId,
-  sala: PLANOS.sala.produtoId,
-};
-
 /**
  * O que cada plano dá.
  *
@@ -52,15 +47,21 @@ export const INCLUI: Record<Plano, string[]> = {
 };
 
 /**
- * Onde se paga. O ambiente manda sobre a configuração, para um endereço
- * poder mudar sem deploy.
+ * Onde se paga: dentro da app.
+ *
+ * Já foi um link para um checkout externo, que abria a conta sozinho
+ * por webhook. Saiu. Paga-se por Multicaixa Express ou transferência e
+ * envia-se a fotografia do comprovativo por este ecrã, que reabre a
+ * conta na hora enquanto a transferência se confirma.
+ *
+ * Continua a ser uma função, e não uma constante à solta, porque é
+ * chamada de sítios que passam o plano — e um dia, se cada plano tiver
+ * o seu caminho, muda-se aqui e mais nada.
  */
-export function linkDePagamento(plano: Plano): string {
-  const doAmbiente = (
-    plano === 'mesa' ? process.env.NEXT_PUBLIC_KURSINHA_MESA : process.env.NEXT_PUBLIC_KURSINHA_SALA
-  )?.trim();
+export const CAMINHO_DE_PAGAMENTO = '/painel/pagar';
 
-  return doAmbiente && /^https?:\/\//.test(doAmbiente) ? doAmbiente : PLANOS[plano].link;
+export function linkDePagamento(_plano?: Plano): string {
+  return CAMINHO_DE_PAGAMENTO;
 }
 
 /* ------------------------------------------------------------------ */

@@ -322,7 +322,7 @@ export type LinhaDePagamento = {
  * Todos os avisos de pagamento que entraram, e o que cada um fez.
  *
  * Existe por causa de uma avaria que é a mais provável de todas, porque
- * é a mais humana: pagar na Kursinha com um email e ter a conta do
+ * é a mais humana: pagar com um email e ter a conta do
  * CardApp noutro. O webhook faz o que deve — grava, não abre nada a
  * ninguém, e escreve porquê — mas até aqui isso ficava só na base de
  * dados, e ninguém vai à base de dados ver se alguém pagou.

@@ -7,9 +7,19 @@ import manifest from '../src/app/manifest';
  * O logótipo e os ícones, tal como cada sítio os exige.
  *
  * Nada disto se vê a correr a aplicação no computador: um ícone maskable
- * com os talheres fora da zona segura só aparece cortado no ecrã inicial
- * de um Android, e um ícone de iPhone com transparência só aparece com um
+ * com a marca fora da zona segura só aparece cortado no ecrã inicial de
+ * um Android, e um ícone de iPhone com transparência só aparece com um
  * fundo que ninguém escolheu. Por isso fica testado aqui.
+ *
+ * A MARCA MUDOU, E ESTES TESTES COM ELA. Era um disco preto cheio, com
+ * talheres brancos recortados lá dentro, e o que se guardava era que o
+ * disco enchia o quadrado e que os talheres não saíam da zona segura.
+ * A marca nova é um C aberto com um cartão ao meio: já não há disco, e
+ * o branco deixou de ser a marca para passar a ser o fundo. O que se
+ * guarda agora é o que continua a valer — que a marca tem fundo
+ * transparente, que os ícones têm cantos redondos, que os dois que o
+ * sistema recorta não têm transparência nenhuma, e que a tinta cabe na
+ * zona que o Android nunca corta.
  */
 
 const pixeis = async (ficheiro: string) =>
@@ -24,6 +34,16 @@ function cor(d: Awaited<ReturnType<typeof pixeis>>, x: number, y: number) {
   return [d.data[i], d.data[i + 1], d.data[i + 2], d.data[i + 3]];
 }
 
+/** Quantos pixéis são tinta: opacos e escuros. */
+function tinta(d: Awaited<ReturnType<typeof pixeis>>) {
+  let quantos = 0;
+  for (let i = 0; i < d.data.length; i += 4) {
+    const escuro = d.data[i] + d.data[i + 1] + d.data[i + 2] < 200;
+    if (d.data[i + 3] > 200 && escuro) quantos += 1;
+  }
+  return quantos;
+}
+
 describe('o logótipo', () => {
   it('é um PNG quadrado', async () => {
     const m = await sharp('public/logo.png').metadata();
@@ -31,23 +51,23 @@ describe('o logótipo', () => {
     expect(m.width).toBe(m.height);
   });
 
-  it('é redondo: os cantos são transparentes e o disco é preto', async () => {
+  it('tem fundo transparente e tinta a sério', async () => {
+    // Vai ao lado da palavra "CardApp", em cima de fundos diferentes: um
+    // fundo branco cozido na imagem apareceria como um quadrado.
     const d = await pixeis('logo.png');
     const l = d.info.width;
-    for (const [x, y] of [[2, 2], [l - 3, 2], [2, l - 3], [l - 3, l - 3]]) {
+
+    for (const [x, y] of [
+      [2, 2],
+      [l - 3, 2],
+      [2, l - 3],
+      [l - 3, l - 3],
+    ]) {
       expect(alfa(d, x, y), `canto ${x},${y}`).toBe(0);
     }
-    // Perto do bordo, no topo, dentro do disco: preto opaco.
-    expect(cor(d, Math.round(l / 2), Math.round(l * 0.05))).toEqual([0, 0, 0, 255]);
-  });
 
-  it('o disco enche o quadrado, sem margem à volta', async () => {
-    const d = await pixeis('logo.png');
-    const l = d.info.width;
-    // Nos quatro pontos cardeais, a 2% do bordo, já é disco.
-    for (const [x, y] of [[l / 2, l * 0.02], [l / 2, l * 0.98], [l * 0.02, l / 2], [l * 0.98, l / 2]]) {
-      expect(alfa(d, Math.round(x), Math.round(y))).toBe(255);
-    }
+    // E a marca ocupa o quadrado: pelo menos um oitavo dele é tinta.
+    expect(tinta(d)).toBeGreaterThan((l * l) / 8);
   });
 });
 
@@ -56,13 +76,24 @@ describe('os ícones', () => {
     ['favicon-32.png', 32],
     ['icone-192.png', 192],
     ['icone-512.png', 512],
-    ['logo-128.png', 128],
-  ])('%s tem %i px e é redondo', async (ficheiro, lado) => {
+  ])('%s tem %i px e cantos redondos', async (ficheiro, lado) => {
     const d = await pixeis(ficheiro);
     expect(d.info.width).toBe(lado);
     expect(d.info.height).toBe(lado);
+
+    // O canto é transparente — é o que faz o arredondado — e o meio é
+    // a folha branca onde a marca assenta.
     expect(alfa(d, 0, 0)).toBe(0);
     expect(alfa(d, lado - 1, lado - 1)).toBe(0);
+    expect(alfa(d, Math.round(lado / 2), Math.round(lado / 2))).toBe(255);
+    expect(tinta(d)).toBeGreaterThan(0);
+  });
+
+  it('a marca sozinha, em 128, continua transparente nos cantos', async () => {
+    const d = await pixeis('logo-128.png');
+    expect(d.info.width).toBe(128);
+    expect(alfa(d, 0, 0)).toBe(0);
+    expect(tinta(d)).toBeGreaterThan(0);
   });
 
   it.each([
@@ -78,23 +109,21 @@ describe('os ícones', () => {
     }
   });
 
-  it('no maskable, os talheres ficam dentro da zona que o Android nunca corta', async () => {
-    // A zona segura é um círculo com 80% da largura. Tudo o que for
-    // branco — a faca e o garfo — tem de caber lá dentro.
+  it('no maskable, a marca fica dentro da zona que o Android nunca corta', async () => {
+    // A zona segura é um círculo com 80% da largura: tudo o que for
+    // tinta tem de caber lá dentro, porque o resto pode ser cortado.
     const d = await pixeis('icone-maskable-512.png');
     const l = d.info.width;
     const seguro = 0.4 * l;
+
     let maisLonge = 0;
     for (let y = 0; y < l; y++) {
       for (let x = 0; x < l; x++) {
-        // Só os opacos: um pixel transparente pode guardar branco na cor
-        // sem se ver, e contava como talher.
-        const [r, g, b, a] = cor(d, x, y);
-        if (a === 255 && r + g + b > 600) {
-          maisLonge = Math.max(maisLonge, Math.hypot(x - l / 2, y - l / 2));
-        }
+        const [r, g, b] = cor(d, x, y);
+        if (r + g + b < 200) maisLonge = Math.max(maisLonge, Math.hypot(x - l / 2, y - l / 2));
       }
     }
+
     expect(maisLonge).toBeGreaterThan(0);
     expect(maisLonge).toBeLessThanOrEqual(seguro);
   });
