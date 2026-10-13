@@ -4,7 +4,7 @@ import * as React from 'react';
 import { Bell, BellOff, Volume2 } from 'lucide-react';
 import { Botao } from '@/components/ui/botao';
 import { clienteNavegador } from '@/lib/supabase/cliente';
-import { formatarKz } from '@/lib/format';
+import { formatarKz, nomeDaMesa } from '@/lib/format';
 import {
   ROTULO_PAINEL,
   avancosPossiveis,
@@ -381,29 +381,50 @@ function CartaoPedido({
   }
 
   return (
-    <li className={cn('rounded-cartao border p-5 transition-colors duration-500 ease-calmo', TOM[pedido.estado])}>
+    <li
+      className={cn(
+        'rounded-cartao border p-5 transition-colors duration-500 ease-calmo md:p-6',
+        TOM[pedido.estado],
+        // O que ainda ninguém viu levanta-se da página; o resto assenta.
+        pedido.estado === 'novo' && 'shadow-[0_18px_40px_-28px_rgba(23,22,27,0.3)]',
+      )}
+    >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="font-display text-xl leading-tight text-creme">
-            {pedido.mesa != null ? `Mesa ${pedido.mesa}` : 'Sem mesa'}
+            {/* Pelo mesmo nome que vai no cartão da mesa e no salão: a
+                mesa sete é "Mesa 07" em todo o lado, e não "Mesa 7" aqui. */}
+            {pedido.mesa != null ? nomeDaMesa(pedido.mesa) : 'Sem mesa'}
           </p>
-          <p className="mt-1 font-sans text-xs text-tenue">
-            {hAQuantoTempo(pedido.created_at)} · {ROTULO_PAINEL[pedido.estado]}
+          <p className="mt-1.5 flex items-center gap-2 font-sans text-xs text-tenue">
+            <span className="numerais">{hAQuantoTempo(pedido.created_at)}</span>
+            <span aria-hidden className="h-1 w-1 rounded-full bg-current opacity-40" />
+            <span className="font-semibold">{ROTULO_PAINEL[pedido.estado]}</span>
           </p>
         </div>
-        <p className="font-display text-xl text-laranja">{formatarKz(pedido.total)}</p>
+        {/* O total é de tinta: a cor do cartão já diz o estado, e um
+            número colorido a mais tirava-lhe a força. */}
+        <p className="numerais font-display text-xl text-creme">{formatarKz(pedido.total)}</p>
       </div>
 
-      <ul className="mt-4 flex flex-col gap-1.5 border-t border-linha pt-4">
+      <ul className="mt-4 flex flex-col gap-2 border-t border-linha pt-4">
         {pedido.itens.map((item, i) => (
-          <li key={`${item.nome}-${i}`} className="font-sans text-sm leading-snug text-creme/90">
-            {item.qtd}x {item.nome}
-            {descreverOpcoes(item).map((texto) => (
-              <span key={texto} className="block pl-5 text-xs text-creme/70">
-                {texto}
-              </span>
-            ))}
-            {item.obs ? <span className="block pl-5 text-xs text-tenue">↳ {item.obs}</span> : null}
+          <li
+            key={`${item.nome}-${i}`}
+            className="flex gap-2.5 font-sans text-sm leading-snug text-creme/90"
+          >
+            {/* A quantidade numa coluna sua: com ela colada ao nome, uma
+                lista de dez pratos não tem onde o olho descer. */}
+            <span className="numerais w-6 shrink-0 font-semibold text-creme">{item.qtd}×</span>
+            <span className="min-w-0 flex-1">
+              {item.nome}
+              {descreverOpcoes(item).map((texto) => (
+                <span key={texto} className="block text-xs text-creme/70">
+                  {texto}
+                </span>
+              ))}
+              {item.obs ? <span className="block text-xs text-tenue">↳ {item.obs}</span> : null}
+            </span>
           </li>
         ))}
       </ul>

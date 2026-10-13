@@ -268,6 +268,13 @@ export function GestorMesas({
   );
 }
 
+/** As acções pequenas no pé de cada cartão de mesa. */
+const accaoDoCartao = cn(
+  'rounded-full px-2.5 py-1 font-sans text-[11px] font-semibold text-tenue',
+  'transition-colors duration-200 hover:bg-black/[0.06] hover:text-creme',
+  'disabled:pointer-events-none disabled:opacity-50',
+);
+
 function CartaoMesaQr({
   mesa,
   slug,
@@ -394,28 +401,27 @@ function CartaoMesaQr({
         placeholder={`Mesa ${numeroMesa(mesa.numero)}`}
         aria-label={`Nome da mesa ${mesa.numero}`}
         maxLength={24}
-        className="mt-3 w-full rounded-campo border border-transparent bg-transparent px-2 py-1 text-center font-display text-base text-creme outline-none transition-colors hover:border-linha focus:border-laranja/60 focus:bg-black/[0.03] placeholder:text-creme/40"
+        /* O marcador não é um aviso de campo vazio: é o nome que a mesa
+           tem enquanto a casa não lhe der outro, e é o que vai impresso
+           no cartão. A 40 % lia-se como texto desligado. */
+        className="mt-3 w-full rounded-campo border border-transparent bg-transparent px-2 py-1 text-center font-display text-base text-creme outline-none transition-colors hover:border-linha focus:border-laranja/60 focus:bg-black/[0.03] placeholder:text-creme/70"
       />
 
-      <div className="mt-1 flex items-center gap-3">
+      {/* Duas acções pequenas, em pastilha e sem sublinhado: sublinhado é
+          para texto corrido, e doze pares de palavras sublinhadas numa
+          grelha de mesas faziam a página parecer um índice. */}
+      <div className="mt-1.5 flex items-center gap-1.5">
         <button
           type="button"
           onClick={guardarCodigo}
           disabled={aGuardar || !qr}
-          className="font-sans text-xs text-tenue underline underline-offset-4 transition-colors hover:text-creme disabled:opacity-50"
+          className={accaoDoCartao}
         >
-          {aGuardar ? 'a guardar…' : 'guardar PNG'}
+          {aGuardar ? 'A guardar…' : 'Guardar PNG'}
         </button>
 
-        <span aria-hidden className="h-3 w-px bg-linha" />
-
-        <a
-          href={url}
-          target="_blank"
-          rel="noreferrer"
-          className="max-w-full truncate font-sans text-xs text-tenue underline underline-offset-4 hover:text-creme"
-        >
-          abrir ↗
+        <a href={url} target="_blank" rel="noreferrer" className={accaoDoCartao}>
+          Abrir ↗
         </a>
       </div>
     </div>

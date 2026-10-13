@@ -7,7 +7,17 @@ import type { Mesa, Restaurante } from './tipos';
 
 /**
  * Folha A4 com seis cartões de mesa por página, prontos a cortar.
- * Impressa a preto e branco num café de bairro tem de continuar legível,
+ *
+ * O CARTÃO TEM DUAS COISAS, E MAIS NENHUMA: o nome da mesa e o código.
+ * Chegou aqui com o logótipo da casa no topo e o nome da casa por baixo,
+ * e isso era repetir o que o cliente já tem à frente — ele está sentado
+ * no restaurante, não precisa que um cartão lhe diga onde está. O que
+ * ele precisa de saber é que mesa é a dele e para onde apontar a câmara.
+ *
+ * A marca do CardApp vive ao meio do código, desenhada pelo `qrDataUrl`,
+ * e é a única que aparece.
+ *
+ * Impresso a preto e branco num café de bairro tem de continuar legível,
  * por isso o QR é grande e não leva cor por cima.
  */
 
@@ -21,23 +31,8 @@ const MARGEM = 10;
 const LARGURA_CARTAO = (A4.largura - MARGEM * 2) / COLUNAS;
 const ALTURA_CARTAO = (A4.altura - MARGEM * 2) / LINHAS;
 
-/** Descarrega o logótipo e converte-o em data URL para o jsPDF. */
-async function logoParaPdf(url: string | null): Promise<string | null> {
-  if (!url) return null;
-  try {
-    const resposta = await fetch(url, { mode: 'cors' });
-    if (!resposta.ok) return null;
-    const blob = await resposta.blob();
-    return await new Promise<string | null>((resolve) => {
-      const leitor = new FileReader();
-      leitor.onload = () => resolve(typeof leitor.result === 'string' ? leitor.result : null);
-      leitor.onerror = () => resolve(null);
-      leitor.readAsDataURL(blob);
-    });
-  } catch {
-    return null;
-  }
-}
+/** Lado do código impresso, em milímetros. */
+const LADO_QR = 48;
 
 export async function gerarCartoesPdf(
   restaurante: Restaurante,
@@ -46,10 +41,9 @@ export async function gerarCartoesPdf(
 ): Promise<Blob> {
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
 
-  const [qrs, logo] = await Promise.all([
-    Promise.all(mesas.map((mesa) => qrDataUrl(urlDaMesa(restaurante.slug, mesa.numero, base)))),
-    logoParaPdf(restaurante.logo_url),
-  ]);
+  const qrs = await Promise.all(
+    mesas.map((mesa) => qrDataUrl(urlDaMesa(restaurante.slug, mesa.numero, base))),
+  );
 
   mesas.forEach((mesa, indice) => {
     const posicao = indice % (COLUNAS * LINHAS);
@@ -60,7 +54,7 @@ export async function gerarCartoesPdf(
     const x = MARGEM + coluna * LARGURA_CARTAO;
     const y = MARGEM + linha * ALTURA_CARTAO;
 
-    desenharCartao(doc, { x, y, restaurante, mesa, qr: qrs[indice], logo });
+    desenharCartao(doc, { x, y, mesa, qr: qrs[indice] });
   });
 
   return doc.output('blob');
@@ -68,59 +62,29 @@ export async function gerarCartoesPdf(
 
 function desenharCartao(
   doc: jsPDF,
-  {
-    x,
-    y,
-    restaurante,
-    mesa,
-    qr,
-    logo,
-  }: {
-    x: number;
-    y: number;
-    restaurante: Restaurante;
-    mesa: Mesa;
-    qr: string;
-    logo: string | null;
-  },
+  { x, y, mesa, qr }: { x: number; y: number; mesa: Mesa; qr: string },
 ) {
   const centro = x + LARGURA_CARTAO / 2;
 
-  // Guia de corte, fina e cinzenta.
-  doc.setDrawColor(210);
+  // Guia de corte, fina e cinzenta. Não é moldura: é onde a tesoura passa.
+  doc.setDrawColor(214);
   doc.setLineWidth(0.1);
   doc.rect(x, y, LARGURA_CARTAO, ALTURA_CARTAO);
 
-  let cursor = y + 14;
-
-  if (logo) {
-    try {
-      doc.addImage(logo, centro - 9, cursor - 5, 18, 18, undefined, 'FAST');
-      cursor += 18;
-    } catch {
-      /* logótipo em formato que o jsPDF não lê: seguimos com o nome */
-    }
-  }
-
-  doc.setTextColor(20, 20, 20);
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(14);
-  doc.text(restaurante.nome, centro, cursor, { align: 'center', maxWidth: LARGURA_CARTAO - 20 });
-
-  const ladoQr = 42;
-  const yQr = cursor + 6;
-  doc.addImage(qr, 'PNG', centro - ladoQr / 2, yQr, ladoQr, ladoQr, undefined, 'FAST');
-
-  doc.setFontSize(8);
-  doc.setTextColor(120, 120, 120);
-  doc.text('SCANEIE PARA VER O CARDÁPIO', centro, yQr + ladoQr + 8, { align: 'center' });
-
+  // O nome da mesa no topo, que é o que se lê de longe.
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(20);
-  doc.setTextColor(20, 20, 20);
-  // O nome que a casa deu à mesa, se deu; senão, "Mesa 07".
-  doc.text(nomeDaMesa(mesa), centro, yQr + ladoQr + 19, {
+  doc.setFontSize(21);
+  doc.setTextColor(28, 26, 23); // o tom da marca
+  doc.text(nomeDaMesa(mesa), centro, y + 19, {
     align: 'center',
     maxWidth: LARGURA_CARTAO - 16,
   });
+
+  const yQr = y + 27;
+  doc.addImage(qr, 'PNG', centro - LADO_QR / 2, yQr, LADO_QR, LADO_QR, undefined, 'FAST');
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  doc.setTextColor(122, 122, 122);
+  doc.text('SCANEIE PARA VER O CARDÁPIO', centro, yQr + LADO_QR + 9, { align: 'center' });
 }

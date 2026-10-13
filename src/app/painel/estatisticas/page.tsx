@@ -81,6 +81,7 @@ export default async function PaginaEstatisticas({
   return (
     <div>
       <CabecalhoPagina
+        etiqueta="As contas"
         titulo="Estatísticas"
         descricao={`Tudo o que passou pelas mesas do ${restaurante.nome}, e como se compara com antes.`}
       />

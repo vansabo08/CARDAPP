@@ -34,6 +34,7 @@ export default async function PaginaMesas() {
   return (
     <div>
       <CabecalhoPagina
+        etiqueta="A casa"
         titulo="Mesas"
         descricao="Cada mesa tem o seu QR. Imprima a folha, corte e ponha um cartão em cada mesa."
       />

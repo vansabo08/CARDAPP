@@ -15,6 +15,7 @@ export default async function PaginaEquipa() {
 
   const cabecalho = (
     <CabecalhoPagina
+      etiqueta="A casa"
       titulo="Equipa"
       descricao="Quem trabalha na casa, e o que cada um pode ver. O gerente, a sala e a cozinha entram com a sua própria conta."
     />

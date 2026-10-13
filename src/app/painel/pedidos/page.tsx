@@ -54,6 +54,7 @@ export default async function PaginaPedidos() {
   return (
     <div>
       <CabecalhoPagina
+        etiqueta="O dia"
         titulo={cozinha ? 'A preparar' : 'Pedidos'}
         descricao={
           cozinha

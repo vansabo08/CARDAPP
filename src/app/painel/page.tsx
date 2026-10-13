@@ -37,6 +37,7 @@ export default async function PaginaResumo() {
   return (
     <div>
       <CabecalhoPagina
+        etiqueta="Resumo"
         titulo="Hoje"
         descricao={`O que já passou pelas mesas do ${restaurante.nome} desde a meia-noite.`}
         accao={
@@ -74,29 +75,32 @@ function Estatisticas({ pedidos }: { pedidos: Pedido[] }) {
 
   return (
     <>
-      <div className="mt-10 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="mt-11 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Numero rotulo="Pedidos" valor={String(pedidos.length)} />
-        <Numero rotulo="Valor" valor={formatarKz(totalValor)} />
+        <Numero rotulo="Valor" valor={formatarKz(totalValor)} destaque />
         <Numero rotulo="Itens" valor={String(totalItens)} />
         <Numero rotulo="Média por pedido" valor={formatarKz(media)} />
       </div>
 
-      <section className="mt-12">
-        <h2 className="font-display text-xl text-creme">Os cinco mais pedidos</h2>
-        <ul className="mt-5 flex flex-col gap-3">
+      <Seccao titulo="Os cinco mais pedidos" nota="Pela quantidade que saiu da cozinha">
+        <ul className="flex flex-col gap-5">
           {top.map((prato, i) => (
             <li key={prato.nome} className="flex items-center gap-4">
-              <span className="w-5 shrink-0 font-sans text-xs tabular-nums text-tenue">
+              {/* O lugar na lista num disco, e não um algarismo solto:
+                  solto lia-se como parte do nome do prato. */}
+              <span className="numerais flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-black/[0.045] font-sans text-[11px] font-semibold text-tenue">
                 {i + 1}
               </span>
               <div className="min-w-0 flex-1">
                 <div className="flex items-baseline justify-between gap-4">
-                  <span className="truncate font-display text-base text-creme">{prato.nome}</span>
-                  <span className="shrink-0 font-sans text-xs text-tenue">
+                  <span className="truncate font-display text-[0.95rem] text-creme">
+                    {prato.nome}
+                  </span>
+                  <span className="numerais shrink-0 font-sans text-xs text-tenue">
                     {prato.qtd}× · {formatarKz(prato.valor)}
                   </span>
                 </div>
-                <div className="mt-2 h-[3px] w-full overflow-hidden rounded-full bg-black/[0.07]">
+                <div className="mt-2.5 h-[5px] w-full overflow-hidden rounded-full bg-black/[0.05]">
                   <div
                     className="h-full rounded-full bg-laranja"
                     style={{ width: `${Math.max(6, (prato.qtd / maiorQtd) * 100)}%` }}
@@ -106,41 +110,91 @@ function Estatisticas({ pedidos }: { pedidos: Pedido[] }) {
             </li>
           ))}
         </ul>
-      </section>
+      </Seccao>
 
-      <section className="mt-12">
-        <h2 className="font-display text-xl text-creme">Últimos pedidos</h2>
-        <ul className="mt-5 divide-y divide-linha border-y border-linha">
+      <Seccao titulo="Últimos pedidos" nota="Os dez mais recentes">
+        <ul className="superficie divide-y divide-linha overflow-hidden rounded-cartao">
           {pedidos.slice(0, 10).map((pedido) => (
-            <li key={pedido.id} className="flex items-start gap-4 py-4">
-              <span className="w-[68px] shrink-0 pt-0.5 font-sans text-sm font-semibold text-creme/70">
+            <li key={pedido.id} className="flex items-start gap-4 px-5 py-4">
+              <span className="numerais w-[66px] shrink-0 pt-px font-sans text-[13px] font-semibold text-creme/75">
                 {pedido.mesa != null ? `Mesa ${numeroMesa(pedido.mesa)}` : 'Balcão'}
               </span>
               <p className="min-w-0 flex-1 font-sans text-sm leading-normal text-creme/85">
                 {pedido.itens.map((i) => `${i.qtd}× ${i.nome}`).join(' · ')}
               </p>
-              <span className="shrink-0 font-sans text-sm font-bold text-creme">
+              <span className="numerais shrink-0 font-sans text-sm font-bold text-creme">
                 {formatarKz(pedido.total)}
               </span>
             </li>
           ))}
         </ul>
-      </section>
+      </Seccao>
     </>
+  );
+}
+
+/**
+ * Um bloco do resumo.
+ *
+ * O título leva uma nota ao lado a dizer de que é a lista. Antes cada
+ * secção era só um `h2` e o leitor tinha de descobrir pelo conteúdo se
+ * estava a ver o dia, a semana ou tudo.
+ */
+function Seccao({
+  titulo,
+  nota,
+  children,
+}: {
+  titulo: string;
+  nota?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="mt-14">
+      {/* Em coluna no telemóvel: lado a lado, o título ficava espremido
+          contra a nota e partia-se a meio da palavra. */}
+      <div className="mb-6 flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
+        <h2 className="font-display text-lg tracking-[-0.02em] text-creme">{titulo}</h2>
+        {nota ? <span className="font-sans text-xs text-tenue">{nota}</span> : null}
+      </div>
+      {children}
+    </section>
   );
 }
 
 /**
  * Um número do dia.
  *
- * O número é o assunto, por isso vai grande e em laranja, e o nome vai
- * pequeno por cima — lê-se o valor de relance e o nome só se for preciso.
+ * O NÚMERO É DE TINTA, E NÃO DE MARCA. Esteve em amarelo escuro, os
+ * quatro iguais, e quatro números todos da mesma cor forte não têm
+ * hierarquia nenhuma — o olho não sabe por onde começar, e o amarelo
+ * escurecido até dar contraste sobre branco já nem parece a marca.
+ * Assim o valor lê-se primeiro por ser grande, e a marca fica para o
+ * ponto do cartão que interessa: o dinheiro do dia.
  */
-function Numero({ rotulo, valor }: { rotulo: string; valor: string }) {
+function Numero({
+  rotulo,
+  valor,
+  destaque = false,
+}: {
+  rotulo: string;
+  valor: string;
+  destaque?: boolean;
+}) {
   return (
-    <div className="superficie rounded-cartao px-5 py-5">
-      <p className="font-sans text-sm font-semibold text-tenue">{rotulo}</p>
-      <p className="mt-2 font-display text-2xl font-bold leading-tight text-laranja md:text-3xl">
+    <div
+      className={`${destaque ? 'superficie-alta' : 'superficie'} rounded-cartao px-5 py-[1.15rem]`}
+    >
+      <p className="flex items-center gap-1.5 font-sans text-xs font-semibold text-tenue">
+        {destaque ? (
+          <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-laranja" />
+        ) : null}
+        {rotulo}
+      </p>
+      {/* No telemóvel são dois cartões por linha, e dentro de cada um
+          sobram cento e tal pixéis: a 1.7rem, "121.300 Kz" partia-se em
+          duas linhas e o cartão crescia só nesse. Cresce com o ecrã. */}
+      <p className="numerais mt-3 font-display text-[1.3rem] leading-none text-creme sm:text-[1.6rem] md:text-[2rem]">
         {valor}
       </p>
     </div>

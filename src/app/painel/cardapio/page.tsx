@@ -44,6 +44,7 @@ export default async function PaginaCardapio() {
   return (
     <div>
       <CabecalhoPagina
+        etiqueta="A casa"
         titulo="Cardápio"
         descricao="Arraste as categorias para mudar a ordem em que aparecem. O interruptor à direita marca o que já esgotou hoje."
         accao={<ResumoCardapio categorias={categorias} plano={restaurante.plano} />}

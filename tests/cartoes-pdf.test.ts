@@ -75,4 +75,16 @@ describe('o cartão impresso', () => {
     expect(texto).toContain('Esplanada 1');
     expect(texto).toContain('Mesa 02');
   });
+
+  it('não leva a casa outra vez: nem logótipo nem nome', async () => {
+    // O cliente está sentado no restaurante. O cartão diz-lhe que mesa é
+    // a dele e para onde apontar a câmara — o resto é ruído impresso.
+    const texto = await (
+      await gerarCartoesPdf(RESTAURANTE_DEMO, MESAS_DEMO.slice(0, 1), BASE)
+    ).text();
+
+    expect(texto).not.toContain(RESTAURANTE_DEMO.nome);
+    expect(texto).toContain('Mesa 01');
+    expect(texto).toContain('SCANEIE PARA VER O CARD');
+  });
 });

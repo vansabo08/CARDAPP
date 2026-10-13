@@ -219,36 +219,48 @@ export function NavegacaoPainel(props: Props) {
         )}
       >
         <div className="flex h-full flex-col overflow-y-auto">
-          <div className="flex items-center justify-between px-5 py-5">
-            <Marca tamanho="sm" href="/painel" />
-            <div className="flex items-center gap-2">
-              <span className="hidden md:inline">
-                {props.demonstracao ? <Distintivo tom="laranja">Demonstração</Distintivo> : null}
-              </span>
+          <div className="px-5 py-5">
+            <div className="flex items-center justify-between gap-2">
+              <Marca tamanho="sm" href="/painel" />
               <button
                 type="button"
                 onClick={() => setAberta(false)}
                 aria-label="Fechar o menu"
-                className="flex h-10 w-10 items-center justify-center rounded-full text-tenue transition-colors hover:bg-black/[0.07] hover:text-creme md:hidden"
+                className="-mr-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-tenue transition-colors hover:bg-black/[0.07] hover:text-creme md:hidden"
               >
                 <X className="h-5 w-5" aria-hidden />
               </button>
             </div>
+
+            {/* Numa linha só, o selo não cabia ao lado do logótipo e saía
+                cortado — "Demonstraçã". Fica por baixo, inteiro. */}
+            {props.demonstracao ? (
+              <div className="mt-3 hidden md:block">
+                <Distintivo tom="laranja">Demonstração</Distintivo>
+              </div>
+            ) : null}
           </div>
 
           {props.nomeRestaurante ? (
-            <div className="px-5 pb-5">
-              <p className="truncate font-display text-lg text-creme">{props.nomeRestaurante}</p>
+            /* A casa fica num cartão seu, e não solta no meio da coluna:
+               é a primeira coisa que se lê ao abrir o menu, e sem nada a
+               segurá-la lia-se como legenda do logótipo de cima. */
+            <div className="mx-3 mb-5 rounded-[1.1rem] bg-black/[0.035] px-4 py-3.5">
+              <p className="truncate font-display text-[1.05rem] leading-tight text-creme">
+                {props.nomeRestaurante}
+              </p>
               <p className="mt-1.5 flex items-center gap-2 font-sans text-xs text-tenue">
                 <PlanoEPapel plano={props.plano} papel={props.papel ?? 'dono'} />
               </p>
             </div>
           ) : null}
 
-          <nav aria-label="Secções do painel" className="flex flex-col gap-5 px-3">
+          <nav aria-label="Secções do painel" className="flex flex-col gap-6 px-3">
             {gruposDe(props.papel ?? 'dono').map((grupo) => (
               <div key={grupo.titulo}>
-                <p className="etiqueta px-3.5 pb-1.5 text-[11px] text-creme/35">{grupo.titulo}</p>
+                <p className="etiqueta px-3.5 pb-2 text-[10px] tracking-[0.2em] text-creme/35">
+                  {grupo.titulo}
+                </p>
                 <ul className="flex flex-col gap-0.5">
                   {grupo.ligacoes.map((ligacao) => {
                     const activa = estaActiva(ligacao.href, caminho);
@@ -264,10 +276,15 @@ export function NavegacaoPainel(props: Props) {
                           prefetch
                           aria-current={activa ? 'page' : undefined}
                           className={cn(
-                            'flex items-center gap-3 rounded-full px-3.5 py-2.5 font-sans text-sm font-semibold transition-colors duration-200',
+                            'flex items-center gap-3 rounded-full px-3.5 py-2.5 font-sans text-sm font-semibold',
+                            'transition-[background-color,color,box-shadow] duration-200',
                             activa
-                              ? 'bg-laranja text-creme shadow-brilho-laranja'
-                              : 'text-creme/70 hover:bg-black/[0.06] hover:text-creme',
+                              ? /* O amarelo cheio chega para dizer onde se está.
+                                   O halo que aqui estava punha uma nuvem amarela
+                                   por baixo de cada mudança de secção — a marca
+                                   lê-se melhor sem ela, com uma sombra curta. */
+                                'bg-laranja text-creme shadow-[0_1px_2px_rgba(23,22,27,0.14)]'
+                              : 'text-creme/70 hover:bg-black/[0.055] hover:text-creme',
                           )}
                         >
                           <ligacao.icone className="h-4 w-4 shrink-0" aria-hidden />
@@ -347,10 +364,13 @@ function Sair() {
 }
 
 export function CabecalhoPagina({
+  etiqueta,
   titulo,
   descricao,
   accao,
 }: {
+  /** Uma palavra por cima do título, a dizer em que parte da casa se está. */
+  etiqueta?: string;
   titulo: string;
   descricao?: string;
   accao?: React.ReactNode;
@@ -358,11 +378,14 @@ export function CabecalhoPagina({
   return (
     // Sem a linha por baixo: o título forte já separa, e uma régua em
     // cada página era mais uma coisa a desenhar o ecrã em fatias.
-    <div className="flex flex-wrap items-end justify-between gap-4">
-      <div>
-        <h1 className="font-display text-3xl leading-tight text-creme md:text-4xl">{titulo}</h1>
+    <div className="flex flex-wrap items-end justify-between gap-5">
+      <div className="min-w-0">
+        {etiqueta ? <p className="etiqueta mb-2.5 text-laranja">{etiqueta}</p> : null}
+        <h1 className="font-display text-[2rem] leading-[1.05] tracking-[-0.03em] text-creme md:text-[2.6rem]">
+          {titulo}
+        </h1>
         {descricao ? (
-          <p className="mt-1.5 max-w-[52ch] font-sans text-sm leading-normal text-tenue">
+          <p className="mt-3 max-w-[52ch] font-sans text-sm leading-relaxed text-tenue">
             {descricao}
           </p>
         ) : null}

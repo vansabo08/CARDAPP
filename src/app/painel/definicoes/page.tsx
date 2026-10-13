@@ -31,6 +31,7 @@ export default async function PaginaDefinicoes() {
   return (
     <div>
       <CabecalhoPagina
+        etiqueta="As contas"
         titulo="Definições"
         descricao="O nome, o endereço do cardápio e o número para onde os pedidos são enviados."
       />

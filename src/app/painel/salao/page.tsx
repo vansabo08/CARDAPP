@@ -15,6 +15,7 @@ export default async function PaginaSalao() {
 
   const cabecalho = (
     <CabecalhoPagina
+      etiqueta="O dia"
       titulo="Salão"
       descricao="Cada mesa como está agora: quem chama, quem pediu a conta, e o que cada uma já consumiu."
     />
