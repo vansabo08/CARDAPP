@@ -81,13 +81,13 @@
     --tenue-escuro: rgba(23, 22, 27, 0.64);
 
     /*
-     * Duas famílias, e a mesma nos dois papéis de estrutura: o Outfit
+     * Duas famílias, e a mesma nos dois papéis de estrutura: a Poppins
      * faz títulos e texto corrido. A variável do texto continua a
      * existir porque está em centenas de classes — aponta é para a
      * mesma letra.
      */
-    --fonte-display: var(--fonte-outfit), system-ui, sans-serif;
-    --fonte-sans: var(--fonte-outfit), system-ui, sans-serif;
+    --fonte-display: var(--fonte-poppins), system-ui, sans-serif;
+    --fonte-sans: var(--fonte-poppins), system-ui, sans-serif;
 
     color-scheme: light;
   }

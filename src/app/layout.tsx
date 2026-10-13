@@ -1,33 +1,33 @@
 import type { Metadata, Viewport } from 'next';
-import { Outfit, Parisienne } from 'next/font/google';
+import { Parisienne, Poppins } from 'next/font/google';
 import { SITE_URL } from '@/lib/supabase/config';
 import './globals.css';
 
 /**
- * DUAS TIPOGRAFIAS, E SÓ DUAS.
+ * A LETRA É A DO GUIA DE MARCA: POPPINS.
  *
- * A referência que o dono escolheu tem duas colunas: à esquerda letras
- * geométricas e pesadas, à direita assinaturas à mão. É essa a divisão
- * que a app passa a ter.
+ * O guia diz "Poppins Bold no logótipo; Poppins Regular/Medium/Bold nos
+ * textos do app", e é isso. A palavra "CardApp" do logótipo já vai em
+ * Poppins dentro do SVG, em curvas; esta é a mesma letra, viva, para
+ * tudo o resto — títulos, botões, listas, preços e texto corrido.
  *
- * 1. OUTFIT faz tudo o que é estrutura — títulos, botões, listas, preços
- *    e texto corrido. Uma família só, com vários pesos, é o que dá a uma
- *    app o ar de coisa desenhada de uma vez; duas famílias a fazer o
- *    mesmo trabalho lêem-se como dois sítios colados.
+ * Esteve aqui a Outfit, que é prima dela: geométrica, do mesmo feitio.
+ * Enquanto esteve, o logótipo e o ecrã por baixo dele eram duas letras
+ * parecidas mas diferentes — e é disso que se faz o ar de coisa montada
+ * de pedaços. Quatro pesos: o normal para ler, o médio para o que se
+ * destaca, o semibold dos títulos e o bold dos números grandes.
  *
- * 2. PARISIENNE é a assinatura. Entra a conta-gotas — a palavra que
- *    fecha o título, o adeus do rodapé — e nunca em texto que alguém
- *    tenha de ler depressa. Uma letra manuscrita num preço ou num botão
- *    é bonita durante um segundo e um estorvo para sempre.
- *
- * Saíram a Poppins e a Manrope, que faziam o mesmo trabalho uma ao lado
- * da outra sem que se notasse a diferença.
+ * A PARISIENNE FICA, a conta-gotas: a palavra que fecha o título da
+ * página inicial e o adeus do rodapé. Não vem no guia — é uma liberdade
+ * de quem desenhou os ecrãs, e sai daqui no dia em que o dono disser.
+ * Nunca entra em texto que alguém tenha de ler depressa: uma letra
+ * manuscrita num preço é bonita um segundo e um estorvo para sempre.
  */
-const display = Outfit({
+const display = Poppins({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
   display: 'swap',
-  variable: '--fonte-outfit',
+  variable: '--fonte-poppins',
 });
 
 const assinatura = Parisienne({

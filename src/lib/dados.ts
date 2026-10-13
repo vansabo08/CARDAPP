@@ -241,7 +241,7 @@ export async function obterMesaPorNumero(
 
   const { data } = await supabase
     .from('tables')
-    .select('id, restaurant_id, numero, qr_token')
+    .select('id, restaurant_id, numero, qr_token, nome')
     .eq('restaurant_id', restaurantId)
     .eq('numero', numero)
     .maybeSingle();
@@ -401,7 +401,7 @@ export async function obterMesas(restaurantId: string): Promise<Mesa[]> {
 
   const { data } = await supabase
     .from('tables')
-    .select('id, restaurant_id, numero, qr_token')
+    .select('id, restaurant_id, numero, qr_token, nome')
     .eq('restaurant_id', restaurantId)
     .order('numero', { ascending: true });
 

@@ -52,6 +52,17 @@ export type Mesa = {
   restaurant_id: string;
   numero: number;
   qr_token: string;
+  /**
+   * O nome que a casa deu à mesa — "Esplanada 1", "Balcão".
+   *
+   * Vazio na esmagadora maioria das mesas, e é isso que se espera: o
+   * número é que manda — é ele que vai no endereço do QR e é por ele
+   * que o pedido encontra a mesa. O nome é uma etiqueta por cima.
+   *
+   * Quem mostra a mesa a uma pessoa usa `nomeDaMesa()`, que trata do
+   * caso vazio; quem a identifica para a base de dados usa o número.
+   */
+  nome?: string | null;
 };
 
 export type Categoria = {

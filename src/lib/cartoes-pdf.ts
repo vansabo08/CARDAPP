@@ -1,7 +1,7 @@
 'use client';
 
 import { jsPDF } from 'jspdf';
-import { numeroMesa } from './format';
+import { nomeDaMesa } from './format';
 import { qrDataUrl, urlDaMesa } from './qr';
 import type { Mesa, Restaurante } from './tipos';
 
@@ -118,5 +118,9 @@ function desenharCartao(
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(20);
   doc.setTextColor(20, 20, 20);
-  doc.text(`Mesa ${numeroMesa(mesa.numero)}`, centro, yQr + ladoQr + 19, { align: 'center' });
+  // O nome que a casa deu à mesa, se deu; senão, "Mesa 07".
+  doc.text(nomeDaMesa(mesa), centro, yQr + ladoQr + 19, {
+    align: 'center',
+    maxWidth: LARGURA_CARTAO - 16,
+  });
 }

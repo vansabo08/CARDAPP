@@ -52,7 +52,9 @@ const config: Config = {
         'tenue-escuro': 'var(--tenue-escuro)',
       },
       fontFamily: {
-        display: ['var(--fonte-display)', 'Georgia', 'serif'],
+        // O recuo é uma geométrica do sistema, e não uma serifa: se a
+        // Poppins não chegar, o ecrã muda de peso, não de mundo.
+        display: ['var(--fonte-display)', 'system-ui', 'sans-serif'],
         sans: ['var(--fonte-sans)', 'system-ui', 'sans-serif'],
         // A assinatura: só para acentos, nunca para texto a ler.
         assinatura: ['var(--fonte-assinatura)', 'cursive'],

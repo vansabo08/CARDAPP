@@ -35,6 +35,22 @@ export function numeroMesa(numero: number) {
 }
 
 /**
+ * Como a mesa se chama, para quem a lê.
+ *
+ * A casa pode dar-lhe um nome — "Esplanada 1", "Balcão" — e nesse caso
+ * é esse que aparece no cartão, no salão e no pedido. Sem nome, continua
+ * a ser "Mesa 07".
+ *
+ * Aceita a mesa inteira ou só o número, porque há ecrãs que já só têm o
+ * número à mão (o pedido, por exemplo, guarda a mesa como um inteiro).
+ */
+export function nomeDaMesa(mesa: { numero: number; nome?: string | null } | number) {
+  if (typeof mesa === 'number') return `Mesa ${numeroMesa(mesa)}`;
+  const dado = mesa.nome?.trim();
+  return dado ? dado : `Mesa ${numeroMesa(mesa.numero)}`;
+}
+
+/**
  * Normaliza um numero de telefone angolano para o formato 244XXXXXXXXX.
  * Aceita "+244 923 456 789", "923456789", "00244923456789".
  */
