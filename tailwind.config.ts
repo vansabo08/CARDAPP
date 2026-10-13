@@ -32,6 +32,20 @@ const config: Config = {
         },
         // Em canais pelo mesmo motivo do laranja: sem isto, bg-verde/15 não existia.
         verde: 'rgb(var(--verde-canais) / <alpha-value>)',
+
+        /*
+         * AS CORES DO GUIA DE MARCA, tal como lá estão escritas.
+         *
+         * Entram agora para o logótipo e os ícones terem onde ir buscar
+         * o amarelo; o resto do desenho ainda não mexe. São valores
+         * fixos de propósito: a marca não muda com o tema da aplicação,
+         * e por isso não passam pelas variáveis do `globals.css` como as
+         * outras. Um dia, se o tema inteiro passar a amarelo, é aqui que
+         * se liga uma coisa à outra.
+         */
+        'brand-yellow': '#FFC21A',
+        'brand-ink': '#1C1A17',
+        'brand-cream': '#FFF6DC',
         linha: 'var(--linha)',
         'linha-escura': 'var(--linha-escura)',
         tenue: 'var(--tenue)',
@@ -113,8 +127,8 @@ const config: Config = {
         /* O botão principal brilha por baixo, na cor dele — a luz de um
            objecto laranja num fundo escuro não é preta. Em repouso é
            curta; sob o cursor alarga, como se o botão subisse. */
-        'brilho-laranja': '0 1px 2px rgba(23,22,27,0.08), 0 10px 24px -12px rgba(245,185,59,0.75)',
-        'brilho-laranja-alto': '0 2px 6px rgba(23,22,27,0.1), 0 16px 32px -12px rgba(245,185,59,0.9)',
+        'brilho-laranja': '0 1px 2px rgba(23,22,27,0.08), 0 10px 24px -12px rgba(255,194,26,0.78)',
+        'brilho-laranja-alto': '0 2px 6px rgba(23,22,27,0.1), 0 16px 32px -12px rgba(255,194,26,0.92)',
       },
       keyframes: {
         /* Um só padrão de entrada em toda a aplicação: 12px a subir. */

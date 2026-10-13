@@ -41,36 +41,36 @@
     --creme-folha-canais: 12 11 15;
 
     /*
-     * O laranja da marca.
+     * O amarelo da marca.
      *
-     * Era dourado champanhe. A referência escolhida é laranja vivo — a cor
-     * que mais abre o apetite, e a que num ecrã escuro se vê de longe sem
-     * precisar de tamanho.
+     * É o #FFC21A do guia, tal e qual. O acento da app andou por fora
+     * dele — foi dourado, foi laranja vivo, foi um âmbar a meio
+     * caminho — e enquanto andou, o botão e o logótipo que estava ao
+     * lado dele eram de cores parecidas mas diferentes, que é o que faz
+     * uma marca parecer montada à pressa.
      *
-     * Foi um laranja cheio, #ff5b24, e pesava: num ecrã inteiro de
-     * botões e etiquetas, o vermelho que ele tem dentro cansava a vista.
-     * Este tem a mesma família e menos densidade — a mesma cor, meio
-     * tom mais aberta.
+     * TRÊS ALTURAS, E CADA UMA COM O SEU TRABALHO:
      *
-     * Contraste medido contra o grafite do fundo: 7,25 para 1 — passa o
-     * AA para texto de qualquer tamanho, e passa-o melhor do que o
-     * anterior. O inverso também: texto grafite em cima do laranja dá os
-     * mesmos 7,25, e é por isso que os botões levam letra escura. Letra
-     * branca no laranja fica em 2,7, que chumba — é o que a referência
-     * faz, e não se copia.
+     *   --laranja        o amarelo cheio, para FUNDOS. Letra de tinta
+     *                    por cima dá 11,1 para 1.
+     *   --laranja-claro  o mesmo, mais aberto, para o rato por cima.
+     *   --laranja-escuro para LETRA. O amarelo da marca como texto
+     *                    sobre branco dá 1,6 para 1 — não se lê de
+     *                    todo. Este é o mesmo amarelo fechado até aos
+     *                    5,9, e é ele que o Tailwind serve em
+     *                    `text-laranja` (ver o `textColor` da
+     *                    configuração).
      *
-     * Vai também em canais soltos, como o creme: o dourado ia como cor
-     * inteira, e todas as transparências dele (`bg-ouro/15`,
-     * `border-ouro/30`...) saíam inválidas e o browser deitava-as fora sem
-     * avisar. Eram trinta sítios, incluindo o fundo do ícone activo da
-     * doca, que nunca chegou a aparecer.
+     * Vão também em canais soltos: sem isso, as transparências
+     * (`bg-laranja/15`, `border-laranja/30`...) saem inválidas e o
+     * browser deita-as fora sem avisar.
      */
-    --laranja: #f5b93b;
-    --laranja-claro: #ffd275;
-    --laranja-escuro: #c2410c;
-    --laranja-canais: 245 185 59;
-    --laranja-claro-canais: 255 210 117;
-    --laranja-escuro-canais: 194 65 12;
+    --laranja: #FFC21A;
+    --laranja-claro: #FFD35C;
+    --laranja-escuro: #8A5A00;
+    --laranja-canais: 255 194 26;
+    --laranja-claro-canais: 255 211 92;
+    --laranja-escuro-canais: 138 90 0;
 
     --verde: #1a7f4b;
     --verde-canais: 26 127 75;
@@ -203,7 +203,7 @@
   }
 
   .brasa-laranja {
-    background: radial-gradient(circle, rgba(245, 185, 59, 0.3) 0%, transparent 64%);
+    background: radial-gradient(circle, rgba(255, 194, 26, 0.3) 0%, transparent 64%);
     animation: derivar-a 46s ease-in-out infinite alternate;
   }
 
@@ -227,7 +227,7 @@
   .holofote {
     background: radial-gradient(
       520px circle at var(--rato-x, 70%) var(--rato-y, 26%),
-      rgba(245, 185, 59, 0.16) 0%,
+      rgba(255, 194, 26, 0.18) 0%,
       transparent 62%
     );
     transition: opacity 400ms ease-out;

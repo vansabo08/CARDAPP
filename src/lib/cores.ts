@@ -51,7 +51,7 @@ export type TomDeEstado = keyof typeof COR_ESTADO;
  * ele. Já esteve dourado depois de a marca passar a laranja, e o painel
  * inteiro ficou laranja com uma linha dourada no meio.
  */
-export const COR_SERIE = '#c2410c';
+export const COR_SERIE = '#B87E00';
 
 /**
  * As cores da dashboard da casa: verde, azul, laranja — e o vermelho

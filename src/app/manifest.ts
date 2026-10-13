@@ -1,8 +1,14 @@
 import type { MetadataRoute } from 'next';
 
 /**
- * Serve /manifest.webmanifest. O preto e o mesmo da barra do sistema,
- * para nao haver um salto de cor quando a app abre do ecra inicial.
+ * Serve /manifest.webmanifest — é este o manifesto da app, gerado pelo
+ * Next a partir daqui. Não há um `site.webmanifest` no `public/`: dois
+ * manifestos é a receita para o telemóvel instalar a app com o ícone de
+ * um e o nome do outro.
+ *
+ * As cores são as do guia de marca: o amarelo pinta a barra do sistema
+ * e o creme é o fundo do arranque, para não haver um salto de cor
+ * quando a app abre do ecrã inicial.
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -15,13 +21,13 @@ export default function manifest(): MetadataRoute.Manifest {
     scope: '/',
     display: 'standalone',
     orientation: 'portrait',
-    background_color: '#F2F1EF',
-    theme_color: '#F2F1EF',
+    background_color: '#FFF6DC',
+    theme_color: '#FFC21A',
     categories: ['food', 'business'],
     icons: [
-      { src: '/icone-192.png?v=3', sizes: '192x192', type: 'image/png', purpose: 'any' },
-      { src: '/icone-512.png?v=3', sizes: '512x512', type: 'image/png', purpose: 'any' },
-      { src: '/icone-maskable-512.png?v=3', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+      { src: '/icon-192.png?v=4', sizes: '192x192', type: 'image/png', purpose: 'any' },
+      { src: '/icon-512.png?v=4', sizes: '512x512', type: 'image/png', purpose: 'any' },
+      { src: '/icon-maskable-512.png?v=4', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
     ],
   };
 }

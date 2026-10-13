@@ -2,42 +2,47 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 /**
- * O logótipo oficial do CardApp: faca e garfo brancos, cruzados, num
- * disco preto.
+ * O símbolo do CardApp: o canto de um QR que se abre num C, com o prato
+ * ao centro.
  *
- * É a imagem que a casa escolheu, tal como veio — recortada à volta do
- * disco e passada a PNG, sem um pixel mudado. Antes havia aqui um
- * redesenho em vector, dourado e sem disco; saiu, para o logótipo ser um
- * só em todo o lado: no separador do browser, no ecrã inicial do
- * telemóvel e dentro da aplicação.
+ * Vem em SVG, e não em PNG. O símbolo aparece a 16 px no separador do
+ * browser e a 512 no ecrã inicial de um telemóvel: em vector é o mesmo
+ * ficheiro de um quilobyte nos dois, sempre nítido. Antes eram cinco
+ * PNG de tamanhos diferentes, e o de 24 px via-se esborratado nos ecrãs
+ * de maior densidade.
  *
- * O ficheiro original tem 1778 px. O next/image serve-o reduzido ao
- * tamanho a que aparece, por isso uma marca de 30 px pesa uns poucos
- * quilobytes e não os 374 do original.
+ * DUAS VERSÕES, segundo o fundo onde assenta — é a regra do guia de
+ * marca. Em fundo claro, o C vai a tinta com o prato amarelo; em fundo
+ * escuro, o C vai amarelo com o prato branco. Pôr o de fundo claro sobre
+ * escuro dá uma mancha preta onde devia estar a marca.
+ *
+ * `unoptimized` porque é SVG: não há nada para o Next comprimir, e
+ * mandá-lo pelo optimizador obrigaria a abrir a porta a SVG de fora.
  */
 export function Logotipo({
   tamanho,
   className,
   alt = '',
+  tom = 'claro',
 }: {
   tamanho: number;
   className?: string;
   /** Vazio quando o nome "CardApp" já vai escrito ao lado. */
   alt?: string;
+  /** O fundo onde assenta: `claro` é o normal; `escuro` inverte. */
+  tom?: 'claro' | 'escuro';
 }) {
   return (
     <Image
-      src="/logo.png"
+      src={tom === 'escuro' ? '/brand/cardapp-simbolo-ondark.svg' : '/brand/cardapp-simbolo-primary.svg'}
       width={tamanho}
       height={tamanho}
       alt={alt}
+      unoptimized
       // A marca está no topo de todos os ecrãs. Carregada "à preguiça",
       // como o next/image faz por omissão, aparecia um espaço vazio ao
       // lado de "CardApp" até o browser decidir ir buscá-la.
       loading="eager"
-      // Sem recorte redondo: a marca nova já é uma forma fechada, com
-      // fundo transparente. Um `rounded-full` por cima cortava-lhe as
-      // pontas do cartão.
       className={cn('shrink-0', className)}
     />
   );

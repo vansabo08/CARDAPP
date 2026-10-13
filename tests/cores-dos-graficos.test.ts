@@ -94,6 +94,12 @@ function chroma(hex: string) {
   return Math.hypot(a, b);
 }
 
+/** O ângulo da cor, em graus — é o que diz de que família ela é. */
+function matiz(hex: string) {
+  const [, a, b] = oklab(linear(hex));
+  return ((Math.atan2(b, a) * 180) / Math.PI + 360) % 360;
+}
+
 function contraste(a: string, b: string) {
   const rel = (hex: string) => {
     const [r, g, bl] = linear(hex);
@@ -175,9 +181,21 @@ describe('a cor da linha e das barras', () => {
     expect(contraste(COR_SERIE, FUNDO)).toBeGreaterThanOrEqual(3);
   });
 
-  it('continua a ser o laranja da casa, e não um dourado qualquer', () => {
-    // A um degrau do laranja da marca. Se alguém a trocar por um tom de
-    // outra família, isto cai.
-    expect(distancia(COR_SERIE, '#c2410c')).toBeLessThan(8);
+  it('é da família do amarelo da marca, e não de outra qualquer', () => {
+    /*
+     * O QUE SE GUARDA É A FAMÍLIA, E NÃO O TOM EXACTO.
+     *
+     * A régua era a distância ao acento da app, e tinha de ser menos de
+     * 8. Não dava: a cor dos gráficos é o mesmo amarelo bastante mais
+     * fechado — tem de se ler a 3 para 1 sobre um cartão branco, e o
+     * amarelo da marca sozinho lê-se a 1,6 — e dois tons com esta
+     * diferença de luz estão sempre a mais de 8 um do outro, por muito
+     * da mesma cor que sejam.
+     *
+     * O ângulo não muda com a luz: se alguém trocar isto por um verde,
+     * um vermelho ou um dourado de outra família, cai aqui.
+     */
+    const diferenca = Math.abs(matiz(COR_SERIE) - matiz('#FFC21A'));
+    expect(Math.min(diferenca, 360 - diferenca)).toBeLessThan(15);
   });
 });

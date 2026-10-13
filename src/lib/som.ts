@@ -390,8 +390,8 @@ export function avisarDoPedido(mesa: number | null, total: string) {
   try {
     new Notification('Pedido novo no CardApp', {
       body: mesa != null ? `Mesa ${mesa} — ${total}` : `Sem mesa — ${total}`,
-      icon: '/icone-192.png',
-      badge: '/icone-192.png',
+      icon: '/icon-192.png',
+      badge: '/icon-192.png',
       // Um pedido substitui o aviso do anterior em vez de empilhar dez.
       tag: 'cardapp-pedido',
       renotify: true,
@@ -419,8 +419,8 @@ export function avisarDoComprovativo(quantos: number) {
         quantos === 1
           ? 'Uma casa transferiu e espera confirmação.'
           : `${quantos} casas transferiram e esperam confirmação.`,
-      icon: '/icone-192.png',
-      badge: '/icone-192.png',
+      icon: '/icon-192.png',
+      badge: '/icon-192.png',
       tag: 'cardapp-comprovativo',
       renotify: true,
     } as NotificationOptions);
@@ -536,7 +536,7 @@ export function avisarDaChamada(mesa: number, tipo: 'empregado' | 'conta') {
     new Notification(tipo === 'conta' ? `Mesa ${mesa} pediu a conta` : `Mesa ${mesa} chama o empregado`, {
       body: 'Toque para abrir o salão.',
       tag: `cardapp-chamada-${mesa}-${tipo}`,
-      icon: '/icone-192.png?v=3',
+      icon: '/icon-192.png?v=4',
     });
   } catch {
     /* alguns browsers móveis só deixam notificar pelo service worker */

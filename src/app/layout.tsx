@@ -48,12 +48,20 @@ export const metadata: Metadata = {
   applicationName: 'CardApp',
   manifest: '/manifest.webmanifest',
   icons: {
+    /*
+     * O `?v=` sobe sempre que o desenho muda: sem ele, quem já visitou o
+     * site fica com o ícone velho no separador durante semanas, e quem
+     * instalou a app fica com ele no ecrã inicial para sempre.
+     *
+     * O SVG vem primeiro: o browser que o souber ler fica com a marca
+     * nítida em qualquer tamanho, e os outros recuam para o .ico.
+     */
     icon: [
-      { url: '/favicon.ico?v=3', sizes: '32x32' },
-      { url: '/favicon-32.png?v=3', type: 'image/png', sizes: '32x32' },
-      { url: '/icone-192.png?v=3', type: 'image/png', sizes: '192x192' },
+      { url: '/favicon.svg?v=4', type: 'image/svg+xml' },
+      { url: '/favicon.ico?v=4', sizes: '32x32' },
+      { url: '/icon-192.png?v=4', type: 'image/png', sizes: '192x192' },
     ],
-    apple: [{ url: '/apple-touch-icon.png?v=3', sizes: '180x180' }],
+    apple: [{ url: '/apple-touch-icon.png?v=4', sizes: '180x180' }],
   },
   appleWebApp: {
     capable: true,
@@ -79,8 +87,9 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  // A app é clara: a barra do sistema acompanha a página.
-  themeColor: '#F2F1EF',
+  // O amarelo da marca: é a cor que o telemóvel pinta à volta da app
+  // quando ela abre do ecrã inicial.
+  themeColor: '#FFC21A',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,

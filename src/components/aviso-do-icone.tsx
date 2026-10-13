@@ -36,7 +36,7 @@ import { cn } from '@/lib/utils';
  * já tinha dispensado o aviso da vez anterior volta a ser avisado, e
  * quem nunca o viu não vê dois.
  */
-const CHAVE = 'cardapp:aviso-do-icone:3';
+const CHAVE = 'cardapp:aviso-do-icone:4';
 
 /**
  * O ícone mudou a 20 de Setembro de 2026. Dois meses chegam para toda a
